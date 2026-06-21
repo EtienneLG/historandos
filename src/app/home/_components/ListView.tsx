@@ -64,9 +64,9 @@ export default function ListView({ traces }: ListViewProps) {
                   >
                     {/* Photo to the left */}
                     <div className="w-1/3 md:w-1/4 bg-gray-200 relative shrink-0">
-                      {trace.imageUrl ? (
+                      {trace.thumbnailUrl ? (
                         <img 
-                          src={trace.imageUrl} 
+                          src={trace.thumbnailUrl} 
                           alt={trace.title} 
                           className="w-full h-full object-cover"
                         />
@@ -85,7 +85,7 @@ export default function ListView({ traces }: ListViewProps) {
                             {trace.title}
                           </h4>
                           <span className="text-sm font-semibold text-blue-600 shrink-0">
-                            {trace.date}
+                            {new Date(trace.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
                           </span>
                         </div>
                         <p className="text-gray-500 text-xs md:text-sm mt-1 line-clamp-2 md:line-clamp-3">

@@ -4,6 +4,6 @@ export interface Trace {
   description: string;
   date: string;
   lat: number;
-  lng: number;
-  imageUrl?: string;
+  lon: number;
+  thumbnailUrl?: string;
 }

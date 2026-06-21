@@ -50,7 +50,7 @@ function GpxLayerEngine({
         map.removeLayer(layerRef.current);
       }
 
-      const gpxUrl = `/api/traces/${selectedTrace as any}`;
+      const gpxUrl = `/api/traces/${selectedTrace.id}`;
 
       // 2. Initialize L.GPX using the plugin's native builder
       const gpxLayer = new (L as any).GPX(gpxUrl, {
@@ -130,7 +130,7 @@ export default function MapInner({ traces }: MapInnerProps) {
           {traces.map((trace) => (
             <Marker 
               key={trace.id} 
-              position={[trace.lat, trace.lng]}
+              position={[trace.lat, trace.lon]}
               eventHandlers={{ click: () => handleMarkerSelection(trace) }}
             >
             </Marker>
