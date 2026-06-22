@@ -9,13 +9,20 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@tmcw/togeojson": "^7.1.2",
+    "@turf/bbox": "^7.3.5",
+    "@turf/turf": "^7.3.5",
+    "@types/mapbox-gl": "^3.5.0",
     "jose": "^6.2.3",
     "leaflet": "^1.9.4",
     "leaflet-gpx": "^2.2.0",
+    "mapbox-gl": "^3.25.0",
     "next": "16.2.9",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "react-leaflet": "^5.0.0"
+    "react-leaflet": "^5.0.0",
+    "react-map-gl": "^8.1.1",
+    "recharts": "^3.8.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
