@@ -5,7 +5,7 @@ import Map, { Source, Layer, Marker } from 'react-map-gl/mapbox';
 import { gpx } from '@tmcw/togeojson';
 import bbox from '@turf/bbox';
 import { length, lineString } from '@turf/turf';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Trace } from '@/types/trace';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -19,6 +19,18 @@ interface TrackMetrics {
   elevationLoss: number;
   profile?: { distance: number; elevation: number }[];
 }
+
+const CleanTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-slate-900/95 backdrop-blur-md text-white px-3 py-2 rounded-xl text-xs shadow-xl border border-slate-800 flex flex-col gap-0.5 animate-in fade-in duration-200">
+        <span className="font-semibold text-slate-200">{payload[0].value} m elevation</span>
+        <span className="text-slate-400 text-[10px]">At {payload[0].payload.distance} km</span>
+      </div>
+    );
+  }
+  return null;
+};
 
 function calculateTrackMetrics(geoJson: any): TrackMetrics {
   let totalDist = 0;
@@ -145,7 +157,7 @@ export default function MapInner({ traces }: MapInnerProps) {
           ))}
 
           {/* Dynamic Track Layer */}
-          {trackData && (
+          {trackData && activeTrace && (
             <Source id="dynamic-gpx" type="geojson" data={trackData}>
               <Layer {...lineLayerStyle} />
             </Source>
@@ -155,87 +167,142 @@ export default function MapInner({ traces }: MapInnerProps) {
 
       {/* HUD Panel */}
       {activeTrace && (
-        <div className="w-80 h-full bg-white shadow-lg overflow-y-auto flex flex-col">
-          <div className="p-6 flex-1 flex flex-col">
+        <div className="w-[480px] h-full bg-white/90 backdrop-blur-md shadow-2xl border-l border-slate-100 overflow-y-auto flex flex-col font-sans text-slate-800">
+          <div className="p-6 flex-1 flex flex-col gap-6">
+            
             {/* Header */}
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{activeTrace.title}</h2>
-              {activeTrace.description && (
-                <p className="text-gray-600 text-sm mb-3">{activeTrace.description}</p>
-              )}
-              {activeTrace.date && (
-                <p className="text-gray-500 text-xs">
-                  {new Date(activeTrace.date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </p>
-              )}
+            <div className="flex justify-between items-start gap-4">
+              <div className="space-y-1 flex-1">
+                <h2 className="text-xl font-bold tracking-tight text-slate-900 leading-snug">{activeTrace.title}</h2>
+                {activeTrace.description && (
+                  <p className="text-slate-500 text-sm leading-relaxed">{activeTrace.description}</p>
+                )}
+                {activeTrace.date && (
+                  <p className="text-slate-400 text-xs tracking-wide uppercase font-medium pt-1">
+                    {new Date(activeTrace.date).toLocaleDateString('fr-FR', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </p>
+                )}
+              </div>
+              
+              <button 
+                onClick={() => { setActiveTrace(null) }}
+                className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-1.5 rounded-xl transition-all duration-200 shrink-0"
+                aria-label="Close panel"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
 
-            {/* Metrics */}
+            {/* Main Content Area */}
             {loading ? (
-              <div className="text-center py-8">
-                <p className="text-gray-500">Loading track...</p>
+              <div className="flex-1 flex flex-col items-center justify-center py-12 gap-2">
+                <div className="h-5 w-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                <p className="text-slate-400 text-sm font-medium">Loading track details...</p>
               </div>
             ) : metrics ? (
-              <div className="flex flex-col gap-4 flex-1">
-                <div className="space-y-3">
-                  <MetricCard label="Distance" value={`${metrics.distance} km`} />
-                  <MetricCard label="Elevation Gain" value={`${metrics.elevationGain} m`} />
-                  <MetricCard label="Elevation Loss" value={`${metrics.elevationLoss} m`} />
+              <div className="flex flex-col gap-6 flex-1">
+                
+                {/* Minimal Metric Dashboard Row */}
+                <div className="grid grid-cols-3 gap-2">
+                  {/* Distance */}
+                  <div className="bg-slate-50/70 rounded-2xl p-3 border border-slate-100 text-center transition-all hover:bg-slate-50">
+                    <span className="block text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-0.5">Distance</span>
+                    <span className="text-base font-extrabold text-slate-800">{metrics.distance}<span className="text-xs font-semibold text-slate-500 ml-0.5">km</span></span>
+                  </div>
+                  
+                  {/* Elevation Gain */}
+                  <div className="bg-emerald-50/50 rounded-2xl p-3 border border-emerald-100/50 text-center transition-all hover:bg-emerald-50">
+                    <span className="block text-[10px] font-bold tracking-wider text-emerald-600 uppercase mb-0.5">Gain</span>
+                    <span className="text-base font-extrabold text-emerald-700">+ {metrics.elevationGain}<span className="text-xs font-semibold text-emerald-600 ml-0.5">m</span></span>
+                  </div>
+
+                  {/* Elevation Loss */}
+                  <div className="bg-rose-50/50 rounded-2xl p-3 border border-rose-100/50 text-center transition-all hover:bg-rose-50">
+                    <span className="block text-[10px] font-bold tracking-wider text-rose-600 uppercase mb-0.5">Loss</span>
+                    <span className="text-base font-extrabold text-rose-700">- {metrics.elevationLoss}<span className="text-xs font-semibold text-rose-600 ml-0.5">m</span></span>
+                  </div>
                 </div>
 
-                {/* Elevation Chart */}
+                {/* Elevation Chart Section */}
                 {metrics.profile && metrics.profile.length > 0 && (
-                  <div className="flex-1 min-h-48 border-t pt-4">
-                    <p className="text-gray-600 text-sm font-medium mb-2">Elevation Profile</p>
-                    <ResponsiveContainer width="100%" height={200}>
-                      <LineChart data={metrics.profile}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                        <XAxis 
-                          dataKey="distance" 
-                          tick={{ fontSize: 12 }} 
-                          label={{ value: 'Distance (km)', position: 'insideBottomRight', offset: -5 }}
-                        />
-                        <YAxis 
-                          tick={{ fontSize: 12 }} 
-                          label={{ value: 'Elevation (m)', angle: -90, position: 'insideLeft' }}
-                        />
-                        <Tooltip 
-                          formatter={(value) => `${value} m`}
-                          labelFormatter={(value) => `${value} km`}
-                          contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc' }}
-                        />
-                        <Line 
-                          type="monotone" 
-                          dataKey="elevation" 
-                          stroke="#0070f3" 
-                          dot={false}
-                          strokeWidth={2}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
+                  <div className="flex flex-col border-t border-slate-100 pt-5">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Elevation Profile</h3>
+                      <span className="text-[11px] text-slate-400 font-medium">m / km</span>
+                    </div>
+                    
+                    {/* Fixed height wrapper makes sure chart scales correctly inside scrolling container */}
+                    <div className="h-56 w-full bg-slate-50/40 rounded-2xl p-2 border border-slate-100/60">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={metrics.profile} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                          <CartesianGrid vertical={false} stroke="#f1f5f9" strokeDasharray="4" />
+                          <XAxis 
+                            dataKey="distance" 
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 500 }}
+                            dy={8}
+                          />
+                          <YAxis 
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 500 }}
+                            domain={['dataMin - 20', 'dataMax + 20']}
+                          />
+                          <Tooltip content={<CleanTooltip />} cursor={{ stroke: '#cbd5e1', strokeWidth: 1, strokeDasharray: '4 4' }} />
+                          <Line 
+                            type="monotone" 
+                            dataKey="elevation" 
+                            stroke="#6366f1" 
+                            strokeWidth={2.5}
+                            dot={false}
+                            activeDot={{ r: 5, strokeWidth: 0, fill: '#4f46e5' }}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                )}
+
+                {/* Photo Gallery Section */}
+                {activeTrace.photos && activeTrace.photos.length > 0 && (
+                  <div className="border-t border-slate-100 pt-5">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Photos from the Trail</h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {activeTrace.photos.map((photoUrl: string, index: number) => (
+                        <div 
+                          key={index} 
+                          className="group relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/40 shadow-sm"
+                        >
+                          <img 
+                            src={photoUrl} 
+                            alt={`Trail snapshot ${index + 1}`} 
+                            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                            loading="lazy"
+                          />
+                          {/* Subtle hover overlay */}
+                          <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition-colors duration-300" />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
             ) : (
-              <p className="text-gray-500 text-sm">No metrics available</p>
+              <div className="flex-1 flex items-center justify-center">
+                <p className="text-slate-400 text-sm font-medium">No layout metrics available</p>
+              </div>
             )}
           </div>
         </div>
       )}
 
-    </div>
-  );
-}
-
-function MetricCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-      <p className="text-gray-600 text-sm font-medium mb-1">{label}</p>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
     </div>
   );
 }
