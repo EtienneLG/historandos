@@ -7,7 +7,6 @@ import bbox from '@turf/bbox';
 import { Trace, TracePoint, TraceMetrics } from '@/types/trace';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { HUDPanel } from "./hud-panel";
-import { trace } from "next/dist/trace/trace";
 
 interface MapInnerProps {
   traces: Trace[];
@@ -78,8 +77,8 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
           {/* Dynamic Marker */}
           {activePoint && (
             <Marker
-              latitude={activePoint.lat} 
-              longitude={activePoint.lon} 
+              latitude={activePoint.lat}
+              longitude={activePoint.lon}
             />
           )}
 
@@ -94,7 +93,7 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
 
       {/* HUD Panel */}
       {activeTrace && (
-        <HUDPanel 
+        <HUDPanel
           activeTrace={activeTrace}
           loading={loading}
           metrics={metrics}
