@@ -98,7 +98,6 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
           loading={loading}
           metrics={metrics}
           onClose={() => setActiveTrace(null)}
-          activePoint={activePoint}
           setActivePoint={setActivePoint}
         />
       )}

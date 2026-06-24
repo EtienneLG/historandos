@@ -36,7 +36,6 @@ export function ElevationChart({ profile, setActivePoint }: ElevationChartProps)
                         margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
                         onMouseMove={(state) => {
                             const activeTooltipIndex = state.activeTooltipIndex;
-                            console.log('Active Point:', activeTooltipIndex);
                             if (state.isTooltipActive && typeof activeTooltipIndex === 'string') {
                                 setActivePoint(profile[Number(activeTooltipIndex)]);
                             }
