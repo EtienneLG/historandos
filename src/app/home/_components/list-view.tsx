@@ -2,9 +2,10 @@ import { Trace } from '@/types/trace';
 
 interface ListViewProps {
   traces: Trace[];
+  activeTrace: Trace | null;
 }
 
-export default function ListView({ traces }: ListViewProps) {
+export default function ListView({ traces, activeTrace }: ListViewProps) {
   const sortedTraces = [...traces].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );

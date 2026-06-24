@@ -1,5 +1,5 @@
 import { Trace } from '@/types/trace';
-import TraceTabs from './_components/TraceTabs';
+import HomeShell from './_components/home-shell';
 
 async function getTraces(): Promise<Trace[]> {
   const driveId = process.env.INFOMANIAK_DRIVE_ID;
@@ -34,7 +34,7 @@ export default async function HomePage() {
 
   return (
     <main className="w-screen h-screen overflow-hidden">
-      <TraceTabs traces={traces} />
+      <HomeShell traces={traces} />
     </main>
   );
 }
