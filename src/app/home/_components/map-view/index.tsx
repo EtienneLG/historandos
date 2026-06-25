@@ -1,5 +1,3 @@
-"use client";
-
 import { Trace } from '@/types/trace';
 import dynamic from "next/dynamic";
 

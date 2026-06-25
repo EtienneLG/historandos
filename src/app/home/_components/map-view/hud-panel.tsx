@@ -15,7 +15,7 @@ interface HUDPanelProps {
 export function HUDPanel({ activeTrace, loading, metrics, onClose, setActivePoint }: HUDPanelProps) {  
   const hudScrollContainerRef = useRef<HTMLDivElement | null>(null);
 
-  const { sentinelRef } = useScrollingPhotos(activeTrace, hudScrollContainerRef);
+  const { sentinelRef, visiblePhotoIds, isFetchingPhotos } = useScrollingPhotos(activeTrace, hudScrollContainerRef);
 
   return (
     <div ref={hudScrollContainerRef} className="w-[480px] h-full bg-white/90 backdrop-blur-md shadow-2xl border-l border-slate-100 overflow-y-auto flex flex-col font-sans text-slate-800">
@@ -89,16 +89,16 @@ export function HUDPanel({ activeTrace, loading, metrics, onClose, setActivePoin
             )}
 
             {/* Photo Gallery Section */}
-            {/*visiblePhotoIds.length > 0 && (
+            {visiblePhotoIds.length > 0 && (
               <div className="border-t border-slate-100 pt-5">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Photos from the Trail</h3>
                 <div className="grid grid-cols-2 gap-2">
-                  {visiblePhotoIds.map((id: string) => (
+                  {visiblePhotoIds.map((id: number) => (
                     <ActivityPhoto key={id} photoId={id} />
                   ))}
                 </div>
               </div>
-            )*/}
+            )}
 
             {/* Scroll Sentinel Target & Loader */}
             <div ref={sentinelRef} className="h-4 w-full" />

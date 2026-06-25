@@ -1,41 +1,75 @@
-'use client';
-
 import { Trace } from '@/types/trace';
-import { useEffect, useRef, RefObject } from 'react';
+import { useRef, RefObject, useCallback, useState, useEffect, act } from 'react';
 
 export function useScrollingPhotos(activeTrace: Trace, containerRef: RefObject<HTMLDivElement | null>) {
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const [visiblePhotoIds, setVisiblePhotoIds] = useState<number[]>([]);
+  const [isFetchingPhotos, setIsFetchingPhotos] = useState<boolean>(false);
+  const [hasMorePhotos, setHasMorePhotos] = useState<boolean>(true);
+  const [cursorPos, setCursorPos] = useState<string | null>(null);
 
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    const container = containerRef.current;
+  const driveId = process.env.INFOMANIAK_DRIVE_ID;
+  const token = process.env.INFOMANIAK_DRIVE_SECRET;
 
-    console.log("in the observer", sentinel, container);
-    
-    if (!sentinel || !container) return;
+  const fetchMorePhotos = async () => {
+    if (!activeTrace || isFetchingPhotos || !hasMorePhotos) return;
 
-    console.log("ok now it's good");
+    setIsFetchingPhotos(true);
+    try {
+      console.log("Fetching :", `/api/photos/list?cursor=${cursorPos}`);
+      const cursorParam = cursorPos ? `&cursor=${cursorPos}` : '';
+      const res = await fetch(`/api/photos/list?dir_id=${activeTrace.photoDirId}${cursorParam}`);
+
+      const data = await res.json();
+      console.log("Got data !", data);
+
+      if (data.photo_ids.length > 0) {
+        setVisiblePhotoIds((prev) => [...prev, ...data.photo_ids]);
+        setCursorPos(data.cursor);
+        if (!data.has_more) setHasMorePhotos(false);
+      } else {
+        setHasMorePhotos(false);
+      }
+    } catch (error) {
+      console.error("Error fetching photos:", error);
+    } finally {
+      setIsFetchingPhotos(false);
+    }
+  };
+
+  const sentinelRef = useCallback((node: HTMLDivElement | null) => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
+
+    if (!node || !containerRef.current) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         const target = entries[0];
-        console.log("target ?", target);
         if (target.isIntersecting) {
-          // Trigger your fetch code here
-          console.log("Sentinel crossed! Fetching more photos...");
+          console.log("Intersect ! Fetch more...");
+          fetchMorePhotos();
         }
       },
       {
-        root: container,      
-        rootMargin: '200px',  
-        threshold: 0,
+        root: containerRef.current,
+        rootMargin: '200px',
+        threshold: 0.1,
       }
     );
 
-    observer.observe(sentinel);
+    observer.observe(node);
+    observerRef.current = observer;
 
-    return () => observer.disconnect();
   }, [activeTrace]);
 
-  return { sentinelRef };
+  useEffect(() => {
+    setCursorPos(null);
+    setHasMorePhotos(true);
+    setVisiblePhotoIds([]);
+  }, [activeTrace]);
+
+  return { sentinelRef, visiblePhotoIds, isFetchingPhotos };
 }

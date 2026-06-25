@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export function ActivityPhoto({ photoId }: { photoId: string }) {
+export function ActivityPhoto({ photoId }: { photoId: number }) {
   const [imgSrc, setImgSrc] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState<boolean>(true);
 
