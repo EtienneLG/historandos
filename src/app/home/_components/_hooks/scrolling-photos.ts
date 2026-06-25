@@ -2,22 +2,26 @@ import { Trace } from '@/types/trace';
 import { useRef, RefObject, useCallback, useState, useEffect, act } from 'react';
 
 export function useScrollingPhotos(activeTrace: Trace, containerRef: RefObject<HTMLDivElement | null>) {
-  const observerRef = useRef<IntersectionObserver | null>(null);
   const [visiblePhotoIds, setVisiblePhotoIds] = useState<number[]>([]);
   const [isFetchingPhotos, setIsFetchingPhotos] = useState<boolean>(false);
   const [hasMorePhotos, setHasMorePhotos] = useState<boolean>(true);
   const [cursorPos, setCursorPos] = useState<string | null>(null);
+  
+  const isFetchingRef = useRef(isFetchingPhotos);
+  const hasMoreRef = useRef(hasMorePhotos);
+  const cursorRef = useRef(cursorPos);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
-  const driveId = process.env.INFOMANIAK_DRIVE_ID;
-  const token = process.env.INFOMANIAK_DRIVE_SECRET;
+  hasMoreRef.current = hasMorePhotos;
+  cursorRef.current = cursorPos;
+  isFetchingRef.current = isFetchingPhotos;
 
   const fetchMorePhotos = async () => {
-    if (!activeTrace || isFetchingPhotos || !hasMorePhotos) return;
+    if (!activeTrace || isFetchingRef.current || !hasMoreRef.current) return;
 
     setIsFetchingPhotos(true);
     try {
-      console.log("Fetching :", `/api/photos/list?cursor=${cursorPos}`);
-      const cursorParam = cursorPos ? `&cursor=${cursorPos}` : '';
+      const cursorParam = cursorRef.current ? `&cursor=${cursorRef.current}` : '';
       const res = await fetch(`/api/photos/list?dir_id=${activeTrace.photoDirId}${cursorParam}`);
 
       const data = await res.json();
@@ -71,5 +75,5 @@ export function useScrollingPhotos(activeTrace: Trace, containerRef: RefObject<H
     setVisiblePhotoIds([]);
   }, [activeTrace]);
 
-  return { sentinelRef, visiblePhotoIds, isFetchingPhotos };
+  return { sentinelRef, visiblePhotoIds, isFetchingPhotos, hasMorePhotos };
 }

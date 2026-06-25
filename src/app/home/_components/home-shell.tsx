@@ -26,6 +26,7 @@ export default function HomeShell({ traces }: HomeShellProps) {
 
     async function loadNewTrack() {
       setLoading(true);
+      setTraceGeoJson(null);
       try {
         const response = await fetch(`/api/traces/${activeTrace?.gpxFileId}`);
         const gpxText = await response.text();
