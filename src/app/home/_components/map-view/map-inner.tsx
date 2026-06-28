@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Map, { Source, Layer, Marker } from 'react-map-gl/mapbox';
-import { gpx } from '@tmcw/togeojson';
+import Map, { Source, Layer, Marker, useMap } from 'react-map-gl/mapbox';
+import mapboxgl from 'mapbox-gl';
 import bbox from '@turf/bbox';
 import { Trace, TracePoint, TraceMetrics } from '@/types/trace';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -19,9 +19,50 @@ interface MapInnerProps {
 
 export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeoJson, loading, metrics }: MapInnerProps) {
   const mapRef = useRef<any>(null);
-  const [activePoint, setActivePoint] = useState<TracePoint | null>(null);
+  const hoverMarkerRef = useRef<mapboxgl.Marker | null>(null);
 
   const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+
+  const handleMapLoad = () => {
+    const rawMap = mapRef.current?.getMap();
+    if (!rawMap || hoverMarkerRef.current) return;
+
+    const el = document.createElement('div');
+    el.className = 'w-4 h-4 bg-blue-600 border-2 border-white rounded-full shadow-md pointer-events-none hidden';
+    el.id = 'elevation-hover-dot';
+
+    const marker = new mapboxgl.Marker({ element: el })
+      .setLngLat([0, 0])
+      .addTo(rawMap);
+
+    hoverMarkerRef.current = marker;
+  };
+
+  useEffect(() => {
+    const handleHoverBridge = (e: Event) => {
+      const index = (e as CustomEvent).detail;
+      const marker = hoverMarkerRef.current;
+            
+      if (!marker || !metrics?.profile) return;
+
+      if (index === null) {
+        document.getElementById('elevation-hover-dot')?.classList.add('hidden');
+        return;
+      }
+
+      const activePoint = metrics.profile[index];
+      if (!activePoint) return;
+
+      marker.setLngLat([activePoint.lon, activePoint.lat]);
+      document.getElementById('elevation-hover-dot')?.classList.remove('hidden');
+    };
+
+    window.addEventListener('trace-point-hover', handleHoverBridge);
+    
+    return () => {
+      window.removeEventListener('trace-point-hover', handleHoverBridge);
+    };
+  }, [metrics]);
 
   useEffect(() => {
     if (!traceGeoJson || !mapRef.current) return;
@@ -48,7 +89,7 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
   };
 
   return (
-    <div className="w-full h-full flex relative overflow-hidden">
+    <div className="w-full h-full flex relative overflow-hidden bg-slate-950">
 
       {/* Map Element Box */}
       <div className="flex-1 h-full w-full z-0">
@@ -62,6 +103,7 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
           }}
           style={{ width: '100%', height: '100%' }}
           mapStyle="mapbox://styles/mapbox/outdoors-v12"
+          onLoad={handleMapLoad}
         >
           {/* Trace Markers */}
           {traces.map((trace) => (
@@ -74,14 +116,6 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
             </Marker>
           ))}
 
-          {/* Dynamic Marker */}
-          {activePoint && (
-            <Marker
-              latitude={activePoint.lat}
-              longitude={activePoint.lon}
-            />
-          )}
-
           {/* Dynamic Track Layer */}
           {traceGeoJson && activeTrace && (
             <Source id="dynamic-gpx" type="geojson" data={traceGeoJson}>
@@ -89,17 +123,18 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
             </Source>
           )}
         </Map>
-      </div>
+      </div>      
 
       {/* HUD Panel */}
       {activeTrace && (
-        <HUDPanel
-          activeTrace={activeTrace}
-          loading={loading}
-          metrics={metrics}
-          onClose={() => setActiveTrace(null)}
-          setActivePoint={setActivePoint}
-        />
+        <div className="absolute top-0 right-0 z-10 h-full p-0 pointer-events-none">
+          <HUDPanel
+            activeTrace={activeTrace}
+            loading={loading}
+            metrics={metrics}
+            onClose={() => setActiveTrace(null)}
+          />
+        </div>
       )}
 
     </div>

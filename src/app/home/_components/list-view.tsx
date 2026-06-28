@@ -3,9 +3,11 @@ import { Trace } from '@/types/trace';
 interface ListViewProps {
   traces: Trace[];
   activeTrace: Trace | null;
+  setActiveTrace: (trace: Trace | null) => void;
+  metrics: any;
 }
 
-export default function ListView({ traces, activeTrace }: ListViewProps) {
+export default function ListView({ traces, activeTrace, setActiveTrace, metrics }: ListViewProps) {
   const sortedTraces = [...traces].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
@@ -57,7 +59,7 @@ export default function ListView({ traces, activeTrace }: ListViewProps) {
               </div>
 
               {/* Grid Layout: Allows multiple items on the same row (1 on mobile, 2 on desktop) */}
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 {monthTraces.map((trace) => (
                   <div 
                     key={trace.id} 
@@ -67,7 +69,7 @@ export default function ListView({ traces, activeTrace }: ListViewProps) {
                     <div className="w-1/3 md:w-1/4 bg-gray-200 relative shrink-0">
                       {trace.thumbnailUrl ? (
                         <img 
-                          src={trace.thumbnailUrl} 
+                          src={``}
                           alt={trace.title} 
                           className="w-full h-full object-cover"
                         />
@@ -79,24 +81,18 @@ export default function ListView({ traces, activeTrace }: ListViewProps) {
                     </div>
 
                     {/* Content copy block to the right */}
-                    <div className="w-2/3 md:w-3/4 p-4 flex flex-col justify-between">
-                      <div>
-                        <div className="flex justify-between items-start gap-2">
-                          <h4 className="font-bold text-base md:text-lg text-gray-900 line-clamp-1">
-                            {trace.title}
-                          </h4>
-                          <span className="text-sm font-semibold text-blue-600 shrink-0">
-                            {new Date(trace.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
-                          </span>
-                        </div>
-                        <p className="text-gray-500 text-xs md:text-sm mt-1 line-clamp-2 md:line-clamp-3">
-                          {trace.description}
-                        </p>
+                    <div className="w-2/3 md:w-3/4 p-4 flex flex-col">
+                      <div className="flex justify-between items-start gap-2">
+                        <h4 className="font-bold text-base md:text-lg text-gray-900 line-clamp-1">
+                          {trace.title}
+                        </h4>
+                        <span className="text-sm font-semibold text-blue-600 shrink-0">
+                          {new Date(trace.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
+                        </span>
                       </div>
-
-                      <div className="text-[11px] font-medium text-gray-400">
-                        Ajouté le {new Date(trace.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
-                      </div>
+                      <p className="text-gray-500 text-xs md:text-sm mt-1 line-clamp-2 md:line-clamp-3">
+                        {trace.description}
+                      </p>
                     </div>
 
                   </div>

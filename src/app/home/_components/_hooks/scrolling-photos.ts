@@ -28,7 +28,10 @@ export function useScrollingPhotos(activeTrace: Trace, containerRef: RefObject<H
       console.log("Got data !", data);
 
       if (data.photo_ids.length > 0) {
-        setVisiblePhotoIds((prev) => [...prev, ...data.photo_ids]);
+        setVisiblePhotoIds((prev) => {
+          const uniqueIds = new Set([...prev, ...data.photo_ids]);
+          return Array.from(uniqueIds);
+        });
         setCursorPos(data.cursor);
         if (!data.has_more) setHasMorePhotos(false);
       } else {

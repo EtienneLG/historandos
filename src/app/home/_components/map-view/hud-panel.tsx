@@ -9,16 +9,15 @@ interface HUDPanelProps {
     loading: boolean;
     metrics: TraceMetrics | null;
     onClose: () => void;
-    setActivePoint: (point: TracePoint | null) => void;
 }
 
-export function HUDPanel({ activeTrace, loading, metrics, onClose, setActivePoint }: HUDPanelProps) {  
+export function HUDPanel({ activeTrace, loading, metrics, onClose }: HUDPanelProps) {  
   const hudScrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   const { sentinelRef, visiblePhotoIds, isFetchingPhotos, hasMorePhotos } = useScrollingPhotos(activeTrace, hudScrollContainerRef);
 
   return (
-    <div ref={hudScrollContainerRef} className="w-[480px] h-full bg-white/90 backdrop-blur-md shadow-2xl border-l border-slate-100 overflow-y-auto flex flex-col font-sans text-slate-800">
+    <div ref={hudScrollContainerRef} className="pointer-events-auto w-[480px] h-full bg-white/90 backdrop-blur-md shadow-2xl border-l border-slate-100 overflow-y-auto flex flex-col font-sans text-slate-800">
       <div className="p-6 flex-1 flex flex-col gap-6">
 
         {/* Header */}
@@ -83,8 +82,7 @@ export function HUDPanel({ activeTrace, loading, metrics, onClose, setActivePoin
             {/* Elevation Chart Section */}
             {metrics.profile && metrics.profile.length > 0 && (
               <ElevationChart 
-                profile={metrics.profile} 
-                setActivePoint={setActivePoint}
+                profile={metrics.profile}
               />
             )}
 

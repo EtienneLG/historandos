@@ -6,7 +6,6 @@ async function getTraces(): Promise<Trace[]> {
   const metadataId = process.env.INFOMANIAK_METADATA_ID;
   const token = process.env.INFOMANIAK_DRIVE_SECRET;
   
-  // try fetching from API, fall back to local sample data on error
   try {
     const response = await fetch(`https://api.infomaniak.com/2/drive/${driveId}/files/${metadataId}/download`, { 
       method: 'GET',

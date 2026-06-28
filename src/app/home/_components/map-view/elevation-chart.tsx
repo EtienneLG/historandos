@@ -3,7 +3,6 @@ import { TracePoint } from '@/types/trace';
 
 interface ElevationChartProps {
     profile: TracePoint[];
-    setActivePoint: (point: TracePoint | null) => void;
 }
 
 const CleanTooltip = ({ active, payload }: any) => {
@@ -18,8 +17,20 @@ const CleanTooltip = ({ active, payload }: any) => {
     return null;
 };
 
-export function ElevationChart({ profile, setActivePoint }: ElevationChartProps) {
+export function ElevationChart({ profile }: ElevationChartProps) {
     const chartData = profile.map(({ distance, elevation }) => ({ distance, elevation }));
+
+    const handleMouseMove = (e: any) => {
+        if (e && e.activeTooltipIndex !== undefined) {
+            const event = new CustomEvent('trace-point-hover', { detail: e.activeTooltipIndex });
+            window.dispatchEvent(event);
+        }
+    };
+
+    const handleMouseLeave = () => {
+        const event = new CustomEvent('trace-point-hover', { detail: null });
+        window.dispatchEvent(event);
+    };
 
     return (
         <div className="flex flex-col border-t border-slate-100 pt-5">
@@ -34,13 +45,8 @@ export function ElevationChart({ profile, setActivePoint }: ElevationChartProps)
                     <LineChart
                         data={chartData}
                         margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
-                        onMouseMove={(state) => {
-                            const activeTooltipIndex = state.activeTooltipIndex;
-                            if (state.isTooltipActive && typeof activeTooltipIndex === 'string') {
-                                setActivePoint(profile[Number(activeTooltipIndex)]);
-                            }
-                        }}
-                        onMouseLeave={() => setActivePoint(null)}
+                        onMouseMove={handleMouseMove}
+                        onMouseLeave={handleMouseLeave}
                     >
                         <CartesianGrid vertical={false} stroke="#f1f5f9" strokeDasharray="4" />
                         <XAxis

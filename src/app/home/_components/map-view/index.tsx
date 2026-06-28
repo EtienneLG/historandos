@@ -24,6 +24,8 @@ const MapInner = dynamic(() => import("./map-inner"), {
 export default function MapViewWrapper({ traces, activeTrace, setActiveTrace, traceGeoJson, loading, metrics }: MapViewProps) {
   return (
     <div className="w-full h-full relative">
+
+      {/* Map */}
       <MapInner 
         traces={traces} 
         activeTrace={activeTrace} 
@@ -32,6 +34,7 @@ export default function MapViewWrapper({ traces, activeTrace, setActiveTrace, tr
         loading={loading} 
         metrics={metrics} 
       />
+
     </div>
   );
 }

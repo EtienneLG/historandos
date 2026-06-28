@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Trace, TraceMetrics } from '@/types/trace';
 import ListView from './list-view';
 import MapViewWrapper from './map-view/index';
-import { gpx } from '@tmcw/togeojson';
-import { calculateTraceMetrics } from '@/utils/geo';
 
 interface HomeShellProps {
   traces: Trace[];
@@ -29,16 +27,10 @@ export default function HomeShell({ traces }: HomeShellProps) {
       setTraceGeoJson(null);
       try {
         const response = await fetch(`/api/traces/${activeTrace?.gpxFileId}`);
-        const gpxText = await response.text();
+        const data = await response.json();
 
-        const parser = new DOMParser();
-        const gpxXml = parser.parseFromString(gpxText, 'text/xml');
-        const geoJson = gpx(gpxXml);
-
-        const calcMetrics = calculateTraceMetrics(geoJson);
-
-        setTraceGeoJson(geoJson);
-        setMetrics(calcMetrics);
+        setTraceGeoJson(data.geoJson);
+        setMetrics(data.metrics);
       } catch (error) {
         console.error('Error updating GPX track:', error);
       } finally {
@@ -50,7 +42,8 @@ export default function HomeShell({ traces }: HomeShellProps) {
   }, [activeTrace]);
 
   return (
-    <div className="flex flex-col h-full w-full">
+    <div className="flex flex-col h-screen w-full overflow-hidden bg-gray-50">
+      
       <div className="flex w-full border-b border-gray-200 bg-white z-10 shrink-0">
         <button
           onClick={() => setActiveTab('list')}
@@ -74,14 +67,25 @@ export default function HomeShell({ traces }: HomeShellProps) {
         </button>
       </div>
 
-      <div className="flex-1 w-full overflow-hidden">
-        {activeTab === 'list' ? (
+      <div className="relative flex-1 w-full min-h-0">
+
+        <div className={`w-full h-full overflow-y-auto ${activeTab === 'list' ? 'block' : 'hidden'}`}>
           <ListView 
             traces={traces} 
             activeTrace={activeTrace} 
+            setActiveTrace={setActiveTrace}
+            metrics={metrics}
           />
-        ) : (
-          <MapViewWrapper 
+        </div>
+
+        <div 
+          className={`absolute inset-0 transition-opacity duration-200 ${
+            activeTab === 'map' 
+              ? 'opacity-100 pointer-events-auto z-10' 
+              : 'opacity-0 pointer-events-none -z-10'
+          }`}
+        >
+          <MapViewWrapper
             traces={traces} 
             activeTrace={activeTrace} 
             setActiveTrace={setActiveTrace}
@@ -89,7 +93,8 @@ export default function HomeShell({ traces }: HomeShellProps) {
             loading={loading}
             metrics={metrics}
           />
-        )}
+        </div>
+
       </div>
     </div>
   );
