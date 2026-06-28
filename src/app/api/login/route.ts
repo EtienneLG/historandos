@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { SignJWT } from 'jose';
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { password } = await request.json();
 
