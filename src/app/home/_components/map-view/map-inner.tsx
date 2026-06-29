@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import Map, { Source, Layer, Marker, useMap } from 'react-map-gl/mapbox';
+import { useEffect, useRef } from "react";
+import Map, { Source, Layer, Marker, LineLayerSpecification } from 'react-map-gl/mapbox';
 import mapboxgl from 'mapbox-gl';
 import bbox from '@turf/bbox';
-import { Trace, TracePoint, TraceMetrics } from '@/types/trace';
+import { Trace, TraceMetrics } from '@/types/trace';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { HUDPanel } from "./hud-panel";
 
@@ -79,7 +79,7 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
     });
   }, [traceGeoJson]);
 
-  const lineLayerStyle = {
+  const lineLayerStyle: Omit<LineLayerSpecification, 'source'> = {
     id: 'gpx-track-layer',
     type: 'line',
     paint: {
