@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
         'order': 'asc',
         'type[]': 'file',
     });
-    const response = await fetch(`https://api.infomaniak.com/3/drive/${driveId}/files/${dirId}/files?${params}${cursorParam}`, {
+    const response = await fetch(`https://api.infomaniak.com/3/drive/${driveId}/files/${dirId}/files?${params.toString()}${cursorParam}`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,

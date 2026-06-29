@@ -69,7 +69,12 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
 
     const bounds = bbox(traceGeoJson);
     mapRef.current.fitBounds(bounds, {
-      padding: 50,
+      padding: {
+        top: 50,
+        bottom: 50,
+        left: 50,
+        right: 400
+      },
       duration: 1200,
     });
   }, [traceGeoJson]);

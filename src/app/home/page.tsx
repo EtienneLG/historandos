@@ -1,5 +1,5 @@
 import { Trace } from '@/types/trace';
-import HomeShell from './_components/home-shell';
+import HomeShell from './home-shell';
 
 async function getTraces(): Promise<Trace[]> {
   const driveId = process.env.INFOMANIAK_DRIVE_ID;

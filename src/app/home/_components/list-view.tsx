@@ -59,7 +59,7 @@ export default function ListView({ traces, activeTrace, setActiveTrace, metrics 
               </div>
 
               {/* Grid Layout: Allows multiple items on the same row (1 on mobile, 2 on desktop) */}
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 {monthTraces.map((trace) => (
                   <div 
                     key={trace.id} 

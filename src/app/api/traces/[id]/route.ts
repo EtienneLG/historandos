@@ -39,8 +39,7 @@ export async function GET(
   } catch (error) {
     console.error('Error fetching trace:', error);
 
-    return new NextResponse(
-      JSON.stringify({ error: 'Failed to load trace data.' }), 
+    return NextResponse.json({ error: 'Failed to load trace data.' }, 
       {
         status: 500,
         headers: { 
