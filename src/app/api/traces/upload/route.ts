@@ -95,9 +95,11 @@ export async function POST(
       date: date,
       lat: lat,
       lon: lon,
-      distance: metrics.distance,
-      elevationGain: metrics.elevationGain,
-      elevationLoss: metrics.elevationLoss
+      metrics: {
+        distance: metrics.distance,
+        elevationGain: metrics.elevationGain,
+        elevationLoss: metrics.elevationLoss
+      }
     })
 
     const metadataPayloadStr = JSON.stringify(metadata);

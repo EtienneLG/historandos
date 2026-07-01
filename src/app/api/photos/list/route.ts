@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams
+  const searchParams = request.nextUrl.searchParams;
   const cursor = searchParams.get('cursor');
   const dirId = searchParams.get('dir_id');
 

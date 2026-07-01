@@ -9,7 +9,8 @@ export async function GET(
   const driveId = process.env.INFOMANIAK_DRIVE_ID;
   const token = process.env.INFOMANIAK_DRIVE_SECRET;
 
-  const { id: traceId } = await params;
+  const { id: traceId } = await params;  
+  
   console.log(`Fetching trace ${traceId}`);
   
   try {

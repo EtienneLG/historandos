@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Trace, TraceMetrics } from '@/types/trace';
 import ListView from './_components/list-view';
@@ -33,6 +33,10 @@ export default function HomeShell({ traces }: HomeShellProps) {
       setTraceGeoJson(null);
       try {
         const response = await fetch(`/api/traces/${activeTrace?.gpxFileId}`);
+        
+        if (!response.ok)
+          throw new Error('Failed fetching GPX track');
+        
         const data = await response.json();
 
         setTraceGeoJson(data.geoJson);

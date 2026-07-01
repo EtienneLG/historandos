@@ -7,7 +7,7 @@ export interface Trace {
   date: string;
   lat: number;
   lon: number;
-  thumbnailUrl?: string;
+  metrics?: TraceMetrics;
 }
 
 export interface TracePoint {
