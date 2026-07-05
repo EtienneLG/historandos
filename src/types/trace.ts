@@ -8,6 +8,7 @@ export interface Trace {
   lat: number;
   lon: number;
   metrics?: TraceMetrics;
+  thumnailUrl?: string;
 }
 
 export interface TracePoint {

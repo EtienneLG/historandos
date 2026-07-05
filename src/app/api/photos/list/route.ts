@@ -45,6 +45,7 @@ export async function GET(request: NextRequest) {
 
   } catch (error: any) {
     console.error("Fetch Error:", error.message);
+    
     return NextResponse.json({ error: "Failed to fetch photos" }, { status: 500 });
   }
 }

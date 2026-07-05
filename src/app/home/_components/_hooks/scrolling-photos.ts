@@ -25,7 +25,6 @@ export function useScrollingPhotos(activeTrace: Trace, containerRef: RefObject<H
       const res = await fetch(`/api/photos/list?dir_id=${activeTrace.photoDirId}${cursorParam}`);
 
       const data = await res.json();
-      console.log("Got data !", data);
 
       if (data.photo_ids.length > 0) {
         setVisiblePhotoIds((prev) => {
@@ -56,7 +55,6 @@ export function useScrollingPhotos(activeTrace: Trace, containerRef: RefObject<H
       (entries) => {
         const target = entries[0];
         if (target.isIntersecting) {
-          console.log("Intersect ! Fetch more...");
           fetchMorePhotos();
         }
       },

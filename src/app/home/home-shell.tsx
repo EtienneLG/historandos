@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Trace, TraceMetrics } from '@/types/trace';
-import ListView from './_components/list-view';
+import ListView from './_components/list-view/index';
 import MapViewWrapper from './_components/map-view/index';
 
 interface HomeShellProps {

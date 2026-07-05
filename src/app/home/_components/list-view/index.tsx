@@ -1,4 +1,6 @@
 import { Trace } from '@/types/trace';
+import { useEffect } from 'react';
+import { TracePhoto } from './trace-photo';
 
 interface ListViewProps {
   traces: Trace[];
@@ -11,7 +13,7 @@ export default function ListView({ traces, activeTrace, setActiveTrace, metrics 
   const sortedTraces = [...traces].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
-
+  
   const timeline: Array<{
     year: string;
     months: Array<{ monthName: string; traces: Trace[] }>;
@@ -67,12 +69,8 @@ export default function ListView({ traces, activeTrace, setActiveTrace, metrics 
                   >
                     {/* Photo to the left */}
                     <div className="w-1/3 md:w-1/4 bg-gray-200 relative shrink-0">
-                      {trace.thumbnailUrl ? (
-                        <img 
-                          src={``}
-                          alt={trace.title} 
-                          className="w-full h-full object-cover"
-                        />
+                      {trace.photoDirId ? (
+                        <TracePhoto photoDirId={trace.photoDirId} />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400 text-xs font-medium">
                           Pas de photo
