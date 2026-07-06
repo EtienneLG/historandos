@@ -1,67 +1,46 @@
-'use client';
+import LoginForm from './form';
+import { Question } from '@/types/question';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-
-
-export default function LoginPage() {
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    setError('');
-    setLoading(true);
-
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || 'Erreur serveur');
-        return;
+async function getQuestion(): Promise<Question> {
+  const driveId = process.env.INFOMANIAK_DRIVE_ID;
+  const token = process.env.INFOMANIAK_DRIVE_SECRET
+  const QAFileId = process.env.INFOMANIAK_LOGIN_QA_ID;
+  
+  try {    
+    const responseQA = await fetch(`https://api.infomaniak.com/2/drive/${driveId}/files/${QAFileId}/download`, { 
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
       }
+    });
 
-      router.push(data.redirect);
-    } catch {
-      setError('Something went wrong');
-    } finally {
-      setLoading(false);
-    }
-  };
+    if (!responseQA.ok)
+      throw new Error(`Infomaniak API responded with status ${responseQA.status}`);
+
+    const QAData = await responseQA.json();
+
+    if (!QAData.questions)
+      throw new Error(`Could not load QA from Infomaniak ${QAData}`);
+
+    const question = QAData.questions[Math.floor(Math.random() * QAData.questions.length)];
+
+    return {
+      id: question.id,
+      question: question.question
+    };
+  } catch (error: any) {
+    console.error("Question fetch Error:", error.message);
+
+    return { id: -1, question: 'Error fetching question' };
+  }
+}
+
+export default async function LoginPage() {
+  const question = await getQuestion();
 
   return (
     <main className="flex min-h-screen items-center justify-center">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-80">
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border rounded p-2"
-          required
-        />
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="rounded bg-black text-white p-2"
-        >
-          {loading ? 'Loading...' : 'Login'}
-        </button>
-
-        {error && <p className="text-red-500">{error}</p>}
-      </form>
+      <LoginForm question={question} />
     </main>
   );
 }

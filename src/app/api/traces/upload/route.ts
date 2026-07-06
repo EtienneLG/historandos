@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { calculateTraceMetrics, gpxToGeoJson } from '@/lib/geo'; 
-import { promises as fs } from 'fs';
-import { distance } from '@turf/turf';
+import { calculateTraceMetrics, gpxToGeoJson } from '@/lib/geo';
 
 function toKebabCase(str: string): string {
   return str
