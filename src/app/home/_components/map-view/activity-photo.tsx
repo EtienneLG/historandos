@@ -4,7 +4,7 @@ export function ActivityPhoto({ photoId }: { photoId: number }) {
   const [loading, setLoading] = useState<boolean>(true);
 
   return (
-    <div className="relative aspect-square w-full rounded-lg overflow-hidden bg-slate-100 shadow-sm border border-slate-200/60">
+    <div className="relative aspect-square w-full rounded-lg overflow-hidden bg-stone shadow-sm border border-stone">
       <img
         src={`/api/photos/${photoId}/thumbnail`}
         alt={`Photo ${photoId}`}

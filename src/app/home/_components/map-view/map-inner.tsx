@@ -28,7 +28,7 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
     if (!rawMap || hoverMarkerRef.current) return;
 
     const el = document.createElement('div');
-    el.className = 'w-4 h-4 bg-blue-600 border-2 border-white rounded-full shadow-md pointer-events-none hidden';
+    el.className = 'w-4 h-4 bg-trail border-2 border-parchment-light rounded-full shadow-md shadow-ink/20 pointer-events-none';
     el.id = 'elevation-hover-dot';
 
     const marker = new mapboxgl.Marker({ element: el })
@@ -83,7 +83,7 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
     id: 'gpx-track-layer',
     type: 'line',
     paint: {
-      'line-color': '#0070f3',
+      'line-color': '#2563eb',
       'line-width': 5,
       'line-opacity': 0.85,
     },
@@ -94,8 +94,7 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
   };
 
   return (
-    <div className="w-full h-full flex relative overflow-hidden bg-slate-950">
-
+    <div className="w-full h-full flex relative overflow-hidden bg-pine-dark">
       {/* Map Element Box */}
       <div className="flex-1 h-full w-full z-0">
         <Map
@@ -111,16 +110,32 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
           onLoad={handleMapLoad}
         >
           {/* Trace Markers */}
-          {traces.map((trace) => (
-            <Marker
-              key={trace.id}
-              latitude={trace.lat}
-              longitude={trace.lon}
-              onClick={() => setActiveTrace(trace)}
-            >
-            </Marker>
-          ))}
-
+          {traces.map((trace) => {
+            const isActive = activeTrace?.id === trace.id;
+            return (
+              <Marker
+                key={trace.id}
+                latitude={trace.lat}
+                longitude={trace.lon}
+                onClick={() => setActiveTrace(trace)}
+              >
+                <button
+                  className="group relative flex items-center justify-center cursor-pointer"
+                  aria-label={trace.title}
+                >
+                  <span
+                    className={`relative flex items-center justify-center w-6 h-6 rounded-full border-2 shadow-md transition-all duration-150 ${
+                      isActive
+                        ? 'bg-trail border-parchment-light scale-125 z-10'
+                        : 'bg-pine border-parchment-light group-hover:bg-pine-dark group-hover:scale-110'
+                    }`}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-parchment-light" />
+                  </span>
+                </button>
+              </Marker>
+            );
+          })}
           {/* Dynamic Track Layer */}
           {traceGeoJson && activeTrace && (
             <Source id="dynamic-gpx" type="geojson" data={traceGeoJson}>
@@ -128,8 +143,7 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
             </Source>
           )}
         </Map>
-      </div>      
-
+      </div>
       {/* HUD Panel */}
       {activeTrace && (
         <div className="absolute top-0 right-0 z-10 h-full p-0 pointer-events-none">
@@ -141,7 +155,6 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
           />
         </div>
       )}
-
     </div>
   );
 }
