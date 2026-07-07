@@ -8,9 +8,9 @@ interface ElevationChartProps {
 const CleanTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
         return (
-            <div className="bg-slate-900/95 backdrop-blur-md text-white px-3 py-2 rounded-xl text-xs shadow-xl border border-slate-800 flex flex-col gap-0.5 animate-in fade-in duration-200">
-                <span className="font-semibold text-slate-200">{payload[0].value} m elevation</span>
-                <span className="text-slate-400 text-[10px]">At {payload[0].payload.distance} km</span>
+            <div className="bg-pine-dark/95 backdrop-blur-md text-parchment-light px-3 py-2 rounded-xl text-xs shadow-xl border border-pine flex flex-col gap-0.5 animate-in fade-in duration-200">
+                <span className="font-mono font-semibold text-parchment">{payload[0].value} m elevation</span>
+                <span className="font-mono text-stone text-[10px]">At {payload[0].payload.distance} km</span>
             </div>
         );
     }
@@ -33,14 +33,13 @@ export function ElevationChart({ profile }: ElevationChartProps) {
     };
 
     return (
-        <div className="flex flex-col border-t border-slate-100 pt-5">
+        <div className="flex flex-col border-t border-stone pt-5">
             <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Elevation Profile</h3>
-                <span className="text-[11px] text-slate-400 font-medium">m / km</span>
+                <h3 className="font-display text-xs uppercase tracking-widest text-pine/60">Elevation Profile</h3>
+                <span className="font-mono text-[11px] text-ink/40 font-medium">m / km</span>
             </div>
-
             {/* Fixed height wrapper makes sure chart scales correctly inside scrolling container */}
-            <div className="h-56 w-full bg-slate-50/40 rounded-2xl p-2 border border-slate-100/60">
+            <div className="h-56 w-full bg-stone/20 rounded-2xl p-2 border border-stone">
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart
                         data={chartData}
@@ -48,28 +47,35 @@ export function ElevationChart({ profile }: ElevationChartProps) {
                         onMouseMove={handleMouseMove}
                         onMouseLeave={handleMouseLeave}
                     >
-                        <CartesianGrid vertical={false} stroke="#f1f5f9" strokeDasharray="4" />
+                        <defs>
+                            <linearGradient id="elevationFill" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#2d4a3a" stopOpacity={0.25} />
+                                <stop offset="100%" stopColor="#2d4a3a" stopOpacity={0} />
+                            </linearGradient>
+                        </defs>
+                        <CartesianGrid vertical={false} stroke="#d9d2c0" strokeDasharray="4" />
                         <XAxis
                             dataKey="distance"
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 500 }}
+                            tick={{ fontSize: 10, fill: '#8a8067', fontWeight: 500 }}
                             dy={8}
                         />
                         <YAxis
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 500 }}
+                            tick={{ fontSize: 10, fill: '#8a8067', fontWeight: 500 }}
                             domain={['dataMin - 20', 'dataMax + 20']}
                         />
-                        <Tooltip content={<CleanTooltip />} cursor={{ stroke: '#cbd5e1', strokeWidth: 1, strokeDasharray: '4 4' }} />
+                        <Tooltip content={<CleanTooltip />} cursor={{ stroke: '#bfb6a0', strokeWidth: 1, strokeDasharray: '4 4' }} />
                         <Line
                             type="monotone"
                             dataKey="elevation"
-                            stroke="#6366f1"
+                            stroke="#2d4a3a"
                             strokeWidth={2.5}
                             dot={false}
-                            activeDot={{ r: 5, strokeWidth: 0, fill: '#4f46e5' }}
+                            activeDot={{ r: 5, strokeWidth: 2, stroke: '#faf7ef', fill: '#6b9b3f' }}
+                            fill="url(#elevationFill)"
                         />
                     </LineChart>
                 </ResponsiveContainer>

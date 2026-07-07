@@ -45,14 +45,18 @@ export function TracePhoto({ photoDirId }: TracePhotoProps) {
   }, [photoDirId]);
 
   return (
-    <div className="w-1/3 md:w-1/4 bg-gray-100 relative shrink-0 aspect-square overflow-hidden rounded-xl border border-gray-100 shadow-sm">
-      
+    <div className="w-1/3 md:w-1/4 bg-stone relative shrink-0 aspect-square overflow-hidden rounded-xl border border-stone shadow-sm">
+
       {(!imgSrc || !isImageLoaded) && (
-        <div className="absolute inset-0 bg-gray-200 animate-pulse z-10" />
+        <div className="absolute inset-0 bg-stone animate-pulse z-10 flex items-center justify-center">
+          <svg className="w-5 h-5 text-stone-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 19l6.5-11L14 15l2.5-3.5L21 19H3z" />
+          </svg>
+        </div>
       )}
-      
+
       {imgSrc && (
-        <img 
+        <img
           src={imgSrc}
           alt=""
           onLoad={() => setIsImageLoaded(true)}
@@ -61,6 +65,9 @@ export function TracePhoto({ photoDirId }: TracePhotoProps) {
           }`}
         />
       )}
+
+      {/* subtle bottom vignette so any overlaid text/badges stay legible */}
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/15 via-transparent to-transparent pointer-events-none" />
     </div>
   );
 }
