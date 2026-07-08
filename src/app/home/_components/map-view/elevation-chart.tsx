@@ -71,10 +71,10 @@ export function ElevationChart({ profile }: ElevationChartProps) {
                         <Line
                             type="monotone"
                             dataKey="elevation"
-                            stroke="#2d4a3a"
+                            stroke="#2563eb"
                             strokeWidth={2.5}
                             dot={false}
-                            activeDot={{ r: 5, strokeWidth: 2, stroke: '#faf7ef', fill: '#6b9b3f' }}
+                            activeDot={{ r: 5, strokeWidth: 2, stroke: '#faf7ef', fill: '#2563eb' }}
                             fill="url(#elevationFill)"
                         />
                     </LineChart>

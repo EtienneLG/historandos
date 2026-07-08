@@ -59,23 +59,35 @@ export function HUDPanel({ activeTrace, loading, metrics, onClose }: HUDPanelPro
           <div className="flex flex-col gap-6 flex-1">
 
             {/* Minimal Metric Dashboard Row */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="flex items-stretch divide-x divide-stone rounded-2xl border border-stone overflow-hidden">
               {/* Distance */}
-              <div className="bg-stone/30 rounded-2xl p-3 border border-stone text-center transition-all hover:bg-stone/50">
-                <span className="block text-[10px] font-bold tracking-wider text-ink/40 uppercase mb-0.5">Distance</span>
-                <span className="font-mono text-base font-extrabold text-ink">{metrics.distance}<span className="text-xs font-semibold text-ink/50 ml-0.5">km</span></span>
+              <div className="flex-1 flex flex-col items-center justify-center gap-1 py-3">
+                <span className="text-[10px] font-bold tracking-wider text-ink/40 uppercase">Distance</span>
+                <span className="font-mono text-lg font-extrabold text-ink leading-none">
+                  {metrics.distance}<span className="text-xs font-semibold text-ink/40 ml-0.5">km</span>
+                </span>
               </div>
 
               {/* Elevation Gain */}
-              <div className="bg-emerald-50 rounded-2xl p-3 border border-emerald-200 text-center transition-all hover:bg-emerald-100">
-                <span className="block text-[10px] font-bold tracking-wider text-emerald-700 uppercase mb-0.5">Gain</span>
-                <span className="font-mono text-base font-extrabold text-emerald-700">+{metrics.elevationGain}<span className="text-xs font-semibold text-emerald-600 ml-0.5">m</span></span>
+              <div className="flex-1 flex flex-col items-center justify-center gap-1 py-3">
+                <span className="text-[10px] font-bold tracking-wider text-ink/40 uppercase">Dénivelé +</span>
+                <span className="flex items-center gap-1 font-mono text-lg font-extrabold text-emerald-600 leading-none">
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                  </svg>
+                  {metrics.elevationGain}<span className="text-xs font-semibold text-emerald-600/70 ml-0.5">m</span>
+                </span>
               </div>
 
               {/* Elevation Loss */}
-              <div className="bg-red-50 rounded-2xl p-3 border border-red-200 text-center transition-all hover:bg-red-100">
-                <span className="block text-[10px] font-bold tracking-wider text-red-700 uppercase mb-0.5">Loss</span>
-                <span className="font-mono text-base font-extrabold text-red-700">-{metrics.elevationLoss}<span className="text-xs font-semibold text-red-600 ml-0.5">m</span></span>
+              <div className="flex-1 flex flex-col items-center justify-center gap-1 py-3">
+                <span className="text-[10px] font-bold tracking-wider text-ink/40 uppercase">Dénivelé -</span>
+                <span className="flex items-center gap-1 font-mono text-lg font-extrabold text-red-600 leading-none">
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                  {metrics.elevationLoss}<span className="text-xs font-semibold text-red-600/70 ml-0.5">m</span>
+                </span>
               </div>
             </div>
 
