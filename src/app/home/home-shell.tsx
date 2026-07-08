@@ -8,16 +8,14 @@ import MapViewWrapper from './_components/map-view/index';
 
 interface HomeShellProps {
   traces: Trace[];
-} 
-
-type TabView = 'list' | 'map';
+}
 
 const UploadDrawer = dynamic(() => import('./_components/upload-drawer'), {
   ssr: false,
 });
 
 export default function HomeShell({ traces }: HomeShellProps) {
-  const [activeTab, setActiveTab] = useState<TabView>('list');
+  const [activeTab, setActiveTab] = useState<'list' | 'map'>('list');
   const [isUploadOpen, setIsUploadOpen] = useState(false);
 
   const [activeTrace, setActiveTrace] = useState<Trace | null>(null);
@@ -127,6 +125,7 @@ export default function HomeShell({ traces }: HomeShellProps) {
             traces={traces}
             activeTrace={activeTrace}
             setActiveTrace={setActiveTrace}
+            setActiveTab={setActiveTab}
             metrics={metrics}
           />
         </div>
