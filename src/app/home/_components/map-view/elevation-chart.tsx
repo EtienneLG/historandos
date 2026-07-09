@@ -10,8 +10,8 @@ const CleanTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-pine-dark/95 backdrop-blur-md text-parchment-light px-3 py-2 rounded-xl text-xs shadow-xl border border-pine flex flex-col gap-0.5 animate-in fade-in duration-200">
-        <span className="font-mono font-semibold text-parchment">{payload[0].value} m elevation</span>
-        <span className="font-mono text-stone text-[10px]">At {payload[0].payload.distance} km</span>
+        <span className="font-mono font-semibold text-parchment">{payload[0].value} m d'altitude</span>
+        <span className="font-mono text-stone text-[10px]">À {payload[0].payload.distance} km</span>
       </div>
     );
   }
@@ -19,8 +19,6 @@ const CleanTooltip = ({ active, payload }: any) => {
 };
 
 export function ElevationChart({ profile }: ElevationChartProps) {
-  const distMax = profile[profile.length - 1].distance;
-
   const handleMouseMove = (e: any) => {
     if (e && e.activeTooltipIndex !== undefined) {
       const event = new CustomEvent('trace-point-hover', { detail: e.activeTooltipIndex });
@@ -57,12 +55,6 @@ export function ElevationChart({ profile }: ElevationChartProps) {
             <CartesianGrid vertical={false} stroke="#d9d2c0" strokeDasharray="4" />
             <XAxis
               dataKey="distance"
-              type="number"
-              domain={[0, 'dataMax']}
-              ticks={Array.from(
-                { length: Math.floor(distMax) + 1 }, 
-                (_, i) => i
-              )}
               axisLine={false}
               tickLine={false}
               tick={{ fontSize: 10, fill: '#8a8067', fontWeight: 500 }}
