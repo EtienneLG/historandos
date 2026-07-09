@@ -85,7 +85,7 @@ export default function ListView({ traces, activeTrace, setActiveTrace, setActiv
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M3 19l6.5-11L14 15l2.5-3.5L21 19H3z" />
                         </svg>
-                        <span className="text-[10px] font-semibold uppercase tracking-wide">No photo</span>
+                        <span className="text-[10px] font-semibold uppercase tracking-wide">Aucune photo</span>
                       </div>
                     )}
 
@@ -98,6 +98,16 @@ export default function ListView({ traces, activeTrace, setActiveTrace, setActiv
                           <h4 className="font-display text-xl text-ink tracking-wide truncate group-hover:text-pine transition-colors">
                             {trace.title}
                           </h4>
+
+                          {trace.people?.length > 0 && (
+                            <p className="flex items-center gap-1.5 text-xs text-blaze mt-1">
+                              <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                              </svg>
+                              {trace.people.join(', ')}
+                            </p>
+                          )}
+
                           <p className="text-ink/50 text-sm mt-1.5 leading-relaxed line-clamp-2">
                             {trace.description}
                           </p>
@@ -113,7 +123,7 @@ export default function ListView({ traces, activeTrace, setActiveTrace, setActiv
                               </svg>
                               {formatDistance(trace.metrics.distance)}<span className="text-ink/40 ml-0.5">km</span>
                             </span>
-                            
+
                             <span className="flex items-center text-emerald-600">
                               <svg className="w-3.5 h-3.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />

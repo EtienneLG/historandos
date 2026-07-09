@@ -7,8 +7,8 @@ export interface Trace {
   date: string;
   lat: number;
   lon: number;
+  people: string[];
   metrics?: TraceMetrics;
-  thumnailUrl?: string;
 }
 
 export interface TracePoint {
