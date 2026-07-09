@@ -21,6 +21,7 @@ export async function POST(
     const formData = await request.formData();
 
     const title = formData.get('title');
+    const people = formData.get('people');
     const description = formData.get('description') || '';
     const date = formData.get('date');
     const photoDirectoryId = formData.get('photoDirectoryId') || '';
@@ -93,6 +94,7 @@ export async function POST(
       date: date,
       lat: lat,
       lon: lon,
+      people: people,
       metrics: {
         distance: metrics.distance,
         elevationGain: metrics.elevationGain,
