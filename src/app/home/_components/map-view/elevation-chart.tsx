@@ -1,5 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TracePoint } from '@/types/trace';
+import { distance } from '@turf/turf';
 
 interface ElevationChartProps {
   profile: TracePoint[];
@@ -18,7 +19,7 @@ const CleanTooltip = ({ active, payload }: any) => {
 };
 
 export function ElevationChart({ profile }: ElevationChartProps) {
-  const chartData = profile.map(({ distance, elevation }) => ({ distance, elevation }));
+  const distMax = profile[profile.length - 1].distance;
 
   const handleMouseMove = (e: any) => {
     if (e && e.activeTooltipIndex !== undefined) {
@@ -35,14 +36,14 @@ export function ElevationChart({ profile }: ElevationChartProps) {
   return (
     <div className="flex flex-col border-t border-stone pt-5">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-display text-xs uppercase tracking-widest text-pine/60">Elevation Profile</h3>
+        <h3 className="font-display text-xs uppercase tracking-widest text-pine/60">Profil altimétrique</h3>
         <span className="font-mono text-[11px] text-ink/40 font-medium">m / km</span>
       </div>
       {/* Fixed height wrapper makes sure chart scales correctly inside scrolling container */}
       <div className="h-56 w-full bg-stone/20 rounded-2xl p-2 border border-stone">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
-            data={chartData}
+            data={profile}
             margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
@@ -56,6 +57,12 @@ export function ElevationChart({ profile }: ElevationChartProps) {
             <CartesianGrid vertical={false} stroke="#d9d2c0" strokeDasharray="4" />
             <XAxis
               dataKey="distance"
+              type="number"
+              domain={[0, 'dataMax']}
+              ticks={Array.from(
+                { length: Math.floor(distMax) + 1 }, 
+                (_, i) => i
+              )}
               axisLine={false}
               tickLine={false}
               tick={{ fontSize: 10, fill: '#8a8067', fontWeight: 500 }}
