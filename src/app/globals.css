@@ -53,9 +53,9 @@
   --color-trail: #2563eb;
 
   /* Font Families */
-  --font-display: "Your Display Font", sans-serif;
-  --font-sans: "Your Body Font", sans-serif;
-  --font-mono: "Your Mono Font", monospace;
+  --font-display: var(--font-display), sans-serif;
+  --font-sans: var(--font-body), sans-serif;
+  --font-mono: var(--font-mono), monospace;
 }
 
 @media (prefers-color-scheme: dark) {
