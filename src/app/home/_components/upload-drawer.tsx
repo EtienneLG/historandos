@@ -10,10 +10,11 @@ export default function UploadDrawer({ onClose }: UploadDrawerProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [title, setTitle] = useState<string>('');
+  const [people, setPeople] = useState<string[]>([]);
   const [description, setDescription] = useState<string>('');
+  const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [gpxFile, setGpxFile] = useState<File | null>(null);
   const [photoDirectoryId, setPhotoDirectoryId] = useState<string>('');
-  const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
@@ -59,6 +60,9 @@ export default function UploadDrawer({ onClose }: UploadDrawerProps) {
     try {
       const formData = new FormData();
       formData.append('title', title);
+      people.forEach(p => {
+        formData.append('people', p);
+      });
       formData.append('description', description);
       formData.append('gpxFile', gpxFile);
       formData.append('date', date);
@@ -109,6 +113,7 @@ export default function UploadDrawer({ onClose }: UploadDrawerProps) {
               </svg>
             </button>
           </div>
+
           {/* Scrollable Form Body */}
           <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto py-6 px-2 space-y-5 min-h-0 pr-1">
 
@@ -124,6 +129,54 @@ export default function UploadDrawer({ onClose }: UploadDrawerProps) {
                 className="w-full px-3 py-2 text-sm border border-stone rounded-xl bg-stone/20 focus:bg-parchment-light focus:outline-none focus:ring-2 focus:ring-pine/40 focus:border-pine transition-all placeholder:text-ink/30 text-ink"
               />
             </div>
+
+            {/* Participants */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold uppercase tracking-wide text-pine/70">Participants</label>
+                <span className="text-[10px] font-semibold text-ink/40 uppercase tracking-wide bg-stone/40 px-1.5 py-0.5 rounded">Optionnel</span>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {people.map((person, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={person}
+                      onChange={(e) => {
+                        const updated = [...people];
+                        updated[index] = e.target.value;
+                        setPeople(updated);
+                      }}
+                      placeholder="Nom"
+                      className="flex-1 px-3 py-2 text-sm border border-stone rounded-xl bg-stone/20 focus:bg-parchment-light focus:outline-none focus:ring-2 focus:ring-pine/40 focus:border-pine transition-all placeholder:text-ink/30 text-ink"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setPeople(people.filter((_, i) => i !== index))}
+                      className="p-2 text-ink/30 hover:text-blaze-dark hover:bg-blaze/5 rounded-lg transition-colors shrink-0"
+                      aria-label="Retirer"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setPeople([...people, ''])}
+                className="flex items-center gap-1.5 mt-1 px-3 py-2 text-sm font-semibold text-pine border border-dashed border-pine/30 rounded-xl hover:bg-pine/5 hover:border-pine/50 transition-all self-start"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Ajouter une personne
+              </button>
+            </div>
+
             {/* Date */}
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-bold uppercase tracking-wide text-pine/70">Date de l'activité</label>
@@ -135,6 +188,7 @@ export default function UploadDrawer({ onClose }: UploadDrawerProps) {
                 className="w-full px-3 py-2 text-sm border border-stone rounded-xl bg-stone/20 focus:bg-parchment-light focus:outline-none focus:ring-2 focus:ring-pine/40 focus:border-pine transition-all text-ink"
               />
             </div>
+
             {/* Description */}
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-bold uppercase tracking-wide text-pine/70">Description</label>
@@ -146,6 +200,7 @@ export default function UploadDrawer({ onClose }: UploadDrawerProps) {
                 className="w-full px-3 py-2 text-sm border border-stone rounded-xl bg-stone/20 focus:bg-parchment-light focus:outline-none focus:ring-2 focus:ring-pine/40 focus:border-pine transition-all placeholder:text-ink/30 text-ink resize-none"
               />
             </div>
+
             {/* Optional Photo Directory ID */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
@@ -160,6 +215,7 @@ export default function UploadDrawer({ onClose }: UploadDrawerProps) {
                 className="w-full px-3 py-2 text-sm border border-stone rounded-xl bg-stone/20 focus:bg-parchment-light focus:outline-none focus:ring-2 focus:ring-pine/40 focus:border-pine transition-all placeholder:text-ink/30 font-mono text-xs text-ink"
               />
             </div>
+
             {/* GPX Dropzone File Field */}
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-bold uppercase tracking-wide text-pine/70">Fichier GPX</label>
@@ -169,10 +225,10 @@ export default function UploadDrawer({ onClose }: UploadDrawerProps) {
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-6 transition-all cursor-pointer ${isDragging
-                    ? 'border-blaze bg-blaze/5'
-                    : gpxFile
-                      ? 'border-pine bg-pine/5'
-                      : 'border-stone-dark bg-stone/10 hover:bg-stone/20 hover:border-pine/40'
+                  ? 'border-blaze bg-blaze/5'
+                  : gpxFile
+                    ? 'border-pine bg-pine/5'
+                    : 'border-stone-dark bg-stone/10 hover:bg-stone/20 hover:border-pine/40'
                   }`}
               >
                 <input
@@ -215,6 +271,7 @@ export default function UploadDrawer({ onClose }: UploadDrawerProps) {
               </div>
             </div>
           </form>
+
           {/* Action Footer Buttons */}
           <div className="pt-4 px-2 border-t border-stone flex items-center justify-end gap-3 shrink-0 bg-parchment-light">
             <button
