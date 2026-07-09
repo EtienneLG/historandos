@@ -62,8 +62,8 @@ export default function ListView({ traces, activeTrace, setActiveTrace, setActiv
 
               {/* Month Group Separator Heading */}
               <div className="flex items-center gap-3 mb-4">
-                <span className="w-1.5 h-1.5 rounded-full bg-blaze shrink-0" />
-                <h3 className="font-display text-sm text-pine/70 uppercase tracking-[0.15em] shrink-0">
+                <span className="w-2 h-2 rounded-full bg-blaze shrink-0" />
+                <h3 className="font-display text-base text-pine/70 uppercase tracking-[0.15em] shrink-0">
                   {monthName}
                 </h3>
                 <div className="h-px w-full bg-stone"></div>
@@ -81,7 +81,7 @@ export default function ListView({ traces, activeTrace, setActiveTrace, setActiv
                     {trace.photoDirId ? (
                       <TracePhoto photoDirId={trace.photoDirId} />
                     ) : (
-                      <div className="w-1/3 md:w-1/4 aspect-square bg-stone relative shrink-0 flex flex-col items-center justify-center gap-1.5 text-pine/40 rounded-xl">
+                      <div className="w-1/3 md:w-55 aspect-square bg-stone relative shrink-0 flex flex-col items-center justify-center gap-1.5 text-pine/40 rounded-xl">
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M3 19l6.5-11L14 15l2.5-3.5L21 19H3z" />
                         </svg>
