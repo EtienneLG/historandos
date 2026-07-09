@@ -63,8 +63,8 @@ export default function HomeShell({ traces }: HomeShellProps) {
               <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none" />
             </svg>
           </div>
-          <span className="font-display text-lg tracking-wide text-pine uppercase">
-            Ridge<span className="text-blaze">line</span>
+          <span className="font-display text-2xl tracking-wide text-pine uppercase">
+            Histo'<span className="text-blaze">Randos</span>
           </span>
         </div>
 
@@ -84,7 +84,7 @@ export default function HomeShell({ traces }: HomeShellProps) {
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" />
               </svg>
-              Trail Log
+              Journal
             </button>
             <button
               onClick={() => setActiveTab('map')}
@@ -98,7 +98,7 @@ export default function HomeShell({ traces }: HomeShellProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              Map
+              Carte
             </button>
           </nav>
 
@@ -112,7 +112,7 @@ export default function HomeShell({ traces }: HomeShellProps) {
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
             </svg>
-            Upload Trace
+            Ajouter une rando 
           </button>
         </div>
       </header>
