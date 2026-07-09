@@ -84,3 +84,10 @@ export function gpxToGeoJson(gpxXmlText: string) {
     ],
   };
 }
+
+export function formatDistance(dist: Number): string {
+  return dist.toLocaleString('fr-FR', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  })
+}

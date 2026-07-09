@@ -1,5 +1,5 @@
 import { Trace } from '@/types/trace';
-import { useEffect } from 'react';
+import { formatDistance } from '@/lib/geo';
 import { TracePhoto } from './trace-photo';
 
 interface ListViewProps {
@@ -95,36 +95,39 @@ export default function ListView({ traces, activeTrace, setActiveTrace, setActiv
                       {/* Left column: title top, description, stats bottom */}
                       <div className="flex-1 flex flex-col justify-between min-w-0 py-0.5">
                         <div>
-                          <h4 className="font-display text-lg text-ink tracking-wide truncate group-hover:text-pine transition-colors">
+                          <h4 className="font-display text-xl text-ink tracking-wide truncate group-hover:text-pine transition-colors">
                             {trace.title}
                           </h4>
-                          <p className="text-ink/50 text-sm mt-1.5 leading-relaxed line-clamp-2">
+                          <p className="text-ink/50 text-base mt-1.5 leading-relaxed line-clamp-2">
                             {trace.description}
                           </p>
                         </div>
 
                         {/* Quick Stats Row */}
                         {trace.metrics && (
-                          <div className="flex items-center gap-4 mt-3 pt-3 border-t border-stone font-mono text-sm font-semibold">
-                            {trace.metrics.distance != null && (
-                              <span className="text-ink/60">{trace.metrics.distance}<span className="text-ink/35 font-sans font-normal ml-0.5">km</span></span>
-                            )}
-                            {trace.metrics.elevationGain != null && (
-                              <span className="flex items-center gap-1 text-emerald-600">
-                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-                                </svg>
-                                {trace.metrics.elevationGain}<span className="text-emerald-600/60 font-sans font-normal ml-0.5">m</span>
-                              </span>
-                            )}
-                            {trace.metrics.elevationLoss != null && (
-                              <span className="flex items-center gap-1 text-red-600">
-                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                                </svg>
-                                {trace.metrics.elevationLoss}<span className="text-red-600/60 font-sans font-normal ml-0.5">m</span>
-                              </span>
-                            )}
+                          <div className="flex items-center gap-4 mt-3 pt-3 border-t border-stone font-mono text-base font-semibold">
+
+                            <span className="flex items-center gap-1 text-ink/60">
+                              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                              </svg>
+                              {formatDistance(trace.metrics.distance)}<span className="text-ink/40 ml-0.5">km</span>
+                            </span>
+                            
+                            <span className="flex items-center gap-1 text-emerald-600">
+                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                              </svg>
+                              {trace.metrics.elevationGain}<span className="text-emerald-600/60 ml-0.5">m</span>
+                            </span>
+
+                            <span className="flex items-center gap-1 text-red-600">
+                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                              </svg>
+                              {trace.metrics.elevationLoss}<span className="text-red-600/60 ml-0.5">m</span>
+                            </span>
+
                           </div>
                         )}
                       </div>
