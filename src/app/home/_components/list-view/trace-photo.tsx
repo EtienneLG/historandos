@@ -45,7 +45,7 @@ export function TracePhoto({ photoDirId }: TracePhotoProps) {
   }, [photoDirId]);
 
   return (
-    <div className="w-1/3 md:w-55 bg-stone relative shrink-0 aspect-square overflow-hidden rounded-xl border border-stone shadow-sm">
+    <div className="w-1/3 md:w-1/3 bg-stone relative shrink-0 aspect-square overflow-hidden rounded-xl border border-stone shadow-sm">
 
       {(!imgSrc || !isImageLoaded) && (
         <div className="absolute inset-0 bg-stone animate-pulse z-10 flex items-center justify-center">
