@@ -53,7 +53,7 @@ export default function ListView({ traces, activeTrace, setActiveTrace, setActiv
 
           {/* Year Group Separator Heading */}
           <div className="flex items-center gap-4 mb-7">
-            <h2 className="font-display text-3xl text-pine shrink-0 tracking-wide">{year}</h2>
+            <h2 className="font-display text-3xl text-blaze shrink-0 tracking-wide">{year}</h2>
             <div className="h-px w-full bg-gradient-to-r from-stone-dark to-transparent"></div>
           </div>
 
