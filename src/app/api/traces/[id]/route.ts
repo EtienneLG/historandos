@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { calculateTraceMetrics, gpxToGeoJson } from '@/lib/geo'; 
-//import { getGpxFileFromInfomaniak } from '@/lib/infomaniak';
 
 export async function GET(
   request: NextRequest,
@@ -18,7 +17,8 @@ export async function GET(
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
-      }
+      },
+      next: { revalidate: 604800 }
     });
 
     if (!response.ok) 
@@ -34,7 +34,7 @@ export async function GET(
       metrics
     }, {
       headers: {
-        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400'
+        'Cache-Control': 'public, max-age=86400, immutable'
       }
     });
   } catch (error) {

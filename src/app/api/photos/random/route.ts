@@ -31,11 +31,11 @@ export async function GET(
     });
     const response = await fetch(`https://api.infomaniak.com/3/drive/${driveId}/files/${dirId}/files?${params.toString()}`, {
         method: 'GET',
-        cache: 'no-store',
         headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',  
-        }
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',  
+        },
+        cache: 'no-store',
     });
 
     if (!response.ok)

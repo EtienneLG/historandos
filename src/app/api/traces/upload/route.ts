@@ -62,7 +62,8 @@ export async function POST(
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
-      }
+      },
+      cache: 'no-store',
     });
 
     if (!responseMetadata.ok) 

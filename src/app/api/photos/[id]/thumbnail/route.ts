@@ -15,7 +15,8 @@ export async function GET(
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',  
-        }
+        },
+        next: { revalidate: 2592000 }
     });
 
     if (!response.ok) {
