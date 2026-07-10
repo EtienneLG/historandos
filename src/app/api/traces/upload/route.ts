@@ -21,7 +21,8 @@ export async function POST(
     const formData = await request.formData();
 
     const title = formData.get('title');
-    const people = formData.get('people');
+    const people = formData.getAll('people');
+    console.log(people);
     const description = formData.get('description') || '';
     const date = formData.get('date');
     const photoDirectoryId = formData.get('photoDirectoryId') || '';
