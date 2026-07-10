@@ -1,6 +1,8 @@
 import { Trace } from '@/types/trace';
 import HomeShell from './home-shell';
 
+export const dynamic = 'force-dynamic';
+
 async function getTraces(): Promise<Trace[]> {
   const driveId = process.env.INFOMANIAK_DRIVE_ID;
   const metadataId = process.env.INFOMANIAK_METADATA_ID;
@@ -11,7 +13,8 @@ async function getTraces(): Promise<Trace[]> {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
-      }
+      },
+      cache: 'no-store',
     });
 
     if (!response.ok) 
