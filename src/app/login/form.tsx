@@ -73,7 +73,7 @@ export default function LoginForm() {
     } catch {
       setError('Something went wrong');
     } finally {
-      // setLoading(false);
+      setLoading(false);
     }
   };
 
