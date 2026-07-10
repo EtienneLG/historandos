@@ -29,7 +29,8 @@ export async function POST(request: NextRequest) {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
-      }
+      },
+      next: { revalidate: 3600 },
     });
 
     if (!responseQA.ok)
