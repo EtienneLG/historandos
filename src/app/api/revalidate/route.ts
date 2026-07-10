@@ -5,10 +5,6 @@ export async function POST(request: NextRequest) {
   const secret = request.nextUrl.searchParams.get('secret');
   const tag = request.nextUrl.searchParams.get('tag');
 
-  if (secret !== process.env.REVALIDATION_SECRET) {
-    return NextResponse.json({ message: 'Invalid secret token' }, { status: 401 });
-  }
-
   if (!tag) {
     return NextResponse.json({ message: 'Missing "tag" parameter' }, { status: 400 });
   }
