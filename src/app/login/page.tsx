@@ -160,7 +160,7 @@ export default function LoginForm() {
             {/* Security question */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between gap-2">
-                <label className="text-base font-bold uppercase tracking-wide text-blaze">
+                <label className="text-base font-bold tracking-wide text-blaze">
                   {questionLoading ? 'Chargement de la question…' : question?.question || 'Question indisponible'}
                 </label>
                 <button

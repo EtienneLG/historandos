@@ -7,7 +7,8 @@ function normalize(str: string) {
   return str
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, ' ');
+    .replace(/\s+/g, ' ')
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 export async function POST(request: NextRequest) {
