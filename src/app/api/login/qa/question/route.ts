@@ -35,6 +35,7 @@ export async function GET() {
       question: {
         id: question.id,
         question: question.question,
+        type: question.type
       },
     });
   } catch (error: any) {

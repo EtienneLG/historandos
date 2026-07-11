@@ -108,7 +108,7 @@ export default function ListView({ traces, activeTrace, setActiveTrace, setActiv
                             </p>
                           )}
 
-                          <p className="text-ink/50 text-sm mt-1.5 leading-relaxed line-clamp-2">
+                          <p className="text-ink/50 text-sm mt-1.5 leading-relaxed line-clamp-3">
                             {trace.description}
                           </p>
                         </div>
