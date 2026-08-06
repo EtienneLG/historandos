@@ -3,6 +3,28 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  --color-parchment: #f3eee1;
+  --color-parchment-light: #faf7ef;
+  --color-ink: #1f2a24;
+  --color-pine: #2d4a3a;
+  --color-pine-dark: #1e3329;
+  --color-blaze: #6b9b3f;
+  --color-blaze-dark: #567f30;
+  --color-tarn: #4a7c8c;
+  --color-stone: #d9d2c0;
+  --color-stone-dark: #bfb6a0;
+  --color-trail: #2563eb;
+}
+
+.topo-texture {
+  background-image: repeating-radial-gradient(
+    circle at 20% 30%,
+    transparent 0,
+    transparent 18px,
+    rgba(45, 74, 58, 0.035) 19px,
+    transparent 20px
+  );
 }
 
 @theme inline {
@@ -10,6 +32,30 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Colors */
+  --color-parchment: #f3eee1;
+  --color-parchment-light: #faf7ef;
+  
+  --color-ink: #1f2a24;
+  
+  --color-pine: #2d4a3a;
+  --color-pine-dark: #1e3329;
+  
+  --color-blaze: #6b9b3f;
+  --color-blaze-dark: #567f30;
+  
+  --color-tarn: #4a7c8c;
+  
+  --color-stone: #d9d2c0;
+  --color-stone-dark: #bfb6a0;
+
+  --color-trail: #2563eb;
+
+  /* Font Families */
+  --font-display: var(--font-display), sans-serif;
+  --font-sans: var(--font-body), sans-serif;
+  --font-mono: var(--font-mono), monospace;
 }
 
 @media (prefers-color-scheme: dark) {
