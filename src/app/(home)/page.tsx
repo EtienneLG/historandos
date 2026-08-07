@@ -1,8 +1,6 @@
 import { getHikes } from '@/lib/data/hikes';
 import HomeShell from './home-shell';
 
-export const dynamic = 'force-dynamic';
-
 export default async function HomePage() {
   const traces = await getHikes();
 

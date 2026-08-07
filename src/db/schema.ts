@@ -27,7 +27,7 @@ export const poiTypeEnum = pgEnum('poi_type', [
 export const hikes = pgTable('hikes', {
   id: uuid('id').primaryKey().defaultRandom(),
   title: text('title').notNull(),
-  description: text('description'),
+  description: text('description').notNull(),
   date: date('date').notNull(),
   isLoop: boolean('is_loop').notNull(),
 

@@ -1,29 +1,32 @@
-import { z } from 'zod';
-import { HikeSchema, Hike } from '@/types/hike';
+import { desc } from 'drizzle-orm';
+import { cacheLife, cacheTag } from 'next/cache';
+import { db } from '@/db/index';
+import { hikes } from '@/db/schema';
+import { z }  from 'zod';
+import { HikeSummary, HikeSummarySchema } from '@/types/hike';
 
-const DRIVE_ID = process.env.INFOMANIAK_DRIVE_ID;
-const METADATA_ID = process.env.INFOMANIAK_METADATA_ID;
-const DRIVE_SECRET = process.env.INFOMANIAK_DRIVE_SECRET;
+export async function getHikes(): Promise<HikeSummary[]> {
+  'use cache';
+  cacheTag('hikes');
+  cacheLife('days');
 
-export async function getHikes(): Promise<Hike[]> {
-  try {
-    const response = await fetch(`https://api.infomaniak.com/2/drive/${DRIVE_ID}/files/${METADATA_ID}/download`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${DRIVE_SECRET}`,
-      },
-      cache: 'no-store',
-    });
+  const hikeList = await db.select({
+    id: hikes.id,
+    title: hikes.title,
+    description: hikes.description,
+    date: hikes.date,
+    isLoop: hikes.isLoop,
+    distanceM: hikes.distanceM,
+    elevationGainM: hikes.elevationGainM,
+    elevationLossM: hikes.elevationLossM,
+    bbox: hikes.bbox,
+  }).from(hikes).orderBy(desc(hikes.date));
 
-    if (!response.ok) 
-      throw new Error(`Failed to fetch metadata: ${response.status}`);
-
-    const data = await response.json();
-
-    return z.array(HikeSchema).parse(data);
-  } catch (error) {
-    console.error('Error fetching traces:', error);
-
-    return [];
+  const result = z.array(HikeSummarySchema).safeParse(hikeList);
+  if (!result.success) {
+    console.error('Error fetching hikes:', result.error);
+    throw new Error('Failed to load hikes: unexpected data shape.');
   }
+
+  return result.data;
 }
