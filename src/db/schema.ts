@@ -1,4 +1,4 @@
-import { pgTable, pgEnum, uuid, text, integer, boolean, date, jsonb, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, pgEnum, uuid, text, integer, boolean, date, jsonb, timestamp, doublePrecision } from 'drizzle-orm/pg-core';
 import { defineRelations } from 'drizzle-orm';
 
 export const waypointCategoryEnum = pgEnum('waypoint_category', [
@@ -30,6 +30,10 @@ export const hikes = pgTable('hikes', {
   description: text('description').notNull(),
   date: date('date').notNull(),
   isLoop: boolean('is_loop').notNull(),
+  people: text('people').array().notNull().default([]),
+  photoDirId: integer('photo_dir_id').notNull(),
+  startLat: doublePrecision('start_lat'),
+  startLon: doublePrecision('start_lon'),
 
   // Derived stats
   distanceM: integer('distance_m').notNull(),

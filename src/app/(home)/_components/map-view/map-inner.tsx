@@ -3,22 +3,25 @@
 import { useEffect, useRef } from "react";
 import Map, { Source, Layer, Marker, LineLayerSpecification } from 'react-map-gl/mapbox';
 import mapboxgl from 'mapbox-gl';
-import bbox from '@turf/bbox';
-import { distance } from '@turf/turf';
-import { Trace, TraceMetrics } from '@/types/trace';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { HUDPanel } from "./hud-panel";
+import { HikeSummary } from "@/types/hike-types";
+import { useUIStore } from "@/stores/ui-store";
+import { useHikeDetail } from "@/stores/use-hike-detail";
+import { useActiveHike } from "@/stores/use-active-hike";
+import { useHikePoints } from "@/stores/use-hike-points";
 
 interface MapInnerProps {
-  traces: Trace[];
-  activeTrace: Trace | null;
-  setActiveTrace: (trace: Trace | null) => void;
-  traceGeoJson: any;
-  loading: boolean;
-  metrics: TraceMetrics | null;
+  hikes: HikeSummary[];
 }
 
-export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeoJson, loading, metrics }: MapInnerProps) {
+export default function MapInner({ hikes }: MapInnerProps) {
+  const activeHikeId = useUIStore((s) => s.activeHikeId);
+  const setActiveHikeId = useUIStore((s) => s.setActiveHikeId);
+  const activeHike = useActiveHike(hikes);
+  const { hikeDetail, loading } = useHikeDetail();
+  const hikePoints = useHikePoints(hikeDetail);
+
   const mapRef = useRef<any>(null);
   const hoverMarkerRef = useRef<mapboxgl.Marker | null>(null);
 
@@ -44,14 +47,14 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
       const index = (e as CustomEvent).detail;
       const marker = hoverMarkerRef.current;
 
-      if (!marker || !metrics?.profile) return;
+      if (!marker || !hikePoints) return;
 
       if (index === null) {
         document.getElementById('elevation-hover-dot')?.classList.add('hidden');
         return;
       }
 
-      const activePoint = metrics.profile[index];
+      const activePoint = hikePoints[index];
       if (!activePoint) return;
 
       marker.setLngLat([activePoint.lon, activePoint.lat]);
@@ -63,13 +66,12 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
     return () => {
       window.removeEventListener('trace-point-hover', handleHoverBridge);
     };
-  }, [metrics]);
+  }, [hikePoints]);
 
   useEffect(() => {
-    if (!traceGeoJson || !mapRef.current) return;
+    if (!activeHike || !mapRef.current) return;
 
-    const bounds = bbox(traceGeoJson);
-    mapRef.current.fitBounds(bounds, {
+    mapRef.current.fitBounds(activeHike.bbox, {
       padding: {
         top: 50,
         bottom: 50,
@@ -78,7 +80,7 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
       },
       duration: 1200,
     });
-  }, [traceGeoJson]);
+  }, [activeHike]);
 
   const lineLayerStyle: Omit<LineLayerSpecification, 'source'> = {
     id: 'gpx-track-layer',
@@ -111,18 +113,18 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
           onLoad={handleMapLoad}
         >
           {/* Trace Markers */}
-          {traces.map((trace) => {
-            const isActive = activeTrace?.id === trace.id;
+          {hikes.map((hike) => {
+            const isActive = activeHikeId === hike.id;
             return (
               <Marker
-                key={trace.id}
-                latitude={trace.lat}
-                longitude={trace.lon}
-                onClick={() => setActiveTrace(trace)}
+                key={hike.id}
+                latitude={hike.startLat}
+                longitude={hike.startLon}
+                onClick={() => setActiveHikeId(hike.id)}
               >
                 <button
                   className="group relative flex items-center justify-center cursor-pointer"
-                  aria-label={trace.title}
+                  aria-label={hike.title}
                 >
                   <span
                     className={`relative flex items-center justify-center w-6 h-6 rounded-full border-2 shadow-md transition-all duration-150 ${isActive
@@ -138,47 +140,36 @@ export default function MapInner({ traces, activeTrace, setActiveTrace, traceGeo
           })}
 
           {/* Dynamic Track Layer */}
-          {traceGeoJson && activeTrace && (
-            <Source id="dynamic-gpx" type="geojson" data={traceGeoJson}>
+          {hikeDetail && (
+            <Source id="dynamic-gpx" type="geojson" data={hikeDetail.geometry}>
               <Layer {...lineLayerStyle} />
             </Source>
           )}
 
           {/* End Marker */}
-          {traceGeoJson && activeTrace && (() => {
-            const coordinates = traceGeoJson.features?.[0]?.geometry?.coordinates; 
-            const startWp = coordinates?.[0];
-            const endWp = coordinates?.[coordinates.length - 1];
-
-            if (!startWp || !endWp) return null;
-
-            const isLoop = distance(startWp, endWp, { units: "meters" }) < 10;
-
-            if (isLoop) return null;
-
-            return (
-              <Marker
-                key="end-marker"
-                latitude={endWp[1]}
-                longitude={endWp[0]}
-              >
-                <span className="group relative flex items-center justify-center cursor-default">
-                  <span className="relative flex items-center justify-center w-4 h-4 rounded-full border-3 shadow-md transition-all duration-150 bg-pine border-parchment-light" />
-                </span>
-              </Marker>
-            );
-          })()}
+          {activeHike && !activeHike.isLoop && hikePoints &&
+            <Marker
+              key="end-marker"
+              latitude={hikePoints[hikePoints.length-1].lat}
+              longitude={hikePoints[hikePoints.length-1].lon}
+            >
+              <span className="group relative flex items-center justify-center cursor-default">
+                <span className="relative flex items-center justify-center w-4 h-4 rounded-full border-3 shadow-md transition-all duration-150 bg-pine border-parchment-light" />
+              </span>
+            </Marker>
+          }
         </Map>
       </div>
 
       {/* HUD Panel */}
-      {activeTrace && (
+      {activeHike && (
         <div className="absolute top-0 right-0 z-10 h-full p-0 pointer-events-none">
           <HUDPanel
-            activeTrace={activeTrace}
+            activeHike={activeHike}
+            hikeDetail={hikeDetail}
             loading={loading}
-            metrics={metrics}
-            onClose={() => setActiveTrace(null)}
+            hikePoints={hikePoints}
+            onClose={() => setActiveHikeId(null)}
           />
         </div>
       )}

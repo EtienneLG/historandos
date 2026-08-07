@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@turf/distance": "^7.4.0",
+    "@turf/helpers": "^7.4.0",
     "@types/geojson": "^7946.0.16",
     "drizzle-orm": "^1.0.0-rc.4",
     "jose": "^6.2.8",
@@ -18,7 +20,9 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-map-gl": "^8.1.2",
-    "zod-geojson": "^1.7.0"
+    "recharts": "^3.10.1",
+    "zod-geojson": "^1.7.0",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

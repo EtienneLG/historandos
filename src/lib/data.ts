@@ -2,8 +2,8 @@ import { desc } from 'drizzle-orm';
 import { cacheLife, cacheTag } from 'next/cache';
 import { db } from '@/db/index';
 import { hikes } from '@/db/schema';
-import { z }  from 'zod';
-import { HikeSummary, HikeSummarySchema } from '@/types/hike';
+import { z } from 'zod';
+import { HikeSummary, HikeSummarySchema } from '@/types/hike-types';
 
 export async function getHikes(): Promise<HikeSummary[]> {
   'use cache';
@@ -16,6 +16,10 @@ export async function getHikes(): Promise<HikeSummary[]> {
     description: hikes.description,
     date: hikes.date,
     isLoop: hikes.isLoop,
+    people: hikes.people,
+    photoDirId: hikes.photoDirId,
+    startLat: hikes.startLat,
+    startLon: hikes.startLon,
     distanceM: hikes.distanceM,
     elevationGainM: hikes.elevationGainM,
     elevationLossM: hikes.elevationLossM,

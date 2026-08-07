@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { GeoJSONGeometrySchema } from 'zod-geojson';
+import { GeoJSONGeometrySchema, GeoJSONBBoxSchema } from 'zod-geojson';
 
 export const WaypointCategorySchema = z.enum([
   'start',          // Departure point
@@ -26,22 +26,16 @@ export const WaypointSchema = z.object({
   poiType: PoiTypeSchema.nullable()
 })
 
-// Map viewport bounds, matches the `bbox` jsonb column on the `hikes` table.
-export const BBoxSchema = z.object({
-  minLng: z.number(),
-  minLat: z.number(),
-  maxLng: z.number(),
-  maxLat: z.number(),
-})
-
-// Lightweight shape for the list & map views — no geometry/waypoints, so it
-// maps directly to a lean column-subset query on the `hikes` table.
 export const HikeSummarySchema = z.object({
   id: z.uuid(),
   title: z.string(),
   description: z.string(),
   date: z.iso.date(),
   isLoop: z.boolean(),
+  people: z.array(z.string()),
+  photoDirId: z.int().positive(),
+  startLat: z.number(),
+  startLon: z.number(),
 
   // Global stats
   distanceM: z.number(),
@@ -49,17 +43,22 @@ export const HikeSummarySchema = z.object({
   elevationLossM: z.number(),
 
   // Map data
-  bbox: BBoxSchema,
+  bbox: GeoJSONBBoxSchema,
 })
 
-// Full shape for the single-hike detail view, fetched only once a hike is
-// selected — assembled by joining `hikes` + `hike_waypoints`.
 export const HikeDetailSchema = HikeSummarySchema.extend({
   geometry: GeoJSONGeometrySchema,
   
   // Waypoints in sequence
   waypoints: z.array(WaypointSchema)
 })
+
+export interface HikePoint {
+  lon: number;
+  lat: number;
+  elevation: number;
+  distanceFromStartM: number;
+}
 
 export type HikeSummary = z.infer<typeof HikeSummarySchema>;
 export type HikeDetail = z.infer<typeof HikeDetailSchema>;

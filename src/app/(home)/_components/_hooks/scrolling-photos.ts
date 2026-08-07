@@ -1,7 +1,6 @@
-import { Trace } from '@/types/trace';
-import { useRef, RefObject, useCallback, useState, useEffect, act } from 'react';
+import { useRef, RefObject, useCallback, useState, useEffect } from 'react';
 
-export function useScrollingPhotos(activeTrace: Trace, containerRef: RefObject<HTMLDivElement | null>) {
+export function useScrollingPhotos(photoDirId: number | null, containerRef: RefObject<HTMLDivElement | null>) {
   const [visiblePhotoIds, setVisiblePhotoIds] = useState<number[]>([]);
   const [isFetchingPhotos, setIsFetchingPhotos] = useState<boolean>(false);
   const [hasMorePhotos, setHasMorePhotos] = useState<boolean>(true);
@@ -17,12 +16,12 @@ export function useScrollingPhotos(activeTrace: Trace, containerRef: RefObject<H
   isFetchingRef.current = isFetchingPhotos;
 
   const fetchMorePhotos = async () => {
-    if (!activeTrace || isFetchingRef.current || !hasMoreRef.current) return;
+    if (!photoDirId || isFetchingRef.current || !hasMoreRef.current) return;
 
     setIsFetchingPhotos(true);
     try {
       const cursorParam = cursorRef.current ? `&cursor=${cursorRef.current}` : '';
-      const res = await fetch(`/api/photos/list?dir_id=${activeTrace.photoDirId}${cursorParam}`);
+      const res = await fetch(`/api/photos/list?dir_id=${photoDirId}${cursorParam}`);
 
       const data = await res.json();
 
@@ -68,13 +67,13 @@ export function useScrollingPhotos(activeTrace: Trace, containerRef: RefObject<H
     observer.observe(node);
     observerRef.current = observer;
 
-  }, [activeTrace]);
+  }, [photoDirId]);
 
   useEffect(() => {
     setCursorPos(null);
     setHasMorePhotos(true);
     setVisiblePhotoIds([]);
-  }, [activeTrace]);
+  }, [photoDirId]);
 
   return { sentinelRef, visiblePhotoIds, isFetchingPhotos, hasMorePhotos };
 }

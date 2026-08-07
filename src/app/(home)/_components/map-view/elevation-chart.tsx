@@ -1,9 +1,8 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TracePoint } from '@/types/trace';
-import { distance } from '@turf/turf';
+import { HikePoint } from '@/types/hike-types';
 
 interface ElevationChartProps {
-  profile: TracePoint[];
+  hikePoints: HikePoint[];
 }
 
 const CleanTooltip = ({ active, payload }: any) => {
@@ -18,7 +17,7 @@ const CleanTooltip = ({ active, payload }: any) => {
   return null;
 };
 
-export function ElevationChart({ profile }: ElevationChartProps) {
+export function ElevationChart({ hikePoints }: ElevationChartProps) {
   const handleMouseMove = (e: any) => {
     if (e && e.activeTooltipIndex !== undefined) {
       const event = new CustomEvent('trace-point-hover', { detail: e.activeTooltipIndex });
@@ -41,7 +40,7 @@ export function ElevationChart({ profile }: ElevationChartProps) {
       <div className="h-56 w-full bg-stone/20 rounded-2xl p-2 border border-stone">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
-            data={profile}
+            data={hikePoints}
             margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}

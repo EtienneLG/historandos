@@ -1,13 +1,8 @@
-import { Trace } from '@/types/trace';
+import { HikeSummary } from '@/types/hike-types';
 import dynamic from "next/dynamic";
 
 interface MapViewProps {
-  traces: Trace[];
-  activeTrace: Trace | null;
-  setActiveTrace: (trace: Trace | null) => void;
-  traceGeoJson: any;
-  loading: boolean;
-  metrics: any;
+  hikes: HikeSummary[];
 }
 
 const MapInner = dynamic(() => import("./map-inner"), {
@@ -21,18 +16,13 @@ const MapInner = dynamic(() => import("./map-inner"), {
   ),
 });
 
-export default function MapViewWrapper({ traces, activeTrace, setActiveTrace, traceGeoJson, loading, metrics }: MapViewProps) {
+export default function MapViewWrapper({ hikes }: MapViewProps) {
   return (
     <div className="w-full h-full relative">
 
       {/* Map */}
       <MapInner 
-        traces={traces} 
-        activeTrace={activeTrace} 
-        setActiveTrace={setActiveTrace} 
-        traceGeoJson={traceGeoJson} 
-        loading={loading} 
-        metrics={metrics} 
+        hikes={hikes} 
       />
 
     </div>
