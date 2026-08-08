@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ElevationChart } from './elevation-chart';
 import { ActivityPhoto } from './activity-photo';
 import { useScrollingPhotos } from '../_hooks/scrolling-photos';
@@ -23,7 +23,11 @@ export function HUDPanel({ activeHike, loading, hikePoints, onClose }: HUDPanelP
   } = useScrollingPhotos(activeHike.photoDirId, hudScrollContainerRef);
 
   return (
-    <div ref={hudScrollContainerRef} className="pointer-events-auto w-[480px] h-full bg-parchment-light/95 backdrop-blur-md shadow-2xl border-l border-stone overflow-y-auto flex flex-col font-sans text-ink">
+    <div
+      ref={hudScrollContainerRef}
+      className="pointer-events-auto w-[480px] h-full bg-parchment-light/95 backdrop-blur-md shadow-2xl border-l border-stone overflow-y-auto flex flex-col font-sans text-ink"
+      style={{ scrollbarGutter: 'stable' }}
+    >
       <div className="p-6 flex-1 flex flex-col gap-6">
 
         {/* Header */}
@@ -72,7 +76,7 @@ export function HUDPanel({ activeHike, loading, hikePoints, onClose }: HUDPanelP
             <div className="flex-1 flex flex-col items-center justify-center gap-1 py-3">
               <span className="text-[10px] font-bold tracking-wider text-ink/40 uppercase">Distance</span>
               <span className="font-mono text-lg font-extrabold text-ink leading-none">
-                {formatDistance(activeHike.distanceM)}<span className="text-xs font-semibold text-ink/40 ml-0.5">km</span>
+                {formatDistance(activeHike.distanceM / 1000)}<span className="text-xs font-semibold text-ink/40 ml-0.5">km</span>
               </span>
             </div>
 

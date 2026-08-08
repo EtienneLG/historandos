@@ -6,18 +6,6 @@ interface ElevationChartProps {
   hikePoints: HikePoint[];
 }
 
-const CleanTooltip = ({ active, payload }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-pine-dark/95 backdrop-blur-md text-parchment-light px-3 py-2 rounded-xl text-xs shadow-xl border border-pine flex flex-col gap-0.5 animate-in fade-in duration-200">
-        <span className="font-mono font-semibold text-parchment">{payload[0].value} m d'altitude</span>
-        <span className="font-mono text-stone text-[10px]">À {payload[0].payload.distance} km</span>
-      </div>
-    );
-  }
-  return null;
-};
-
 export function ElevationChart({ hikePoints }: ElevationChartProps) {
   const handleMouseMove = (e: any) => {
     if (e && e.activeTooltipIndex !== undefined) {
