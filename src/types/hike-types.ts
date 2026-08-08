@@ -46,7 +46,8 @@ export const HikeSummarySchema = z.object({
   bbox: GeoJSONBBoxSchema,
 })
 
-export const HikeDetailSchema = HikeSummarySchema.extend({
+export const HikeGeometrySchema = z.object({
+  id: z.uuid(),
   geometry: GeoJSONGeometrySchema,
   
   // Waypoints in sequence
@@ -61,4 +62,4 @@ export interface HikePoint {
 }
 
 export type HikeSummary = z.infer<typeof HikeSummarySchema>;
-export type HikeDetail = z.infer<typeof HikeDetailSchema>;
+export type HikeGeometry = z.infer<typeof HikeGeometrySchema>;

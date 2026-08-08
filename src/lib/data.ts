@@ -3,7 +3,7 @@ import { cacheLife, cacheTag } from 'next/cache';
 import { db } from '@/db/index';
 import { hikes } from '@/db/schema';
 import { z } from 'zod';
-import { HikeDetail, HikeDetailSchema, HikeSummary, HikeSummarySchema } from '@/types/hike-types';
+import { HikeGeometry, HikeGeometrySchema, HikeSummary, HikeSummarySchema } from '@/types/hike-types';
 
 export async function getHikes(): Promise<HikeSummary[]> {
   'use cache';
@@ -35,25 +35,13 @@ export async function getHikes(): Promise<HikeSummary[]> {
   return result.data;
 }
 
-export async function getHikeDetail(hikeId: string): Promise<HikeDetail> {
+export async function getHikeGeometry(hikeId: string): Promise<HikeGeometry> {
   'use cache';
   cacheTag('hikes');
   cacheLife('days');
 
   const detail = await db.select({
     id: hikes.id,
-    title: hikes.title,
-    description: hikes.description,
-    date: hikes.date,
-    isLoop: hikes.isLoop,
-    people: hikes.people,
-    photoDirId: hikes.photoDirId,
-    startLat: hikes.startLat,
-    startLon: hikes.startLon,
-    distanceM: hikes.distanceM,
-    elevationGainM: hikes.elevationGainM,
-    elevationLossM: hikes.elevationLossM,
-    bbox: hikes.bbox,
     geometry: hikes.geometry
   }).from(hikes)
     .where(eq(hikes.id, hikeId));
@@ -62,7 +50,7 @@ export async function getHikeDetail(hikeId: string): Promise<HikeDetail> {
     throw new Error(`Hike not found: ${hikeId}`);
   }
 
-  const result = HikeDetailSchema.safeParse(detail[0]);
+  const result = HikeGeometrySchema.safeParse(detail[0]);
   if (!result.success) {
     console.error('Error fetching hikes:', result.error);
     throw new Error('Failed to load hikes: unexpected data shape.');

@@ -1,32 +1,33 @@
 import { useEffect, useState } from 'react';
 import { useUIStore } from './ui-store';
-import { HikeDetail, HikeDetailSchema } from '@/types/hike-types';
+import { HikeGeometrySchema } from '@/types/hike-types';
+import type { GeoJSONGeometry } from 'zod-geojson';
 
-export function useHikeDetail() {
+export function useHikeGeometry() {
   const activeHikeId = useUIStore((s) => s.activeHikeId);
-  const [hikeDetail, setHikeDetail] = useState<HikeDetail | null>(null);
+  const [geometry, setGeometry] = useState<GeoJSONGeometry | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!activeHikeId) {
-      setHikeDetail(null);
+      setGeometry(null);
       return;
     }
     let cancelled = false;
 
     async function loadNewHike() {
       setLoading(true);
-      setHikeDetail(null);
+      setGeometry(null);
       try {
         const response = await fetch(`/api/hikes/${activeHikeId}`);
 
         if (!response.ok)
-          throw new Error('Failed fetching hike details');
+          throw new Error('Failed fetching hike geometry');
 
         const data = await response.json();
-        const detail = HikeDetailSchema.parse(data);
-        
-        if (!cancelled) setHikeDetail(detail);
+        const parsed = HikeGeometrySchema.parse(data);
+
+        if (!cancelled) setGeometry(parsed.geometry);
       } catch (error) {
         console.error('Error updating GPX track:', error);
       } finally {
@@ -38,5 +39,5 @@ export function useHikeDetail() {
     return () => { cancelled = true; };
   }, [activeHikeId]);
 
-  return { hikeDetail, loading };
+  return { geometry, loading };
 }

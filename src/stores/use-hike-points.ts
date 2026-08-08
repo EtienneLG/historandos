@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
 import { computeHikePoints } from '@/lib/geo';
-import { HikeDetail, HikePoint } from '@/types/hike-types';
+import { HikePoint } from '@/types/hike-types';
+import type { GeoJSONGeometry } from 'zod-geojson';
 
-export function useHikePoints(hikeDetail: HikeDetail | null): HikePoint[] {
+export function useHikePoints(geometry: GeoJSONGeometry | null): HikePoint[] {
   return useMemo(
-    () => (hikeDetail ? computeHikePoints(hikeDetail.geometry) : []),
-    [hikeDetail]
+    () => (geometry ? computeHikePoints(geometry) : []),
+    [geometry]
   );
 }

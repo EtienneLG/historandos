@@ -5,9 +5,10 @@ import Map, { Source, Layer, Marker, LineLayerSpecification } from 'react-map-gl
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { HUDPanel } from "./hud-panel";
+import BaseMap from "@/components/base-map";
 import { HikeSummary } from "@/types/hike-types";
 import { useUIStore } from "@/stores/ui-store";
-import { useHikeDetail } from "@/stores/use-hike-detail";
+import { useHikeGeometry } from "@/stores/use-hike-geometry";
 import { useActiveHike } from "@/stores/use-active-hike";
 import { useHikePoints } from "@/stores/use-hike-points";
 
@@ -19,8 +20,8 @@ export default function MapInner({ hikes }: MapInnerProps) {
   const activeHikeId = useUIStore((s) => s.activeHikeId);
   const setActiveHikeId = useUIStore((s) => s.setActiveHikeId);
   const activeHike = useActiveHike(hikes);
-  const { hikeDetail, loading } = useHikeDetail();
-  const hikePoints = useHikePoints(hikeDetail);
+  const { geometry, loading } = useHikeGeometry();
+  const hikePoints = useHikePoints(geometry);
 
   const mapRef = useRef<any>(null);
   const hoverMarkerRef = useRef<mapboxgl.Marker | null>(null);
@@ -100,17 +101,9 @@ export default function MapInner({ hikes }: MapInnerProps) {
     <div className="w-full h-full flex relative overflow-hidden bg-pine-dark">
       {/* Map Element Box */}
       <div className="flex-1 h-full w-full z-0">
-        <Map
-          ref={mapRef}
-          mapboxAccessToken={MAPBOX_TOKEN}
-          initialViewState={{
-            longitude: 6.5,
-            latitude: 46.5,
-            zoom: 7
-          }}
-          style={{ width: '100%', height: '100%' }}
-          mapStyle="mapbox://styles/mapbox/outdoors-v12"
-          onLoad={handleMapLoad}
+        <BaseMap
+          mapRef={mapRef}
+          handleMapLoad={handleMapLoad}
         >
           {/* Trace Markers */}
           {hikes.map((hike) => {
@@ -140,8 +133,8 @@ export default function MapInner({ hikes }: MapInnerProps) {
           })}
 
           {/* Dynamic Track Layer */}
-          {hikeDetail && (
-            <Source id="dynamic-gpx" type="geojson" data={hikeDetail.geometry}>
+          {geometry && (
+            <Source id="dynamic-gpx" type="geojson" data={geometry}>
               <Layer {...lineLayerStyle} />
             </Source>
           )}
@@ -150,29 +143,30 @@ export default function MapInner({ hikes }: MapInnerProps) {
           {activeHike && !activeHike.isLoop && hikePoints &&
             <Marker
               key="end-marker"
-              latitude={hikePoints[hikePoints.length-1].lat}
-              longitude={hikePoints[hikePoints.length-1].lon}
+              latitude={hikePoints[hikePoints.length - 1].lat}
+              longitude={hikePoints[hikePoints.length - 1].lon}
             >
               <span className="group relative flex items-center justify-center cursor-default">
                 <span className="relative flex items-center justify-center w-4 h-4 rounded-full border-3 shadow-md transition-all duration-150 bg-pine border-parchment-light" />
               </span>
             </Marker>
           }
-        </Map>
+        </BaseMap>
       </div>
 
       {/* HUD Panel */}
-      {activeHike && (
-        <div className="absolute top-0 right-0 z-10 h-full p-0 pointer-events-none">
-          <HUDPanel
-            activeHike={activeHike}
-            hikeDetail={hikeDetail}
-            loading={loading}
-            hikePoints={hikePoints}
-            onClose={() => setActiveHikeId(null)}
-          />
-        </div>
-      )}
-    </div>
+      {
+        activeHike && (
+          <div className="absolute top-0 right-0 z-10 h-full p-0 pointer-events-none">
+            <HUDPanel
+              activeHike={activeHike}
+              loading={loading}
+              hikePoints={hikePoints}
+              onClose={() => setActiveHikeId(null)}
+            />
+          </div>
+        )
+      }
+    </div >
   );
 }

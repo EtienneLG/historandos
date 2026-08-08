@@ -5,23 +5,26 @@ export function useScrollingPhotos(photoDirId: number | null, containerRef: RefO
   const [isFetchingPhotos, setIsFetchingPhotos] = useState<boolean>(false);
   const [hasMorePhotos, setHasMorePhotos] = useState<boolean>(true);
   const [cursorPos, setCursorPos] = useState<string | null>(null);
-  
+  const [sentinelNode, setSentinelNode] = useState<HTMLDivElement | null>(null);
+
   const isFetchingRef = useRef(isFetchingPhotos);
   const hasMoreRef = useRef(hasMorePhotos);
   const cursorRef = useRef(cursorPos);
-  const observerRef = useRef<IntersectionObserver | null>(null);
+  const photoDirIdRef = useRef(photoDirId);
 
   hasMoreRef.current = hasMorePhotos;
   cursorRef.current = cursorPos;
   isFetchingRef.current = isFetchingPhotos;
+  photoDirIdRef.current = photoDirId;
 
-  const fetchMorePhotos = async () => {
-    if (!photoDirId || isFetchingRef.current || !hasMoreRef.current) return;
+  const fetchMorePhotos = useCallback(async () => {
+    const dirId = photoDirIdRef.current;
+    if (!dirId || isFetchingRef.current || !hasMoreRef.current) return;
 
     setIsFetchingPhotos(true);
     try {
       const cursorParam = cursorRef.current ? `&cursor=${cursorRef.current}` : '';
-      const res = await fetch(`/api/photos/list?dir_id=${photoDirId}${cursorParam}`);
+      const res = await fetch(`/api/photos/list?dir_id=${dirId}${cursorParam}`);
 
       const data = await res.json();
 
@@ -40,15 +43,21 @@ export function useScrollingPhotos(photoDirId: number | null, containerRef: RefO
     } finally {
       setIsFetchingPhotos(false);
     }
-  };
-
+  }, []);
+  
   const sentinelRef = useCallback((node: HTMLDivElement | null) => {
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-      observerRef.current = null;
-    }
+    setSentinelNode(node);
+  }, []);
 
-    if (!node || !containerRef.current) return;
+  useEffect(() => {
+    setCursorPos(null);
+    setHasMorePhotos(true);
+    setVisiblePhotoIds([]);
+  }, [photoDirId]);
+
+  useEffect(() => {
+    const root = containerRef.current;
+    if (!sentinelNode || !root || !photoDirId || !hasMorePhotos) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -58,22 +67,16 @@ export function useScrollingPhotos(photoDirId: number | null, containerRef: RefO
         }
       },
       {
-        root: containerRef.current,
+        root,
         rootMargin: '200px',
         threshold: 0.1,
       }
     );
 
-    observer.observe(node);
-    observerRef.current = observer;
+    observer.observe(sentinelNode);
 
-  }, [photoDirId]);
-
-  useEffect(() => {
-    setCursorPos(null);
-    setHasMorePhotos(true);
-    setVisiblePhotoIds([]);
-  }, [photoDirId]);
+    return () => observer.disconnect();
+  }, [sentinelNode, containerRef, photoDirId, hasMorePhotos, fetchMorePhotos]);
 
   return { sentinelRef, visiblePhotoIds, isFetchingPhotos, hasMorePhotos };
 }
