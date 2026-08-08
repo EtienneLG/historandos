@@ -4,8 +4,9 @@
 import { formatDistance } from '@/lib/geo';
 import { HikePoint } from '@/types/hike-types';
 import {
-  AreaChart,
+  ComposedChart,
   Area,
+  Line,
   XAxis,
   YAxis,
   Tooltip,
@@ -20,6 +21,18 @@ interface ElevationChartProps {
   handleMouseUp?: (e?: any) => void;
   children?: React.ReactNode;
 }
+
+const CleanTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-pine-dark/95 backdrop-blur-md text-parchment-light px-3 py-2 rounded-xl text-xs shadow-xl border border-pine flex flex-col gap-0.5 animate-in fade-in duration-200">
+        <span className="font-mono font-semibold text-parchment">{payload[0].value} m d'altitude</span>
+        <span className="font-mono text-stone text-[10px]">À {payload[0].payload.distance} km</span>
+      </div>
+    );
+  }
+  return null;
+};
 
 export default function BaseChart({
   data,
@@ -43,7 +56,7 @@ export default function BaseChart({
 
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <AreaChart
+      <ComposedChart
         data={data}
         margin={{ top: 5, right: 10, left: -35, bottom: -15 }}
         onMouseMove={handleMouseMove}
@@ -81,31 +94,43 @@ export default function BaseChart({
         />
 
         {/* Clean Minimal Tooltip */}
-        <Tooltip
-          contentStyle={{
-            background: '#fff',
-            border: '1px solid #e7e5e4',
-            borderRadius: '8px',
-            fontSize: '11px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-          }}
-          labelFormatter={(value) => `${formatDistance(Number(value) / 1000)} km`}
-          formatter={(value: any) => [`${value} m`, 'Altitude']}
+        <Tooltip content={<CleanTooltip />} cursor={{ stroke: '#bfb6a0', strokeWidth: 1, strokeDasharray: '4 4' }} />
+
+        {/*
+          The fill is rendered statically (no animation): Recharts animates Area via a
+          per-frame clipPath resize, which forces an expensive repaint of the whole
+          gradient region every frame. That gets starved under main-thread contention
+          (e.g. photos loading), making it "snap" instead of animating smoothly.
+        */}
+        <Area
+          type="monotone"
+          dataKey="elevation"
+          stroke="none"
+          fillOpacity={1}
+          fill="url(#elevationGradient)"
+          isAnimationActive={false}
+          legendType="none"
+          tooltipType="none"
+          activeDot={false}
         />
 
-        {/* The actual drawn area layer */}
-        <Area
+        {/*
+          The line does the animated "drawing in" reveal via strokeDasharray, which is
+          cheap to repaint and stays smooth/continuous even if frames are dropped.
+        */}
+        <Line
           type="monotone"
           dataKey="elevation"
           stroke="#2563eb"
           strokeWidth={2}
-          fillOpacity={1}
-          fill="url(#elevationGradient)"
+          dot={false}
+          activeDot={{ r: 5, strokeWidth: 2, stroke: '#faf7ef', fill: '#2563eb' }}
+          legendType="none"
         />
 
         {children}
 
-      </AreaChart>
+      </ComposedChart>
     </ResponsiveContainer>
   );
 }
