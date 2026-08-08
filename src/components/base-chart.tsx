@@ -96,12 +96,6 @@ export default function BaseChart({
         {/* Clean Minimal Tooltip */}
         <Tooltip content={<CleanTooltip />} cursor={{ stroke: '#bfb6a0', strokeWidth: 1, strokeDasharray: '4 4' }} />
 
-        {/*
-          The fill is rendered statically (no animation): Recharts animates Area via a
-          per-frame clipPath resize, which forces an expensive repaint of the whole
-          gradient region every frame. That gets starved under main-thread contention
-          (e.g. photos loading), making it "snap" instead of animating smoothly.
-        */}
         <Area
           type="monotone"
           dataKey="elevation"
@@ -114,10 +108,6 @@ export default function BaseChart({
           activeDot={false}
         />
 
-        {/*
-          The line does the animated "drawing in" reveal via strokeDasharray, which is
-          cheap to repaint and stays smooth/continuous even if frames are dropped.
-        */}
         <Line
           type="monotone"
           dataKey="elevation"
