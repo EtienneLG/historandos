@@ -1,5 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { HikePoint } from '@/types/hike-types';
+import BaseChart from '@/components/base-chart';
 
 interface ElevationChartProps {
   hikePoints: HikePoint[];
@@ -38,45 +39,13 @@ export function ElevationChart({ hikePoints }: ElevationChartProps) {
       </div>
       {/* Fixed height wrapper makes sure chart scales correctly inside scrolling container */}
       <div className="h-56 w-full bg-stone/20 rounded-2xl p-2 border border-stone">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={hikePoints}
-            margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-          >
-            <defs>
-              <linearGradient id="elevationFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#2d4a3a" stopOpacity={0.25} />
-                <stop offset="100%" stopColor="#2d4a3a" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid vertical={false} stroke="#d9d2c0" strokeDasharray="4" />
-            <XAxis
-              dataKey="distanceFromStartM"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 10, fill: '#8a8067', fontWeight: 500 }}
-              dy={8}
-            />
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 10, fill: '#8a8067', fontWeight: 500 }}
-              domain={['dataMin - 20', 'dataMax + 20']}
-            />
-            <Tooltip content={<CleanTooltip />} cursor={{ stroke: '#bfb6a0', strokeWidth: 1, strokeDasharray: '4 4' }} />
-            <Line
-              type="monotone"
-              dataKey="elevation"
-              stroke="#2563eb"
-              strokeWidth={2.5}
-              dot={false}
-              activeDot={{ r: 5, strokeWidth: 2, stroke: '#faf7ef', fill: '#2563eb' }}
-              fill="url(#elevationFill)"
-            />
-          </LineChart>
-        </ResponsiveContainer>
+        <BaseChart
+          data={hikePoints}
+          handleMouseMove={handleMouseMove}
+          handleMouseLeave={handleMouseLeave}
+        >
+          <CartesianGrid vertical={false} stroke="#d9d2c0" strokeDasharray="4" />
+        </BaseChart>
       </div>
     </div>
   );
