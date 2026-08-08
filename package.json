@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:hike": "tsx scripts/seed-hike.ts"
   },
   "dependencies": {
     "@turf/distance": "^7.4.0",

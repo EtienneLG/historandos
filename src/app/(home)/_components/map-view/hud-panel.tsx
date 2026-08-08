@@ -114,27 +114,25 @@ export function HUDPanel({ activeHike, hikeDetail, loading, hikePoints, onClose 
             )}
 
             {/* Photo Gallery Section */}
-            <div>
-              {visiblePhotoIds.length > 0 && (
-                <div className="border-t border-stone pt-5">
-                  <h3 className="font-display text-xs uppercase tracking-widest text-pine/60 mb-3">Photos</h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {visiblePhotoIds.map((id: number) => (
-                      <ActivityPhoto key={id} photoId={id} />
-                    ))}
-                  </div>
+            {visiblePhotoIds.length > 0 && (
+              <div className="border-t border-stone pt-5">
+                <h3 className="font-display text-xs uppercase tracking-widest text-pine/60 mb-3">Photos</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {visiblePhotoIds.map((id: number) => (
+                    <ActivityPhoto key={id} photoId={id} />
+                  ))}
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Scroll Sentinel Target & Loader */}
-              {hasMorePhotos && (
-                <div ref={sentinelRef} className="py-6 flex justify-center items-center min-h-[40px]">
-                  {isFetchingPhotos && (
-                    <div className="h-4 w-4 border-2 border-stone-dark border-t-blaze rounded-full animate-spin" />
-                  )}
-                </div>
-              )}
-            </div>
+            {/* Scroll Sentinel Target & Loader */}
+            {hasMorePhotos && (
+              <div ref={sentinelRef} className="py-6 flex justify-center items-center min-h-[40px]">
+                {isFetchingPhotos && (
+                  <div className="h-4 w-4 border-2 border-stone-dark border-t-blaze rounded-full animate-spin" />
+                )}
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex-1 flex items-center justify-center">

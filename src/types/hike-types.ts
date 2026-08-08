@@ -50,7 +50,7 @@ export const HikeDetailSchema = HikeSummarySchema.extend({
   geometry: GeoJSONGeometrySchema,
   
   // Waypoints in sequence
-  waypoints: z.array(WaypointSchema)
+  //waypoints: z.array(WaypointSchema)
 })
 
 export interface HikePoint {

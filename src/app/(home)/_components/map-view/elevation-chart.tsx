@@ -53,7 +53,7 @@ export function ElevationChart({ hikePoints }: ElevationChartProps) {
             </defs>
             <CartesianGrid vertical={false} stroke="#d9d2c0" strokeDasharray="4" />
             <XAxis
-              dataKey="distance"
+              dataKey="distanceFromStartM"
               axisLine={false}
               tickLine={false}
               tick={{ fontSize: 10, fill: '#8a8067', fontWeight: 500 }}
