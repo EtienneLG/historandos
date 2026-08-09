@@ -1,7 +1,7 @@
-import { desc, eq } from 'drizzle-orm';
+import { asc, desc, eq } from 'drizzle-orm';
 import { cacheLife, cacheTag } from 'next/cache';
 import { db } from '@/db/index';
-import { hikes } from '@/db/schema';
+import { hikes, hikeWaypoints } from '@/db/schema';
 import { z } from 'zod';
 import { HikeGeometry, HikeGeometrySchema, HikeSummary, HikeSummarySchema } from '@/types/hike-types';
 
@@ -50,7 +50,19 @@ export async function getHikeGeometry(hikeId: string): Promise<HikeGeometry> {
     throw new Error(`Hike not found: ${hikeId}`);
   }
 
-  const result = HikeGeometrySchema.safeParse(detail[0]);
+  const waypoints = await db.select({
+    id: hikeWaypoints.id,
+    category: hikeWaypoints.category,
+    name: hikeWaypoints.name,
+    description: hikeWaypoints.description,
+    indexFromStart: hikeWaypoints.indexFromStart,
+    accommodationType: hikeWaypoints.accommodationType,
+    poiType: hikeWaypoints.poiType,
+  }).from(hikeWaypoints)
+    .where(eq(hikeWaypoints.hikeId, hikeId))
+    .orderBy(asc(hikeWaypoints.indexFromStart));
+
+  const result = HikeGeometrySchema.safeParse({ ...detail[0], waypoints });
   if (!result.success) {
     console.error('Error fetching hikes:', result.error);
     throw new Error('Failed to load hikes: unexpected data shape.');

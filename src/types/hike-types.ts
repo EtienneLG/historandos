@@ -19,7 +19,7 @@ export const WaypointSchema = z.object({
   category: WaypointCategorySchema,
   name: z.string(),
   description: z.string().nullable(),
-  indexFromStart: z.int().positive(),
+  indexFromStart: z.int().nonnegative(),
 
   // Metadata based on category
   accommodationType: AccommodationTypeSchema.nullable(),
@@ -49,9 +49,9 @@ export const HikeSummarySchema = z.object({
 export const HikeGeometrySchema = z.object({
   id: z.uuid(),
   geometry: GeoJSONGeometrySchema,
-  
+
   // Waypoints in sequence
-  //waypoints: z.array(WaypointSchema)
+  waypoints: z.array(WaypointSchema)
 })
 
 export interface HikePoint {
@@ -63,3 +63,15 @@ export interface HikePoint {
 
 export type HikeSummary = z.infer<typeof HikeSummarySchema>;
 export type HikeGeometry = z.infer<typeof HikeGeometrySchema>;
+export type Waypoint = z.infer<typeof WaypointSchema>;
+export type WaypointCategory = z.infer<typeof WaypointCategorySchema>;
+export type AccommodationType = z.infer<typeof AccommodationTypeSchema>;
+export type PoiType = z.infer<typeof PoiTypeSchema>;
+
+export interface ResolvedWaypoint extends Waypoint {
+  lon: number;
+  lat: number;
+  elevation: number;
+  indexFromStart: number;
+  distanceFromStartM: number;
+}

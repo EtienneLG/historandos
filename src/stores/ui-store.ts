@@ -1,17 +1,31 @@
 import { create } from 'zustand';
 
 export type TabView = 'list' | 'map';
+export type PanelTab = 'waypoints' | 'photos';
 
 interface UIState {
     activeTab: TabView;
     activeHikeId: string | null;
+    panelTab: PanelTab;
+    activeWaypointId: string | null;
+    dockCollapsed: boolean;
     setActiveTab: (tab: TabView) => void;
     setActiveHikeId: (id: string | null) => void;
+    setPanelTab: (tab: PanelTab) => void;
+    setActiveWaypointId: (id: string | null) => void;
+    toggleDockCollapsed: () => void;
 }
 
 export const useUIStore = create<UIState>((set) => ({
     activeTab: 'list',
     activeHikeId: null,
+    panelTab: 'waypoints',
+    activeWaypointId: null,
+    dockCollapsed: false,
     setActiveTab: (tab) => set({ activeTab: tab }),
-    setActiveHikeId: (id) => set({ activeHikeId: id })
+    // Selecting another hike invalidates every panel/waypoint selection.
+    setActiveHikeId: (id) => set({ activeHikeId: id, panelTab: 'waypoints', activeWaypointId: null }),
+    setPanelTab: (tab) => set({ panelTab: tab }),
+    setActiveWaypointId: (id) => set({ activeWaypointId: id }),
+    toggleDockCollapsed: () => set((s) => ({ dockCollapsed: !s.dockCollapsed }))
 }))

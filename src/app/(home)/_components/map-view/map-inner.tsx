@@ -5,12 +5,16 @@ import Map, { Source, Layer, Marker, LineLayerSpecification } from 'react-map-gl
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { HUDPanel } from "./hud-panel";
+import { ElevationDock } from "./dock/elevation-dock";
 import BaseMap from "@/components/base-map";
 import { HikeSummary } from "@/types/hike-types";
+import { DOCK_COLLAPSED_HEIGHT_PX, DOCK_HEIGHT_PX, PANEL_WIDTH_PX, getWaypointVisual } from "@/lib/waypoints";
+import { WaypointIcon } from "@/components/waypoint-icon";
 import { useUIStore } from "@/stores/ui-store";
 import { useHikeGeometry } from "@/stores/use-hike-geometry";
 import { useActiveHike } from "@/stores/use-active-hike";
 import { useHikePoints } from "@/stores/use-hike-points";
+import { useResolvedWaypoints } from "@/stores/use-resolved-waypoints";
 
 interface MapInnerProps {
   hikes: HikeSummary[];
@@ -19,14 +23,16 @@ interface MapInnerProps {
 export default function MapInner({ hikes }: MapInnerProps) {
   const activeHikeId = useUIStore((s) => s.activeHikeId);
   const setActiveHikeId = useUIStore((s) => s.setActiveHikeId);
+  const activeWaypointId = useUIStore((s) => s.activeWaypointId);
+  const setActiveWaypointId = useUIStore((s) => s.setActiveWaypointId);
+  const dockCollapsed = useUIStore((s) => s.dockCollapsed);
   const activeHike = useActiveHike(hikes);
-  const { geometry, loading } = useHikeGeometry();
+  const { geometry, waypoints, loading } = useHikeGeometry();
   const hikePoints = useHikePoints(geometry);
+  const resolvedWaypoints = useResolvedWaypoints(waypoints, hikePoints);
 
   const mapRef = useRef<any>(null);
   const hoverMarkerRef = useRef<mapboxgl.Marker | null>(null);
-
-  const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
   const handleMapLoad = () => {
     const rawMap = mapRef.current?.getMap();
@@ -75,13 +81,28 @@ export default function MapInner({ hikes }: MapInnerProps) {
     mapRef.current.fitBounds(activeHike.bbox, {
       padding: {
         top: 50,
-        bottom: 50,
+        bottom: (dockCollapsed ? DOCK_COLLAPSED_HEIGHT_PX : DOCK_HEIGHT_PX) + 30,
         left: 50,
-        right: 400
+        right: PANEL_WIDTH_PX + 40
       },
       duration: 1200,
     });
+    // Refitting on dock collapse would fight the user's own panning.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeHike]);
+
+  useEffect(() => {
+    if (!activeWaypointId || !mapRef.current) return;
+
+    const waypoint = resolvedWaypoints.find((w) => w.id === activeWaypointId);
+    if (!waypoint) return;
+
+    mapRef.current.flyTo({
+      center: [waypoint.lon, waypoint.lat],
+      zoom: 14,
+      duration: 1000,
+    });
+  }, [activeWaypointId, resolvedWaypoints]);
 
   const lineLayerStyle: Omit<LineLayerSpecification, 'source'> = {
     id: 'gpx-track-layer',
@@ -139,6 +160,34 @@ export default function MapInner({ hikes }: MapInnerProps) {
             </Source>
           )}
 
+          {/* Waypoint Markers */}
+          {resolvedWaypoints.map((waypoint) => {
+            const visual = getWaypointVisual(waypoint);
+            const isActive = activeWaypointId === waypoint.id;
+
+            return (
+              <Marker
+                key={waypoint.id}
+                latitude={waypoint.lat}
+                longitude={waypoint.lon}
+                onClick={() => setActiveWaypointId(waypoint.id)}
+              >
+                <button
+                  className="group relative flex items-center justify-center cursor-pointer"
+                  aria-label={waypoint.name}
+                  title={waypoint.name}
+                >
+                  <span
+                    className={`flex items-center justify-center w-6 h-6 rounded-full border-2 shadow-md transition-all duration-150 ${visual.nodeClass} ${isActive ? 'scale-125 z-10 ring-2 ring-blaze/50' : 'group-hover:scale-110'
+                      }`}
+                  >
+                    <WaypointIcon icon={visual.icon} className="w-3 h-3" />
+                  </span>
+                </button>
+              </Marker>
+            );
+          })}
+
           {/* End Marker */}
           {activeHike && !activeHike.isLoop && hikePoints &&
             <Marker
@@ -154,18 +203,27 @@ export default function MapInner({ hikes }: MapInnerProps) {
         </BaseMap>
       </div>
 
+      {/* Bottom Dock: elevation profile + waypoint pins */}
+      {activeHike && (
+        <ElevationDock
+          hikePoints={hikePoints}
+          waypoints={resolvedWaypoints}
+          loading={loading}
+        />
+      )}
+
       {/* HUD Panel */}
-      {
-        activeHike && (
-          <div className="absolute top-0 right-0 z-10 h-full p-0 pointer-events-none">
-            <HUDPanel
-              activeHike={activeHike}
-              loading={loading}
-              hikePoints={hikePoints}
-              onClose={() => setActiveHikeId(null)}
-            />
-          </div>
-        )
+      {activeHike && (
+        <div className="absolute top-0 right-0 z-20 h-full p-0 pointer-events-none">
+          <HUDPanel
+            activeHike={activeHike}
+            loading={loading}
+            waypoints={resolvedWaypoints}
+            hikePoints={hikePoints}
+            onClose={() => setActiveHikeId(null)}
+          />
+        </div>
+      )
       }
     </div >
   );
