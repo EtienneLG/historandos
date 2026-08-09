@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { ActivityPhoto } from '../activity-photo';
+import { ActivityPhoto } from './activity-photo';
 import { useScrollingPhotos } from '../../_hooks/scrolling-photos';
 
 interface PhotosTabProps {
