@@ -1,64 +1,126 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useUploadStore } from '@/stores/upload-store';
+import { useResolvedWaypoints } from '@/stores/use-resolved-waypoints';
+import { Waypoint } from '@/types/hike-types';
+import WaypointCard from './waypoint-card';
 
 export default function StepDetails() {
-  // Toggle Accordion
-  const handleToggle = (index: number) => {
-    setActiveSegmentIndex(activeSegmentIndex === index ? null : index);
+  const hikePoints = useUploadStore((s) => s.hikePoints);
+  const waypoints = useUploadStore((s) => s.waypoints);
+  const addWaypoint = useUploadStore((s) => s.addWaypoint);
+  const updateWaypoint = useUploadStore((s) => s.updateWaypoint);
+  const removeWaypoint = useUploadStore((s) => s.removeWaypoint);
+  const goToPrevStep = useUploadStore((s) => s.goToPrevStep);
+
+  const resolvedWaypoints = useResolvedWaypoints(waypoints, hikePoints);
+
+  const [activeWaypointId, setActiveWaypointId] = useState<string | null>(null);
+
+  // Ensure the track always has a fixed start & end waypoint the moment this step is reached.
+  useEffect(() => {
+    if (hikePoints.length === 0) return;
+
+    const currentWaypoints = useUploadStore.getState().waypoints;
+    const hasStart = currentWaypoints.some((w) => w.category === 'start');
+    const hasEnd = currentWaypoints.some((w) => w.category === 'end');
+
+    if (!hasStart) {
+      addWaypoint({
+        id: crypto.randomUUID(),
+        category: 'start',
+        name: 'Départ',
+        description: null,
+        indexFromStart: 0,
+        accommodationType: null,
+        poiType: null,
+      });
+    }
+
+    if (!hasEnd) {
+      addWaypoint({
+        id: crypto.randomUUID(),
+        category: 'end',
+        name: 'Arrivée',
+        description: null,
+        indexFromStart: hikePoints.length - 1,
+        accommodationType: null,
+        poiType: null,
+      });
+    }
+    // Only run once hikePoints becomes available.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hikePoints.length]);
+
+  const handleToggle = (id: string) => {
+    setActiveWaypointId(activeWaypointId === id ? null : id);
   };
+
+  const handleAddWaypoint = () => {
+    if (hikePoints.length === 0) return;
+
+    const newWaypoint: Waypoint = {
+      id: crypto.randomUUID(),
+      category: 'poi',
+      name: '',
+      description: null,
+      indexFromStart: Math.floor(hikePoints.length / 2),
+      accommodationType: null,
+      poiType: 'other',
+    };
+
+    addWaypoint(newWaypoint);
+    setActiveWaypointId(newWaypoint.id);
+  };
+
+  console.log(resolvedWaypoints);
 
   return (
     <div className="h-full flex flex-col justify-between">
-      {/* Scrollable Accordion Area */}
+      {/* Scrollable waypoint list */}
       <div className="flex-1 overflow-y-auto pr-2 space-y-4 pb-6">
         <div>
-          <h2 className="text-lg font-bold text-ink mb-1">Configuration des Étapes</h2>
-          <p className="text-xs text-ink/60">Gérez le tracé de vos journées et ajoutez des points d'intérêt.</p>
+          <h2 className="text-lg font-bold text-ink mb-1">Points du parcours</h2>
+          <p className="text-xs text-ink/60">
+            Ajoutez vos étapes, hébergements et points d&apos;intérêt. Leur position sur le tracé se règle depuis le profil d&apos;élévation.
+          </p>
         </div>
 
         <hr className="border-stone/40" />
 
-        {/* Accordion List */}
         <div className="space-y-3">
-          {segments.map((segment, sIndex) => {
-            const isOpen = activeSegmentIndex === sIndex;
-            const dayNumber = sIndex + 1;
-
-            return (
-              <SegmentCard
-                key={segment.id}
-                segment={segment}
-                dayNumber={dayNumber}
-                isOpen={isOpen}
-                onToggle={() => handleToggle(sIndex)}
-                onUpdateSegment={(fields) => onUpdateSegment(sIndex, fields)}
-                onAddPoi={() => onNewPoi(sIndex)}
-                onUpdatePoi={(poiIndex, fields) => onUpadtePoi(sIndex, poiIndex, fields)}
-                onRemovePoi={(poiIndex) => onDeletePoi(sIndex, poiIndex)}
-              />
-            );
-          })}
+          {resolvedWaypoints.map((waypoint) => (
+            <WaypointCard
+              key={waypoint.id}
+              waypoint={waypoint}
+              isLocked={waypoint.category === 'start' || waypoint.category === 'end'}
+              isOpen={activeWaypointId === waypoint.id}
+              onToggle={() => handleToggle(waypoint.id)}
+              onUpdate={(fields) => updateWaypoint(waypoint.id, fields)}
+              onRemove={() => removeWaypoint(waypoint.id)}
+            />
+          ))}
         </div>
 
-        {/* Global Add Segment Button */}
+        {/* Add waypoint button */}
         <button
           type="button"
-          onClick={onSplit}
-          className={`w-full flex items-center justify-center gap-1.5 py-2.5 text-sm font-semibold border border-dashed rounded-xl transition-all text-pine border-pine/40 hover:bg-pine/5`}
+          onClick={handleAddWaypoint}
+          className="w-full flex items-center justify-center gap-1.5 py-2.5 text-sm font-semibold border border-dashed rounded-xl transition-all text-pine border-pine/40 hover:bg-pine/5"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
-          Ajouter une étape
+          Ajouter un point
         </button>
       </div>
 
-      {/* Sticky Bottom Actions */}
+      {/* Sticky bottom actions */}
       <div className="flex gap-3 pt-4 border-t border-stone/30 mt-auto bg-white">
         <button
           type="button"
-          onClick={onBack}
+          onClick={goToPrevStep}
           className="px-4 py-2 text-sm font-semibold border border-stone text-ink/75 rounded-xl hover:bg-stone/5 transition-colors shrink-0"
         >
           Retour
@@ -66,7 +128,7 @@ export default function StepDetails() {
 
         <button
           type="button"
-          onClick={onNext}
+          onClick={() => void 0}
           className="flex-1 px-4 py-2 text-sm font-semibold bg-pine text-parchment-light rounded-xl hover:bg-pine-dark transition-colors text-center shadow"
         >
           Enregistrer le parcours

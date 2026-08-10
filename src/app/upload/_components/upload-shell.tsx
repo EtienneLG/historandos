@@ -21,139 +21,6 @@ export default function UploadShell() {
   const isProcessing = useUploadStore((s) => s.isProcessing);
   const setIsProcessing = useUploadStore((s) => s.setIsProcessing);
 
-  /* const handleSplit = () => {
-    const segments = [...uploadState.segments];
-    const targetSegment = segments[segments.length - 1];
-    const splitIndex = Math.floor((targetSegment.segment.startIndex + targetSegment.segment.endIndex) / 2);
-
-    const segment1Metrics = calculatePartialTraceMetrics(uploadState.geoJson, targetSegment.segment.startIndex, splitIndex);
-    const segment2Metrics = calculatePartialTraceMetrics(uploadState.geoJson, splitIndex, targetSegment.segment.endIndex);
-
-    console.log(segment1Metrics, segment2Metrics);
-
-    const updatedSegment1: DaySegment = {
-      ...targetSegment,
-      segment: {
-        ...targetSegment.segment,
-        endIndex: splitIndex,
-      },
-      metrics: segment1Metrics,
-    };
-
-    const updatedSegment2: DaySegment = {
-      id: crypto.randomUUID(),
-      title: `Jour ${segments.length + 1}`,
-      description: '',
-      pois: [],
-      segment: {
-        startIndex: splitIndex,
-        endIndex: targetSegment.segment.endIndex,
-      },
-      accomodation: 'other',
-      metrics: segment2Metrics,
-    };
-
-    segments.splice(segments.length - 1, 1, updatedSegment1, updatedSegment2);
-
-    setUploadState((prev) => ({
-      ...prev,
-      segments: segments,
-    }));
-  }
-
-  const setActiveSegmentIndex = (index: number | null) => {
-    setUploadState((prev) => ({
-      ...prev,
-      activeSegmentIndex: index,
-    }));
-  }
-
-  const handleUpdateSegment = (index: number, fields: Partial<DaySegment>) => {
-    const updated = [...uploadState.segments];
-    updated[index] = { ...updated[index], ...fields };
-    setUploadState((prev) => ({
-      ...prev,
-      segments: updated,
-    }));
-  };
-
-  const handleAddPoi = (segmentIndex: number) => {
-    const updated = [...uploadState.segments];
-    const seg = updated[segmentIndex].segment;
-    const initCoordsIdx = Math.floor(Math.random() * (seg.endIndex - seg.startIndex) + seg.startIndex);
-
-    const newPoi: POI = {
-      id: crypto.randomUUID(),
-      coordinateIndex: initCoordsIdx,
-      description: '',
-    };
-
-    updated[segmentIndex] = {
-      ...updated[segmentIndex],
-      pois: [...updated[segmentIndex].pois, newPoi]
-    };
-
-    setUploadState((prev) => ({
-      ...prev,
-      segments: updated,
-    }));
-  };
-
-  const handleRemovePoi = (segmentIndex: number, poiIndex: number) => {
-    const updated = [...uploadState.segments];
-    const pois = updated[segmentIndex].pois.filter((_, i) => i !== poiIndex);
-
-    updated[segmentIndex] = { ...updated[segmentIndex], pois };
-
-    setUploadState((prev) => ({
-      ...prev,
-      segments: updated,
-    }));
-  };
-
-  const handleUpdatePoi = (segmentIndex: number, poiIndex: number, fields: Partial<POI>) => {
-    const updated = [...uploadState.segments];
-    const pois = [...updated[segmentIndex].pois];
-
-    pois[poiIndex] = { ...pois[poiIndex], ...fields };
-    updated[segmentIndex] = { ...updated[segmentIndex], pois };
-
-    setUploadState((prev) => ({
-      ...prev,
-      segments: updated,
-    }));
-  };
-
-  const handleUpdateSplitIndex = (segmentId: string, newIndex: number) => {
-    const updated = [...uploadState.segments];
-    const targetIndex = updated.findIndex((s) => s.id === segmentId);
-
-    const beforeMetrics = calculatePartialTraceMetrics(uploadState.geoJson, updated[targetIndex].segment.startIndex, newIndex);
-    const afterMetrics = calculatePartialTraceMetrics(uploadState.geoJson, newIndex, updated[targetIndex + 1].segment.endIndex);
-
-    updated[targetIndex] = {
-      ...updated[targetIndex],
-      segment: {
-        ...updated[targetIndex].segment,
-        endIndex: newIndex,
-      },
-      metrics: beforeMetrics
-    };
-    updated[targetIndex + 1] = {
-      ...updated[targetIndex + 1],
-      segment: {
-        ...updated[targetIndex + 1].segment,
-        startIndex: newIndex,
-      },
-      metrics: afterMetrics,
-    };
-
-    setUploadState((prev) => ({
-      ...prev,
-      segments: updated,
-    }));
-  } */
-
   return (
     <div className="relative w-full h-full min-h-0">
 
@@ -187,22 +54,9 @@ export default function UploadShell() {
             )}
 
             {/* Step 3 : Details */}
-            {/*currentStep == 'details' && (
-              <div className="text-sm text-ink flex-1 flex flex-col">
-                <StepDetails
-                  segments={uploadState.segments}
-                  activeSegmentIndex={uploadState.activeSegmentIndex}
-                  setActiveSegmentIndex={setActiveSegmentIndex}
-                  onSplit={handleSplit}
-                  onUpdateSegment={handleUpdateSegment}
-                  onNewPoi={handleAddPoi}
-                  onDeletePoi={handleRemovePoi}
-                  onUpadtePoi={handleUpdatePoi}
-                  onBack={goToPrevStep}
-                  onNext={() => void (0)}
-                />
-              </div>
-            )*/}
+            {currentStep == 'details' && (
+              <StepDetails/>
+            )}
           </div>
         </div>
       )}
