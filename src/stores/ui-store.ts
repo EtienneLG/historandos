@@ -8,11 +8,13 @@ interface UIState {
     activeHikeId: string | null;
     panelTab: PanelTab;
     activeWaypointId: string | null;
+    activeDayNumber: number | null;
     dockCollapsed: boolean;
     setActiveTab: (tab: TabView) => void;
     setActiveHikeId: (id: string | null) => void;
     setPanelTab: (tab: PanelTab) => void;
     setActiveWaypointId: (id: string | null) => void;
+    setActiveDayNumber: (day: number | null) => void;
     toggleDockCollapsed: () => void;
 }
 
@@ -21,11 +23,13 @@ export const useUIStore = create<UIState>((set) => ({
     activeHikeId: null,
     panelTab: 'waypoints',
     activeWaypointId: null,
+    activeDayNumber: null,
     dockCollapsed: false,
     setActiveTab: (tab) => set({ activeTab: tab }),
-    // Selecting another hike invalidates every panel/waypoint selection.
-    setActiveHikeId: (id) => set({ activeHikeId: id, panelTab: 'waypoints', activeWaypointId: null }),
+    // Selecting another hike invalidates every panel/waypoint/day selection.
+    setActiveHikeId: (id) => set({ activeHikeId: id, panelTab: 'waypoints', activeWaypointId: null, activeDayNumber: null }),
     setPanelTab: (tab) => set({ panelTab: tab }),
     setActiveWaypointId: (id) => set({ activeWaypointId: id }),
+    setActiveDayNumber: (day) => set({ activeDayNumber: day }),
     toggleDockCollapsed: () => set((s) => ({ dockCollapsed: !s.dockCollapsed }))
 }))

@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { computeDaySegments, findDayNumberForWaypoint } from '@/lib/day-segments';
 import { HikePoint, HikeSummary, ResolvedWaypoint } from '@/types/hike-types';
+import { useUIStore } from '@/stores/ui-store';
 import { DaySection } from './day-section';
 import { HikeHeader } from './hike-header';
 
@@ -10,18 +11,26 @@ interface WaypointsTabProps {
   activeWaypointId: string | null;
   activeHike: HikeSummary;
   loading: boolean;
-  onSelect: (id: string) => void;
+  onSelect: (id: string | null) => void;
 }
 
 export function WaypointsTab({ waypoints, hikePoints, activeWaypointId, activeHike, loading, onSelect }: WaypointsTabProps) {
   const days = useMemo(() => computeDaySegments(waypoints, hikePoints), [waypoints, hikePoints]);
-  const [openDayNumber, setOpenDayNumber] = useState<number | null>(1);
+  const openDayNumber = useUIStore((s) => s.activeDayNumber);
+  const setOpenDayNumber = useUIStore((s) => s.setActiveDayNumber);
 
-  const [trackedActiveWaypointId, setTrackedActiveWaypointId] = useState(activeWaypointId);
-  if (activeWaypointId !== trackedActiveWaypointId) {
-    setTrackedActiveWaypointId(activeWaypointId);
-    setOpenDayNumber(findDayNumberForWaypoint(days, activeWaypointId) ?? 1);
-  }
+  useEffect(() => {
+    setOpenDayNumber(findDayNumberForWaypoint(days, activeWaypointId));
+  }, [activeWaypointId]);
+
+  const handleDaySelection = (dayNumber: number) => {
+    if (openDayNumber === dayNumber) {
+      onSelect(null);
+      setOpenDayNumber(null);
+    } else {
+      setOpenDayNumber(dayNumber);
+    }
+  } 
 
   if (loading) {
     return (
@@ -58,7 +67,7 @@ export function WaypointsTab({ waypoints, hikePoints, activeWaypointId, activeHi
             skipFirstWaypoint={day.dayNumber > 1}
             isOpen={openDayNumber === day.dayNumber}
             activeWaypointId={activeWaypointId}
-            onToggle={() => setOpenDayNumber(openDayNumber === day.dayNumber ? null : day.dayNumber)}
+            onToggle={() => handleDaySelection(day.dayNumber)}
             onSelectWaypoint={onSelect}
           />
         ))}

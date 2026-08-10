@@ -1,12 +1,12 @@
 'use client';
 
+import { ReferenceDot, ReferenceLine } from 'recharts';
 import BaseChart from '@/components/base-chart';
-import { WaypointIcon } from '@/components/waypoint-icon';
+import { WaypointChartLine, WaypointChartPin } from '@/components/waypoint-chart';
 import {
   DOCK_COLLAPSED_HEIGHT_PX,
   DOCK_HEIGHT_PX,
   PANEL_WIDTH_PX,
-  getWaypointVisual,
 } from '@/lib/waypoints';
 import { useUIStore } from '@/stores/ui-store';
 import { HikePoint, ResolvedWaypoint } from '@/types/hike-types';
@@ -15,46 +15,6 @@ interface ElevationDockProps {
   hikePoints: HikePoint[];
   waypoints: ResolvedWaypoint[];
   loading: boolean;
-}
-
-interface PinShapeProps {
-  cx?: number;
-  cy?: number;
-  waypoint: ResolvedWaypoint;
-  isActive: boolean;
-  onSelect: (id: string) => void;
-}
-
-function WaypointPin({ cx, cy, waypoint, isActive, onSelect }: PinShapeProps) {
-  if (cx === undefined || cy === undefined) return null;
-
-  const visual = getWaypointVisual(waypoint);
-  const radius = isActive ? 11 : 8;
-
-  return (
-    <g
-      transform={`translate(${cx}, ${cy})`}
-      className="cursor-pointer"
-      style={{ pointerEvents: 'auto' }}
-      onClick={() => onSelect(waypoint.id)}
-      role="button"
-      aria-label={waypoint.name}
-    >
-      <title>{waypoint.name}</title>
-      <line x1={0} y1={0} x2={0} y2={-14} stroke={visual.color} strokeWidth={isActive ? 2 : 1.5} />
-      <circle
-        cx={0}
-        cy={-14 - radius}
-        r={radius}
-        fill={visual.color}
-        stroke="#faf7ef"
-        strokeWidth={2}
-      />
-      <g transform={`translate(${-radius * 0.6}, ${-14 - radius - radius * 0.6})`} color="#faf7ef">
-        <WaypointIcon icon={visual.icon} className={isActive ? 'w-[13px] h-[13px]' : 'w-[10px] h-[10px]'} />
-      </g>
-    </g>
-  );
 }
 
 export function ElevationDock({ hikePoints, waypoints, loading }: ElevationDockProps) {
@@ -121,7 +81,40 @@ export function ElevationDock({ hikePoints, waypoints, loading }: ElevationDockP
                 data={hikePoints}
                 handleMouseMove={handleMouseMove}
                 handleMouseLeave={handleMouseLeave}
-              />
+              >
+                {waypoints.map((waypoint) => (
+                  <ReferenceLine
+                    key={waypoint.id}
+                    x={waypoint.distanceFromStartM}
+                    ifOverflow="visible"
+                    shape={(props) => (
+                      <WaypointChartLine
+                        {...props}
+                        waypoint={waypoint}
+                        isActive={activeWaypointId === waypoint.id}
+                        onSelect={setActiveWaypointId}
+                      />
+                    )}
+                  />
+                ))}
+                {waypoints.map((waypoint) => (
+                  <ReferenceDot
+                    key={waypoint.id}
+                    x={waypoint.distanceFromStartM}
+                    y={waypoint.elevation}
+                    yAxisId={0}
+                    ifOverflow="visible"
+                    shape={(props) => (
+                      <WaypointChartPin
+                        {...props}
+                        waypoint={waypoint}
+                        isActive={activeWaypointId === waypoint.id}
+                        onSelect={setActiveWaypointId}
+                      />
+                    )}
+                  />
+                ))}
+              </BaseChart>
             </div>
           )}
         </div>

@@ -49,7 +49,7 @@ export function DaySection({ day, skipFirstWaypoint, isOpen, activeWaypointId, o
       </button>
 
       {isOpen && (
-        <ol className="relative flex flex-col gap-4 px-3 pt-4 pb-1">
+        <ol className="relative flex flex-col gap-4 px-3 pt-4 pb-2">
           {displayedWaypoints.map((waypoint, index) => {
             const visual = getWaypointVisual(waypoint);
             const isActive = activeWaypointId === waypoint.id;

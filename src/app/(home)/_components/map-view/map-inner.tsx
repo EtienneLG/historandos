@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import Map, { Source, Layer, Marker, LineLayerSpecification } from 'react-map-gl/mapbox';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -15,6 +15,8 @@ import { useHikeGeometry } from "@/stores/use-hike-geometry";
 import { useActiveHike } from "@/stores/use-active-hike";
 import { useHikePoints } from "@/stores/use-hike-points";
 import { useResolvedWaypoints } from "@/stores/use-resolved-waypoints";
+import { computeDaySegments, dayIndexRange } from "@/lib/day-segments";
+import { computeHikePointsBbox, hikePointsToLineString, sliceHikePoints } from "@/lib/geo";
 
 interface MapInnerProps {
   hikes: HikeSummary[];
@@ -25,11 +27,30 @@ export default function MapInner({ hikes }: MapInnerProps) {
   const setActiveHikeId = useUIStore((s) => s.setActiveHikeId);
   const activeWaypointId = useUIStore((s) => s.activeWaypointId);
   const setActiveWaypointId = useUIStore((s) => s.setActiveWaypointId);
+  const activeDayNumber = useUIStore((s) => s.activeDayNumber);
   const dockCollapsed = useUIStore((s) => s.dockCollapsed);
   const activeHike = useActiveHike(hikes);
   const { geometry, waypoints, loading } = useHikeGeometry();
   const hikePoints = useHikePoints(geometry);
   const resolvedWaypoints = useResolvedWaypoints(waypoints, hikePoints);
+
+  const days = useMemo(
+    () => computeDaySegments(resolvedWaypoints, hikePoints),
+    [resolvedWaypoints, hikePoints]
+  );
+  const activeDay = useMemo(
+    () => days.find((d) => d.dayNumber === activeDayNumber) ?? null,
+    [days, activeDayNumber]
+  );
+  const activeDayPoints = useMemo(() => {
+    if (!activeDay || hikePoints.length === 0) return null;
+    const [fromIndex, toIndex] = dayIndexRange(activeDay);
+    return sliceHikePoints(hikePoints, fromIndex, toIndex);
+  }, [activeDay, hikePoints]);
+  const activeDayGeometry = useMemo(
+    () => (activeDayPoints ? hikePointsToLineString(activeDayPoints) : geometry),
+    [activeDayPoints]
+  );
 
   const mapRef = useRef<any>(null);
   const hoverMarkerRef = useRef<mapboxgl.Marker | null>(null);
@@ -87,9 +108,31 @@ export default function MapInner({ hikes }: MapInnerProps) {
       },
       duration: 1200,
     });
-    // Refitting on dock collapse would fight the user's own panning.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeHike]);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const padding = {
+      top: 50,
+      bottom: (dockCollapsed ? DOCK_COLLAPSED_HEIGHT_PX : DOCK_HEIGHT_PX) + 30,
+      left: 50,
+      right: PANEL_WIDTH_PX + 40
+    };
+
+    if (activeDay && activeDayPoints) {
+      const bbox = computeHikePointsBbox(activeDayPoints);
+      if (!bbox) return;
+
+      mapRef.current.fitBounds(bbox, { padding, duration: 1200 });
+      return;
+    }
+
+    // Day deselected: restore the full-hike view.
+    if (!activeDayNumber && activeHike) {
+      mapRef.current.fitBounds(activeHike.bbox, { padding, duration: 1200 });
+    }
+  }, [activeDayNumber, activeDay, activeDayPoints]);
 
   useEffect(() => {
     if (!activeWaypointId || !mapRef.current) return;
@@ -106,6 +149,35 @@ export default function MapInner({ hikes }: MapInnerProps) {
 
   const lineLayerStyle: Omit<LineLayerSpecification, 'source'> = {
     id: 'gpx-track-layer',
+    type: 'line',
+    paint: {
+      'line-color': '#2563eb',
+      'line-width': 5,
+      'line-opacity': 0.85,
+    },
+    layout: {
+      'line-join': 'round',
+      'line-cap': 'round',
+    },
+  };
+  
+  const dottedBaseLayerStyle: Omit<LineLayerSpecification, 'source'> = {
+    id: 'gpx-track-base-layer',
+    type: 'line',
+    paint: {
+      'line-color': '#467dca',
+      'line-width': 4,
+      'line-opacity': 0.7,
+      'line-dasharray': [0.7, 1.6],
+    },
+    layout: {
+      'line-join': 'round',
+      'line-cap': 'round',
+    },
+  };
+
+  const dayHighlightLayerStyle: Omit<LineLayerSpecification, 'source'> = {
+    id: 'gpx-track-day-layer',
     type: 'line',
     paint: {
       'line-color': '#2563eb',
@@ -152,11 +224,18 @@ export default function MapInner({ hikes }: MapInnerProps) {
               </Marker>
             );
           })}
-
+          
           {/* Dynamic Track Layer */}
           {geometry && (
-            <Source id="dynamic-gpx" type="geojson" data={geometry}>
-              <Layer {...lineLayerStyle} />
+            <Source id="dotted-gpx" type="geojson" data={geometry}>
+              <Layer {...dottedBaseLayerStyle}/>
+            </Source>
+          )}
+          
+          {/* Active Day Highlight Layer */}
+          {geometry && (
+            <Source id="active-day-gpx" type="geojson" data={activeDayGeometry ?? geometry}>
+              <Layer {...dayHighlightLayerStyle} />
             </Source>
           )}
 

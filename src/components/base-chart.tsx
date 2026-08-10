@@ -25,9 +25,10 @@ interface ElevationChartProps {
 const CleanTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-pine-dark/95 backdrop-blur-md text-parchment-light px-3 py-2 rounded-xl text-xs shadow-xl border border-pine flex flex-col gap-0.5 animate-in fade-in duration-200">
-        <span className="font-mono font-semibold text-parchment">{payload[0].value} m d'altitude</span>
-        <span className="font-mono text-stone text-[10px]">À {payload[0].payload.distance} km</span>
+      <div className="bg-pine-dark/90 backdrop-blur-md text-parchment-light px-2 py-1 rounded-lg text-[11px] shadow-md border border-pine whitespace-nowrap animate-in fade-in duration-100">
+        <span className="font-mono font-semibold text-parchment">{payload[0].value} m</span>
+        <span className="font-mono text-stone mx-1">·</span>
+        <span className="font-mono text-stone">{formatDistance(payload[0].payload.distanceFromStartM / 1000)} km</span>
       </div>
     );
   }
@@ -94,7 +95,13 @@ export default function BaseChart({
         />
 
         {/* Clean Minimal Tooltip */}
-        <Tooltip content={<CleanTooltip />} cursor={{ stroke: '#bfb6a0', strokeWidth: 1, strokeDasharray: '4 4' }} />
+        <Tooltip
+          content={<CleanTooltip />}
+          cursor={{ stroke: '#bfb6a0', strokeWidth: 1, strokeDasharray: '4 4' }}
+          position={{ y: 0 }}
+          wrapperStyle={{ pointerEvents: 'none' }}
+          allowEscapeViewBox={{ x: true, y: false }}
+        />
 
         <Area
           type="monotone"
@@ -114,7 +121,7 @@ export default function BaseChart({
           stroke="#2563eb"
           strokeWidth={2}
           dot={false}
-          activeDot={{ r: 5, strokeWidth: 2, stroke: '#faf7ef', fill: '#2563eb' }}
+          activeDot={{ r: 6, strokeWidth: 2, stroke: '#faf7ef', fill: '#2563eb' }}
           legendType="none"
         />
 

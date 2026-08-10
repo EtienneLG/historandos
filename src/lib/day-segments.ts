@@ -99,3 +99,12 @@ export function findDayNumberForWaypoint(days: DaySegment[], waypointId: string 
   const day = days.find((d) => d.waypoints.some((w) => w.id === waypointId));
   return day?.dayNumber ?? null;
 }
+
+/**
+ * The `[fromIndex, toIndex]` range (inclusive, into the hike's `hikePoints`
+ * track) covered by a day segment, spanning its first to last waypoint.
+ */
+export function dayIndexRange(day: DaySegment): [number, number] {
+  const indexes = day.waypoints.map((w) => w.indexFromStart);
+  return [Math.min(...indexes), Math.max(...indexes)];
+}
