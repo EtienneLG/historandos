@@ -1,8 +1,27 @@
 import distance from '@turf/distance';
 import { point } from '@turf/helpers';
+import { gpx } from '@tmcw/togeojson';
 import { GeoJSONGeometry } from "zod-geojson"
 import { HikePoint } from "@/types/hike-types"
 
+/** Parses raw GPX XML text into a single `LineString` geometry (all tracks/segments merged in order). */
+export function gpxToGeoJson(gpxXmlText: string): GeoJSONGeometry | null {
+  const dom = new DOMParser().parseFromString(gpxXmlText, 'text/xml');
+  const featureCollection = gpx(dom);
+
+  const coordinates = featureCollection.features
+    .filter((feature) => feature.geometry.type === 'LineString')
+    .flatMap((feature) => (feature.geometry as GeoJSON.LineString).coordinates);
+
+  if (coordinates.length === 0) return null;
+
+  return {
+    type: 'LineString',
+    coordinates: coordinates.map(([lon, lat, elevation = 0]) => [lon, lat, elevation]),
+  };
+}
+
+/** Convert a GeoJSON geometry to an array of HikePoint */
 export function computeHikePoints(geometry: GeoJSONGeometry): HikePoint[] {
   if (geometry.type !== 'LineString') return [];
 
@@ -21,6 +40,7 @@ export function computeHikePoints(geometry: GeoJSONGeometry): HikePoint[] {
   });
 }
 
+/** Format a number to the french format */
 export function formatDistance(dist: Number): string {
   return dist.toLocaleString('fr-FR', {
     minimumFractionDigits: 0,

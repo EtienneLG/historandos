@@ -4,6 +4,7 @@ import { HikeSummary } from '@/types/hike-types';
 import ListView from './list-view/index';
 import MapViewWrapper from './map-view/index';
 import { useUIStore } from '@/stores/ui-store';
+import { SiteHeader } from '@/components/site-header';
 
 interface HomeShellProps {
   hikes: HikeSummary[];
@@ -15,8 +16,7 @@ export default function HomeShell({ hikes }: HomeShellProps) {
 
   return (
     <div className="relative flex flex-col h-screen w-full overflow-hidden bg-parchment font-sans text-ink topo-texture">
-      <header className="flex items-center justify-between px-6 h-16 border-b border-stone bg-parchment-light/80 backdrop-blur-sm z-20 shrink-0">
-
+      <SiteHeader>
         {/* Left Side: Brand Logo & Name */}
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-pine shadow-sm shadow-pine/20">
@@ -62,9 +62,8 @@ export default function HomeShell({ hikes }: HomeShellProps) {
               Carte
             </button>
           </nav>
-
         </div>
-      </header>
+      </SiteHeader>
 
       <div className="relative flex-1 w-full min-h-0">
 

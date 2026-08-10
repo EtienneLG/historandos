@@ -146,20 +146,6 @@ export default function MapInner({ hikes }: MapInnerProps) {
       duration: 1000,
     });
   }, [activeWaypointId, resolvedWaypoints]);
-
-  const lineLayerStyle: Omit<LineLayerSpecification, 'source'> = {
-    id: 'gpx-track-layer',
-    type: 'line',
-    paint: {
-      'line-color': '#2563eb',
-      'line-width': 5,
-      'line-opacity': 0.85,
-    },
-    layout: {
-      'line-join': 'round',
-      'line-cap': 'round',
-    },
-  };
   
   const dottedBaseLayerStyle: Omit<LineLayerSpecification, 'source'> = {
     id: 'gpx-track-base-layer',

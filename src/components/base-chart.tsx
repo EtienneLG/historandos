@@ -15,10 +15,10 @@ import {
 
 interface ElevationChartProps {
   data: HikePoint[];
-  handleMouseMove?: (e?: any) => void;
-  handleMouseLeave?: (e?: any) => void;
-  handleMouseDown?: (e?: any) => void;
-  handleMouseUp?: (e?: any) => void;
+  handleMouseMove?: (nextState?: any, e?: any) => void;
+  handleMouseLeave?: (nextState?: any, e?: any) => void;
+  handleMouseDown?: (nextState?: any, e?: any) => void;
+  handleMouseUp?: (nextState?: any, e?: any) => void;
   children?: React.ReactNode;
 }
 
