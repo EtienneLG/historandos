@@ -98,7 +98,7 @@ const POI_LABELS: Record<PoiType, string> = {
 
 /** Resolves the visual identity of a waypoint, refined by its sub-type when available. */
 export function getWaypointVisual(
-  waypoint: Pick<Waypoint, 'category' | 'accommodationType' | 'poiType'>
+  waypoint: Pick<Waypoint, 'category' | 'accommodationType' | 'poiType'>,
 ): WaypointVisual {
   const base = CATEGORY_VISUALS[waypoint.category];
 

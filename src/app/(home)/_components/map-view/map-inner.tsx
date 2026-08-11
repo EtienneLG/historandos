@@ -1,22 +1,27 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from 'react';
 import { Source, Layer, Marker, LineLayerSpecification } from 'react-map-gl/mapbox';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { HUDPanel } from "./hud-panel";
-import { ElevationDock } from "./dock/elevation-dock";
-import BaseMap from "@/components/base-map";
-import { HikeSummary } from "@/types/hike-types";
-import { DOCK_COLLAPSED_HEIGHT_PX, DOCK_HEIGHT_PX, PANEL_WIDTH_PX, getWaypointVisual } from "@/lib/waypoints";
-import { WaypointIcon } from "@/components/waypoint-icon";
-import { useUIStore } from "@/stores/ui-store";
-import { useHikeGeometry } from "@/stores/use-hike-geometry";
-import { useActiveHike } from "@/stores/use-active-hike";
-import { useHikePoints } from "@/stores/use-hike-points";
-import { useResolvedWaypoints } from "@/stores/use-resolved-waypoints";
-import { computeDaySegments, buildDayNumberIndex, dayIndexRange } from "@/lib/day-segments";
-import { computeHikePointsBbox, hikePointsToLineString, sliceHikePoints } from "@/lib/geo";
+import { HUDPanel } from './hud-panel';
+import { ElevationDock } from './dock/elevation-dock';
+import BaseMap from '@/components/base-map';
+import { HikeSummary } from '@/types/hike-types';
+import {
+  DOCK_COLLAPSED_HEIGHT_PX,
+  DOCK_HEIGHT_PX,
+  PANEL_WIDTH_PX,
+  getWaypointVisual,
+} from '@/lib/waypoints';
+import { WaypointIcon } from '@/components/waypoint-icon';
+import { useUIStore } from '@/stores/ui-store';
+import { useHikeGeometry } from '@/stores/use-hike-geometry';
+import { useActiveHike } from '@/stores/use-active-hike';
+import { useHikePoints } from '@/stores/use-hike-points';
+import { useResolvedWaypoints } from '@/stores/use-resolved-waypoints';
+import { computeDaySegments, buildDayNumberIndex, dayIndexRange } from '@/lib/day-segments';
+import { computeHikePointsBbox, hikePointsToLineString, sliceHikePoints } from '@/lib/geo';
 
 interface MapInnerProps {
   hikes: HikeSummary[];
@@ -36,12 +41,12 @@ export default function MapInner({ hikes }: MapInnerProps) {
 
   const days = useMemo(
     () => computeDaySegments(resolvedWaypoints, hikePoints),
-    [resolvedWaypoints, hikePoints]
+    [resolvedWaypoints, hikePoints],
   );
   const dayNumberByWaypointId = useMemo(() => buildDayNumberIndex(days), [days]);
   const activeDay = useMemo(
     () => days.find((d) => d.dayNumber === activeDayNumber) ?? null,
-    [days, activeDayNumber]
+    [days, activeDayNumber],
   );
   const activeDayPoints = useMemo(() => {
     if (!activeDay || hikePoints.length === 0) return null;
@@ -50,7 +55,7 @@ export default function MapInner({ hikes }: MapInnerProps) {
   }, [activeDay, hikePoints]);
   const activeDayGeometry = useMemo(
     () => (activeDayPoints ? hikePointsToLineString(activeDayPoints) : geometry),
-    [activeDayPoints]
+    [activeDayPoints],
   );
 
   const mapRef = useRef<any>(null);
@@ -61,12 +66,11 @@ export default function MapInner({ hikes }: MapInnerProps) {
     if (!rawMap || hoverMarkerRef.current) return;
 
     const el = document.createElement('div');
-    el.className = 'w-4 h-4 bg-trail border-2 border-parchment-light rounded-full shadow-md shadow-ink/20 pointer-events-none';
+    el.className =
+      'w-4 h-4 bg-trail border-2 border-parchment-light rounded-full shadow-md shadow-ink/20 pointer-events-none';
     el.id = 'elevation-hover-dot';
 
-    const marker = new mapboxgl.Marker({ element: el })
-      .setLngLat([0, 0])
-      .addTo(rawMap);
+    const marker = new mapboxgl.Marker({ element: el }).setLngLat([0, 0]).addTo(rawMap);
 
     hoverMarkerRef.current = marker;
   };
@@ -102,7 +106,7 @@ export default function MapInner({ hikes }: MapInnerProps) {
         top: 50,
         bottom: (dockCollapsed ? DOCK_COLLAPSED_HEIGHT_PX : DOCK_HEIGHT_PX) + 30,
         left: 50,
-        right: PANEL_WIDTH_PX + 40
+        right: PANEL_WIDTH_PX + 40,
       },
       duration: 1200,
     });
@@ -115,7 +119,7 @@ export default function MapInner({ hikes }: MapInnerProps) {
       top: 50,
       bottom: (dockCollapsed ? DOCK_COLLAPSED_HEIGHT_PX : DOCK_HEIGHT_PX) + 30,
       left: 50,
-      right: PANEL_WIDTH_PX + 40
+      right: PANEL_WIDTH_PX + 40,
     };
 
     if (activeDay && activeDayPoints) {
@@ -144,7 +148,7 @@ export default function MapInner({ hikes }: MapInnerProps) {
       duration: 1000,
     });
   }, [activeWaypointId, resolvedWaypoints]);
-  
+
   const dottedBaseLayerStyle: Omit<LineLayerSpecification, 'source'> = {
     id: 'gpx-track-base-layer',
     type: 'line',
@@ -178,10 +182,7 @@ export default function MapInner({ hikes }: MapInnerProps) {
     <div className="w-full h-full flex relative overflow-hidden bg-pine-dark">
       {/* Map Element Box */}
       <div className="flex-1 h-full w-full z-0">
-        <BaseMap
-          mapRef={mapRef}
-          handleMapLoad={handleMapLoad}
-        >
+        <BaseMap mapRef={mapRef} handleMapLoad={handleMapLoad}>
           {/* Trace Markers */}
           {hikes.map((hike) => {
             const isActive = activeHikeId === hike.id;
@@ -197,10 +198,11 @@ export default function MapInner({ hikes }: MapInnerProps) {
                   aria-label={hike.title}
                 >
                   <span
-                    className={`relative flex items-center justify-center w-6 h-6 rounded-full border-2 shadow-md transition-all duration-150 ${isActive
-                      ? 'bg-trail border-parchment-light scale-125 z-10'
-                      : 'bg-pine border-parchment-light group-hover:bg-pine-dark group-hover:scale-110'
-                      }`}
+                    className={`relative flex items-center justify-center w-6 h-6 rounded-full border-2 shadow-md transition-all duration-150 ${
+                      isActive
+                        ? 'bg-trail border-parchment-light scale-125 z-10'
+                        : 'bg-pine border-parchment-light group-hover:bg-pine-dark group-hover:scale-110'
+                    }`}
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-parchment-light" />
                   </span>
@@ -208,14 +210,14 @@ export default function MapInner({ hikes }: MapInnerProps) {
               </Marker>
             );
           })}
-          
+
           {/* Dynamic Track Layer */}
           {geometry && (
             <Source id="dotted-gpx" type="geojson" data={geometry}>
-              <Layer {...dottedBaseLayerStyle}/>
+              <Layer {...dottedBaseLayerStyle} />
             </Source>
           )}
-          
+
           {/* Active Day Highlight Layer */}
           {geometry && (
             <Source id="active-day-gpx" type="geojson" data={activeDayGeometry ?? geometry}>
@@ -233,7 +235,9 @@ export default function MapInner({ hikes }: MapInnerProps) {
                 key={waypoint.id}
                 latitude={waypoint.lat}
                 longitude={waypoint.lon}
-                onClick={() => selectWaypoint(waypoint.id, dayNumberByWaypointId.get(waypoint.id) ?? null)}
+                onClick={() =>
+                  selectWaypoint(waypoint.id, dayNumberByWaypointId.get(waypoint.id) ?? null)
+                }
               >
                 <button
                   className="group relative flex items-center justify-center cursor-pointer"
@@ -241,8 +245,9 @@ export default function MapInner({ hikes }: MapInnerProps) {
                   title={waypoint.name}
                 >
                   <span
-                    className={`flex items-center justify-center w-6 h-6 rounded-full border-2 shadow-md transition-all duration-150 ${visual.nodeClass} ${isActive ? 'scale-125 z-10 ring-2 ring-blaze/50' : 'group-hover:scale-110'
-                      }`}
+                    className={`flex items-center justify-center w-6 h-6 rounded-full border-2 shadow-md transition-all duration-150 ${visual.nodeClass} ${
+                      isActive ? 'scale-125 z-10 ring-2 ring-blaze/50' : 'group-hover:scale-110'
+                    }`}
                   >
                     <WaypointIcon icon={visual.icon} className="w-3 h-3" />
                   </span>
@@ -252,7 +257,7 @@ export default function MapInner({ hikes }: MapInnerProps) {
           })}
 
           {/* End Marker */}
-          {activeHike && !activeHike.isLoop && hikePoints &&
+          {activeHike && !activeHike.isLoop && hikePoints && (
             <Marker
               key="end-marker"
               latitude={hikePoints[hikePoints.length - 1].lat}
@@ -262,7 +267,7 @@ export default function MapInner({ hikes }: MapInnerProps) {
                 <span className="relative flex items-center justify-center w-4 h-4 rounded-full border-3 shadow-md transition-all duration-150 bg-pine border-parchment-light" />
               </span>
             </Marker>
-          }
+          )}
         </BaseMap>
       </div>
 
@@ -287,8 +292,7 @@ export default function MapInner({ hikes }: MapInnerProps) {
             onClose={() => setActiveHikeId(null)}
           />
         </div>
-      )
-      }
-    </div >
+      )}
+    </div>
   );
 }

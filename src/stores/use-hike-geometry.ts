@@ -24,8 +24,7 @@ export function useHikeGeometry() {
       try {
         const response = await fetch(`/api/hikes/${activeHikeId}`);
 
-        if (!response.ok)
-          throw new Error('Failed fetching hike geometry');
+        if (!response.ok) throw new Error('Failed fetching hike geometry');
 
         const data = await response.json();
         const parsed = HikeGeometrySchema.parse(data);
@@ -42,7 +41,9 @@ export function useHikeGeometry() {
     }
     loadNewHike();
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [activeHikeId]);
 
   return { geometry, waypoints, loading };

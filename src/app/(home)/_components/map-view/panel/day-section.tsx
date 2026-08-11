@@ -15,7 +15,14 @@ interface DaySectionProps {
 }
 
 /** One collapsible "Day N" section: header stats + the timeline of that day's waypoints. */
-export function DaySection({ day, skipFirstWaypoint, isOpen, activeWaypointId, onToggle, onSelectWaypoint }: DaySectionProps) {
+export function DaySection({
+  day,
+  skipFirstWaypoint,
+  isOpen,
+  activeWaypointId,
+  onToggle,
+  onSelectWaypoint,
+}: DaySectionProps) {
   const displayedWaypoints = skipFirstWaypoint ? day.waypoints.slice(1) : day.waypoints;
 
   return (
@@ -29,7 +36,9 @@ export function DaySection({ day, skipFirstWaypoint, isOpen, activeWaypointId, o
           {day.dayNumber}
         </span>
 
-        <span className="font-display text-sm text-pine flex-1 text-left">Jour {day.dayNumber}</span>
+        <span className="font-display text-sm text-pine flex-1 text-left">
+          Jour {day.dayNumber}
+        </span>
 
         <span className="flex items-center gap-3 font-mono text-[11px] text-ink/50 shrink-0">
           <span>{formatDistance(day.distanceM / 1000)} km</span>
@@ -97,11 +106,14 @@ function WaypointItem({ waypoint, visual, isActive, isLast, onSelect }: Waypoint
 
       <button
         onClick={() => onSelect(waypoint.id)}
-        className={`w-full text-left rounded-xl px-2 pt-1.5 pb-2 transition-colors duration-150 cursor-pointer hover:bg-stone/20 ${isActive ? 'bg-stone/30' : ''
-          }`}
+        className={`w-full text-left rounded-xl px-2 pt-1.5 pb-2 transition-colors duration-150 cursor-pointer hover:bg-stone/20 ${
+          isActive ? 'bg-stone/30' : ''
+        }`}
       >
         <div className="flex items-center justify-between gap-3">
-          <span className={`font-display text-sm leading-snug ${isActive ? 'text-blaze' : 'text-pine'}`}>
+          <span
+            className={`font-display text-sm leading-snug ${isActive ? 'text-blaze' : 'text-pine'}`}
+          >
             {waypoint.name}
           </span>
           <span className="flex items-center gap-1.5 font-mono text-[11px] text-ink/45 tabular-nums shrink-0">

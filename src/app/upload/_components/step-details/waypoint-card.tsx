@@ -34,7 +34,14 @@ interface WaypointCardProps {
   onRemove: () => void;
 }
 
-export default function WaypointCard({ waypoint, isLocked, isOpen, onToggle, onUpdate, onRemove }: WaypointCardProps) {
+export default function WaypointCard({
+  waypoint,
+  isLocked,
+  isOpen,
+  onToggle,
+  onUpdate,
+  onRemove,
+}: WaypointCardProps) {
   // Reset the local (uncommitted) name/description whenever a different waypoint is
   // shown by this card instance, without needing an effect (see "You Might Not Need an
   // Effect" - adjusting state during render is preferred over syncing it in an effect).
@@ -81,7 +88,9 @@ export default function WaypointCard({ waypoint, isLocked, isOpen, onToggle, onU
         onClick={onToggle}
         className="w-full px-4 py-3 flex items-center gap-3 text-left focus:outline-none bg-stone/5 hover:bg-stone/10 transition-colors"
       >
-        <span className={`flex items-center justify-center w-7 h-7 rounded-full border-2 shrink-0 ${visual.nodeClass}`}>
+        <span
+          className={`flex items-center justify-center w-7 h-7 rounded-full border-2 shrink-0 ${visual.nodeClass}`}
+        >
           <WaypointIcon icon={visual.icon} className="w-3.5 h-3.5" />
         </span>
 
@@ -90,7 +99,8 @@ export default function WaypointCard({ waypoint, isLocked, isOpen, onToggle, onU
             {waypoint.name || CATEGORY_LABELS[waypoint.category]}
           </span>
           <span className="text-[11px] text-ink/50 font-mono">
-            {formatDistance(waypoint.distanceFromStartM / 1000)} km · {Math.round(waypoint.elevation)} m
+            {formatDistance(waypoint.distanceFromStartM / 1000)} km ·{' '}
+            {Math.round(waypoint.elevation)} m
           </span>
         </span>
 
@@ -111,14 +121,18 @@ export default function WaypointCard({ waypoint, isLocked, isOpen, onToggle, onU
           {/* Category selector (locked for start/end) */}
           {!isLocked && (
             <div className="flex flex-col gap-1 relative" ref={dropdownRef}>
-              <label className="text-[10px] font-bold uppercase tracking-wide text-stone-500">Type</label>
+              <label className="text-[10px] font-bold uppercase tracking-wide text-stone-500">
+                Type
+              </label>
               <button
                 type="button"
                 onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
                 className="w-full px-3 py-1.5 text-sm border border-stone/60 rounded-lg bg-white flex items-center justify-between text-ink focus:outline-none"
               >
                 <div className="flex items-center gap-2">
-                  <div className={`flex items-center justify-center w-5 h-5 rounded-full border ${visual.nodeClass}`}>
+                  <div
+                    className={`flex items-center justify-center w-5 h-5 rounded-full border ${visual.nodeClass}`}
+                  >
                     <WaypointIcon icon={visual.icon} className="w-3 h-3" />
                   </div>
                   <span>{CATEGORY_LABELS[waypoint.category]}</span>
@@ -137,7 +151,11 @@ export default function WaypointCard({ waypoint, isLocked, isOpen, onToggle, onU
               {isCategoryDropdownOpen && (
                 <div className="absolute left-0 right-0 top-[58px] bg-white border border-stone/60 rounded-lg shadow-lg z-30 py-1">
                   {EDITABLE_CATEGORIES.map((category) => {
-                    const optionVisual = getWaypointVisual({ category, accommodationType: null, poiType: null });
+                    const optionVisual = getWaypointVisual({
+                      category,
+                      accommodationType: null,
+                      poiType: null,
+                    });
                     return (
                       <button
                         key={category}
@@ -145,7 +163,9 @@ export default function WaypointCard({ waypoint, isLocked, isOpen, onToggle, onU
                         onClick={() => handleCategoryChange(category)}
                         className="w-full px-3 py-2 flex items-center gap-3 text-left text-sm hover:bg-stone/5 text-ink"
                       >
-                        <div className={`flex items-center justify-center w-5 h-5 rounded-full border ${optionVisual.nodeClass}`}>
+                        <div
+                          className={`flex items-center justify-center w-5 h-5 rounded-full border ${optionVisual.nodeClass}`}
+                        >
                           <WaypointIcon icon={optionVisual.icon} className="w-3 h-3" />
                         </div>
                         <span>{CATEGORY_LABELS[category]}</span>
@@ -160,14 +180,20 @@ export default function WaypointCard({ waypoint, isLocked, isOpen, onToggle, onU
           {/* Sub-type selector, depending on category */}
           {!isLocked && waypoint.category === 'accommodation' && (
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] font-bold uppercase tracking-wide text-stone-500">Hébergement</label>
+              <label className="text-[10px] font-bold uppercase tracking-wide text-stone-500">
+                Hébergement
+              </label>
               <select
                 value={waypoint.accommodationType ?? 'other'}
-                onChange={(e) => onUpdate({ accommodationType: e.target.value as Waypoint['accommodationType'] })}
+                onChange={(e) =>
+                  onUpdate({ accommodationType: e.target.value as Waypoint['accommodationType'] })
+                }
                 className="w-full px-3 py-1.5 text-sm border border-stone/60 rounded-lg bg-white text-ink focus:outline-none focus:border-pine"
               >
                 {AccommodationTypeSchema.options.map((type) => (
-                  <option key={type} value={type}>{type}</option>
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
                 ))}
               </select>
             </div>
@@ -175,14 +201,18 @@ export default function WaypointCard({ waypoint, isLocked, isOpen, onToggle, onU
 
           {!isLocked && waypoint.category === 'poi' && (
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] font-bold uppercase tracking-wide text-stone-500">Point d&apos;intérêt</label>
+              <label className="text-[10px] font-bold uppercase tracking-wide text-stone-500">
+                Point d&apos;intérêt
+              </label>
               <select
                 value={waypoint.poiType ?? 'other'}
                 onChange={(e) => onUpdate({ poiType: e.target.value as Waypoint['poiType'] })}
                 className="w-full px-3 py-1.5 text-sm border border-stone/60 rounded-lg bg-white text-ink focus:outline-none focus:border-pine"
               >
                 {PoiTypeSchema.options.map((type) => (
-                  <option key={type} value={type}>{type}</option>
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
                 ))}
               </select>
             </div>
@@ -190,7 +220,9 @@ export default function WaypointCard({ waypoint, isLocked, isOpen, onToggle, onU
 
           {/* Name */}
           <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-bold uppercase tracking-wide text-stone-500">Nom</label>
+            <label className="text-[10px] font-bold uppercase tracking-wide text-stone-500">
+              Nom
+            </label>
             <input
               type="text"
               value={localName}
@@ -203,7 +235,9 @@ export default function WaypointCard({ waypoint, isLocked, isOpen, onToggle, onU
 
           {/* Description */}
           <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-bold uppercase tracking-wide text-stone-500">Description</label>
+            <label className="text-[10px] font-bold uppercase tracking-wide text-stone-500">
+              Description
+            </label>
             <textarea
               rows={3}
               value={localDesc}
@@ -221,7 +255,13 @@ export default function WaypointCard({ waypoint, isLocked, isOpen, onToggle, onU
               onClick={onRemove}
               className="w-full flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold text-red-600 border border-dashed border-red-200 rounded-lg hover:bg-red-50 transition-colors"
             >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg
+                className="w-3.5 h-3.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
               Supprimer ce point

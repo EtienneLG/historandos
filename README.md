@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Historando
 
-## Getting Started
+A private hiking web app for the owner and a few friends: browse hikes in a
+**list** or on a **map**, and **upload a GPX** to add a new one. See
+[`AGENTS.md`](./AGENTS.md) for the full architecture reference, data model,
+and conventions.
 
-First, run the development server:
+## Tech stack
+
+Next.js (App Router) + TypeScript, Tailwind CSS, Supabase Postgres via
+Drizzle ORM, Mapbox GL for maps, recharts for the elevation profile, and the
+Infomaniak Drive API for photo storage. See [`AGENTS.md`](./AGENTS.md#tech-stack-core)
+for the full list.
+
+## Getting started
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Copy `.env.example` to `.env` and fill in the values (see
+   [Environment variables](#environment-variables) below):
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Run the dev server:
+
+   ```bash
+   npm run dev
+   ```
+
+   Open [http://localhost:3000](http://localhost:3000) — you'll be redirected
+   to `/login` (password + rotating security question, see
+   [`AGENTS.md`](./AGENTS.md#auth-model)).
+
+## Scripts
+
+| Command                  | Description                                                          |
+| ------------------------ | -------------------------------------------------------------------- |
+| `npm run dev`            | Start the Next.js dev server                                         |
+| `npm run build`          | Production build                                                     |
+| `npm run start`          | Serve a production build                                             |
+| `npm run lint`           | Run ESLint                                                           |
+| `npm run format`         | Format the codebase with Prettier                                    |
+| `npm run format:check`   | Check formatting without writing                                     |
+| `npm run seed:hike`      | Insert a hike from a local `.gpx` file (see script header for flags) |
+| `npm run seed:waypoints` | Seed or clean demo waypoints for an existing hike by id              |
+
+Database schema changes go through `drizzle-kit`, configured in
+`drizzle.config.ts` (schema at `src/db/schema.ts`, migrations output to
+`drizzle/`):
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npx drizzle-kit generate   # create a migration from schema changes
+npx drizzle-kit push       # push schema changes directly to the database
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+All variables are validated at startup in `src/env.ts`. See `.env.example`
+for the full list and [`AGENTS.md`](./AGENTS.md#environment-variables) for
+what each one is used for:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `DATABASE_URL`, `DIRECT_DATABASE_URL` — Supabase Postgres connection
+- `JWT_SECRET_KEY`, `LOGIN_PASSWORD` — auth
+- `INFOMANIAK_DRIVE_SECRET`, `INFOMANIAK_DRIVE_ID`, `INFOMANIAK_METADATA_ID`,
+  `INFOMANIAK_LOGIN_QA_ID`, `INFOMANIAK_TRACE_DIR_ID` — Infomaniak Drive API
+- `NEXT_PUBLIC_MAPBOX_TOKEN` — client-side Mapbox GL token
 
-## Learn More
+## Learn more
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [`AGENTS.md`](./AGENTS.md) — architecture, data model, auth model, GPX
+  handling, and conventions for this repo.
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Drizzle ORM Documentation](https://orm.drizzle.team/docs/overview)

@@ -12,7 +12,9 @@ export default function StepGlobal() {
   const [people, setPeople] = useState<string[]>(useUploadStore((s) => s.people));
   const [date, setDate] = useState<string>(useUploadStore((s) => s.date));
   const [description, setDescription] = useState<string>(useUploadStore((s) => s.description));
-  const [photoDirectoryId, setPhotoDirectoryId] = useState<number>(useUploadStore((s) => s.photoDirId));
+  const [photoDirectoryId, setPhotoDirectoryId] = useState<number>(
+    useUploadStore((s) => s.photoDirId),
+  );
 
   const saveGlobalData = () => {
     const cleanedPeople = people.filter((p) => p.trim() !== '');
@@ -24,32 +26,31 @@ export default function StepGlobal() {
       description,
       photoDirId: photoDirectoryId,
     });
-  }
+  };
 
   const handleCancel = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     saveGlobalData();
     goToPrevStep();
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     saveGlobalData();
     goToNextStep();
   };
 
   return (
-    <form 
-      onSubmit={handleSubmit} 
-      className="h-full flex flex-col justify-between"
-    >
+    <form onSubmit={handleSubmit} className="h-full flex flex-col justify-between">
       {/* Scrollable Container for Inputs */}
       <div className="flex-1 overflow-y-auto pr-2 space-y-5 pb-6">
         <div>
           <h2 className="text-lg font-bold text-ink mb-1">Détails de l'activité</h2>
-          <p className="text-xs text-ink/60">Saisissez les informations de base avant de diviser votre parcours.</p>
+          <p className="text-xs text-ink/60">
+            Saisissez les informations de base avant de diviser votre parcours.
+          </p>
         </div>
 
         <hr className="border-stone/40" />
@@ -70,8 +71,12 @@ export default function StepGlobal() {
         {/* Participants */}
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold uppercase tracking-wide text-pine/70">Participants</label>
-            <span className="text-[10px] font-semibold text-ink/40 uppercase tracking-wide bg-stone/40 px-1.5 py-0.5 rounded">Optionnel</span>
+            <label className="text-xs font-bold uppercase tracking-wide text-pine/70">
+              Participants
+            </label>
+            <span className="text-[10px] font-semibold text-ink/40 uppercase tracking-wide bg-stone/40 px-1.5 py-0.5 rounded">
+              Optionnel
+            </span>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -94,7 +99,13 @@ export default function StepGlobal() {
                   className="p-2 text-ink/30 hover:text-blaze-dark hover:bg-blaze/5 rounded-lg transition-colors shrink-0"
                   aria-label="Retirer"
                 >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -107,7 +118,13 @@ export default function StepGlobal() {
             onClick={() => setPeople([...people, ''])}
             className="flex items-center gap-1.5 mt-1 px-3 py-2 text-sm font-semibold text-pine border border-dashed border-pine/30 rounded-xl hover:bg-pine/5 hover:border-pine/50 transition-all self-start"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
             Ajouter une personne
@@ -116,7 +133,9 @@ export default function StepGlobal() {
 
         {/* Date */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-bold uppercase tracking-wide text-pine/70">Date de l'activité</label>
+          <label className="text-xs font-bold uppercase tracking-wide text-pine/70">
+            Date de l'activité
+          </label>
           <input
             type="date"
             required
@@ -128,7 +147,9 @@ export default function StepGlobal() {
 
         {/* Description */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-bold uppercase tracking-wide text-pine/70">Description</label>
+          <label className="text-xs font-bold uppercase tracking-wide text-pine/70">
+            Description
+          </label>
           <textarea
             rows={3}
             value={description}
@@ -141,7 +162,9 @@ export default function StepGlobal() {
         {/* Optional Photo Directory ID */}
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold uppercase tracking-wide text-pine/70">ID du répertoire photo</label>
+            <label className="text-xs font-bold uppercase tracking-wide text-pine/70">
+              ID du répertoire photo
+            </label>
           </div>
           <input
             type="number"

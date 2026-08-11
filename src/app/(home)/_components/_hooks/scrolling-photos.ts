@@ -1,6 +1,9 @@
 import { useRef, RefObject, useCallback, useState, useEffect } from 'react';
 
-export function useScrollingPhotos(photoDirId: number | null, containerRef: RefObject<HTMLDivElement | null>) {
+export function useScrollingPhotos(
+  photoDirId: number | null,
+  containerRef: RefObject<HTMLDivElement | null>,
+) {
   const [visiblePhotoIds, setVisiblePhotoIds] = useState<number[]>([]);
   const [isFetchingPhotos, setIsFetchingPhotos] = useState<boolean>(false);
   const [hasMorePhotos, setHasMorePhotos] = useState<boolean>(true);
@@ -39,12 +42,12 @@ export function useScrollingPhotos(photoDirId: number | null, containerRef: RefO
         setHasMorePhotos(false);
       }
     } catch (error) {
-      console.error("Error fetching photos:", error);
+      console.error('Error fetching photos:', error);
     } finally {
       setIsFetchingPhotos(false);
     }
   }, []);
-  
+
   const sentinelRef = useCallback((node: HTMLDivElement | null) => {
     setSentinelNode(node);
   }, []);
@@ -70,7 +73,7 @@ export function useScrollingPhotos(photoDirId: number | null, containerRef: RefO
         root,
         rootMargin: '200px',
         threshold: 0.1,
-      }
+      },
     );
 
     observer.observe(sentinelNode);

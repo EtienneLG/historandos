@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
+import { env } from '@/env';
 
-const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
+const SECRET_KEY = new TextEncoder().encode(env.JWT_SECRET_KEY);
 
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get('authentificated')?.value;
+  const token = request.cookies.get('authenticated')?.value;
   let authenticated = false;
 
   if (token) {
@@ -21,12 +22,12 @@ export default async function proxy(request: NextRequest) {
     }
   }
 
-  if (!authenticated && pathname !== "/login") {
+  if (!authenticated && pathname !== '/login') {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  if (authenticated && pathname === "/login") {
-    return NextResponse.redirect(new URL('/home', request.url));
+  if (authenticated && pathname === '/login') {
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
   return NextResponse.next();

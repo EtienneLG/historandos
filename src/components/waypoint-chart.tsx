@@ -20,7 +20,14 @@ interface WaypointChartPinProps {
 }
 
 /** Small colored dot marking a waypoint's position on the elevation chart. */
-export function WaypointChartPin({ cx, cy, waypoint, onSelect, groupRef, isActive: isActiveProp }: WaypointChartPinProps) {
+export function WaypointChartPin({
+  cx,
+  cy,
+  waypoint,
+  onSelect,
+  groupRef,
+  isActive: isActiveProp,
+}: WaypointChartPinProps) {
   const isActiveFromStore = useUIStore((s) => s.activeWaypointId === waypoint.id);
   const isActive = isActiveProp ?? isActiveFromStore;
 
@@ -29,11 +36,7 @@ export function WaypointChartPin({ cx, cy, waypoint, onSelect, groupRef, isActiv
   const visual = getWaypointVisual(waypoint);
 
   return (
-    <g
-      ref={groupRef}
-      className="cursor-pointer"
-      onClick={() => onSelect(waypoint.id)}
-    >
+    <g ref={groupRef} className="cursor-pointer" onClick={() => onSelect(waypoint.id)}>
       <title>{waypoint.name}</title>
       {/* Larger transparent hit area, easier to click/hover than the small dot itself. */}
       <circle cx={cx} cy={cy} r={10} fill="transparent" />
@@ -63,7 +66,15 @@ interface WaypointChartLineProps {
 }
 
 /** Thin dotted vertical line marking a waypoint's position along the elevation chart. */
-export function WaypointChartLine({ x1, y1, y2, waypoint, onSelect, groupRef, isActive: isActiveProp }: WaypointChartLineProps) {
+export function WaypointChartLine({
+  x1,
+  y1,
+  y2,
+  waypoint,
+  onSelect,
+  groupRef,
+  isActive: isActiveProp,
+}: WaypointChartLineProps) {
   const isActiveFromStore = useUIStore((s) => s.activeWaypointId === waypoint.id);
   const isActive = isActiveProp ?? isActiveFromStore;
 

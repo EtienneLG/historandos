@@ -1,18 +1,9 @@
-// src/app/upload/_components/ElevationChart.tsx
 'use client';
 
 import React from 'react';
 import { formatDistance } from '@/lib/geo';
 import { HikePoint } from '@/types/hike-types';
-import {
-  ComposedChart,
-  Area,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer
-} from 'recharts';
+import { ComposedChart, Area, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface ElevationChartProps {
   data: HikePoint[];
@@ -29,7 +20,9 @@ const CleanTooltip = ({ active, payload }: any) => {
       <div className="bg-pine-dark/90 backdrop-blur-md text-parchment-light px-2 py-1 rounded-lg text-[11px] shadow-md border border-pine whitespace-nowrap animate-in fade-in duration-100">
         <span className="font-mono font-semibold text-parchment">{payload[0].value} m</span>
         <span className="font-mono text-stone mx-1">·</span>
-        <span className="font-mono text-stone">{formatDistance(payload[0].payload.distanceFromStartM / 1000)} km</span>
+        <span className="font-mono text-stone">
+          {formatDistance(payload[0].payload.distanceFromStartM / 1000)} km
+        </span>
       </div>
     );
   }
@@ -42,12 +35,10 @@ export default React.memo(function BaseChart({
   handleMouseLeave,
   handleMouseDown,
   handleMouseUp,
-  children
+  children,
 }: ElevationChartProps) {
   // The total distance of the trace
-  const maxDistance = data.length > 0
-    ? Math.ceil(data[data.length - 1].distanceFromStartM)
-    : 0;
+  const maxDistance = data.length > 0 ? Math.ceil(data[data.length - 1].distanceFromStartM) : 0;
 
   // Create the tick array
   const step = maxDistance > 30000 ? (maxDistance > 60000 ? 2000 : 1000) : 500;
@@ -127,7 +118,6 @@ export default React.memo(function BaseChart({
         />
 
         {children}
-
       </ComposedChart>
     </ResponsiveContainer>
   );

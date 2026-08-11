@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #ffffff;
@@ -36,17 +36,17 @@
   /* Colors */
   --color-parchment: #f3eee1;
   --color-parchment-light: #faf7ef;
-  
+
   --color-ink: #1f2a24;
-  
+
   --color-pine: #2d4a3a;
   --color-pine-dark: #1e3329;
-  
+
   --color-blaze: #6b9b3f;
   --color-blaze-dark: #567f30;
-  
+
   --color-tarn: #4a7c8c;
-  
+
   --color-stone: #d9d2c0;
   --color-stone-dark: #bfb6a0;
 

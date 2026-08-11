@@ -106,7 +106,9 @@ function computeStats(points: TrackPoint[]) {
     const prev = points[i - 1];
     const curr = points[i];
 
-    distanceM += distance(point([prev.lon, prev.lat]), point([curr.lon, curr.lat]), { units: 'meters' });
+    distanceM += distance(point([prev.lon, prev.lat]), point([curr.lon, curr.lat]), {
+      units: 'meters',
+    });
 
     const delta = curr.ele - prev.ele;
     if (delta > 0) elevationGainM += delta;
@@ -119,7 +121,9 @@ function computeStats(points: TrackPoint[]) {
 
   const first = points[0];
   const last = points[points.length - 1];
-  const startEndDistanceM = distance(point([first.lon, first.lat]), point([last.lon, last.lat]), { units: 'meters' });
+  const startEndDistanceM = distance(point([first.lon, first.lat]), point([last.lon, last.lat]), {
+    units: 'meters',
+  });
 
   return {
     distanceM: Math.round(distanceM),
@@ -149,9 +153,15 @@ async function main() {
 
   const title = flags.title ?? metadataName ?? basename(gpxPath, '.gpx');
   const description = flags.description ?? '';
-  const date = flags.date ?? (times[0] ? times[0].slice(0, 10) : new Date().toISOString().slice(0, 10));
+  const date =
+    flags.date ?? (times[0] ? times[0].slice(0, 10) : new Date().toISOString().slice(0, 10));
   const isLoop = flags['is-loop'] !== undefined ? flags['is-loop'] === 'true' : stats.isLoopGuess;
-  const people = flags.people ? flags.people.split(',').map((s) => s.trim()).filter(Boolean) : [];
+  const people = flags.people
+    ? flags.people
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [];
 
   const geometry = {
     type: 'LineString' as const,
@@ -179,7 +189,9 @@ async function main() {
     .returning({ id: hikes.id, title: hikes.title });
 
   console.log(`✅ Inserted hike "${inserted.title}" (id: ${inserted.id})`);
-  console.log(`   distance: ${stats.distanceM}m, gain: ${stats.elevationGainM}m, loss: ${stats.elevationLossM}m, loop: ${isLoop}`);
+  console.log(
+    `   distance: ${stats.distanceM}m, gain: ${stats.elevationGainM}m, loss: ${stats.elevationLossM}m, loop: ${isLoop}`,
+  );
 
   process.exit(0);
 }

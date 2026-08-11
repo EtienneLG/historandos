@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:hike": "tsx scripts/seed-hike.ts"
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "seed:hike": "tsx scripts/seed-hike.ts",
+    "seed:waypoints": "tsx scripts/seed-waypoints.ts"
   },
   "dependencies": {
     "@tmcw/togeojson": "^7.1.2",
@@ -34,6 +37,7 @@
     "drizzle-kit": "^1.0.0-rc.4",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
+    "prettier": "^3.9.6",
     "tailwindcss": "^4",
     "tsx": "^4.23.10",
     "typescript": "^5"

@@ -14,7 +14,7 @@ export default function DropOverlay({ onFileUploaded }: DropOverlayProps) {
   const goToNextStep = useUploadStore((s) => s.goToNextStep);
 
   const handleFileDrop = (gpxXmlText: string) => {
-    setIsProcessing("Traitement du fichier");
+    setIsProcessing('Traitement du fichier');
 
     try {
       const parsedGeometry = gpxToGeoJson(gpxXmlText);
@@ -28,14 +28,14 @@ export default function DropOverlay({ onFileUploaded }: DropOverlayProps) {
       onFileUploaded();
       goToNextStep();
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Error parsing GPX file");
+      alert(error instanceof Error ? error.message : 'Error parsing GPX file');
     } finally {
       setIsProcessing(null);
     }
-  }
+  };
 
   const processFile = (file: File) => {
-    setIsProcessing("Chargement du fichier");
+    setIsProcessing('Chargement du fichier');
 
     try {
       if (!file) {
@@ -55,7 +55,7 @@ export default function DropOverlay({ onFileUploaded }: DropOverlayProps) {
       };
       reader.readAsText(file);
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Error parsing GPX file");
+      alert(error instanceof Error ? error.message : 'Error parsing GPX file');
     } finally {
       setIsProcessing(null);
     }
@@ -95,9 +95,10 @@ export default function DropOverlay({ onFileUploaded }: DropOverlayProps) {
       onDragLeave={handleDrag}
       onDrop={handleDrop}
       className={`absolute inset-0 w-full h-full flex flex-col items-center justify-center cursor-pointer transition-all duration-200 p-8
-        ${isDragging
-          ? 'bg-stone-200/50 border-4 border-dashed border-stone-400'
-          : 'bg-parchment-light hover:bg-stone-50 border-2 border-dashed border-stone-300'
+        ${
+          isDragging
+            ? 'bg-stone-200/50 border-4 border-dashed border-stone-400'
+            : 'bg-parchment-light hover:bg-stone-50 border-2 border-dashed border-stone-300'
         }`}
     >
       {/* Hidden native input element to support click actions */}
@@ -109,9 +110,10 @@ export default function DropOverlay({ onFileUploaded }: DropOverlayProps) {
       />
 
       <div className="flex flex-col items-center text-center max-w-md pointer-events-none select-none">
-
         {/* Upload Icon */}
-        <div className={`p-4 rounded-full bg-stone-100 border border-stone-200 mb-4 transition-transform duration-200 ${isDragging ? 'scale-110 text-stone-700' : 'text-stone-400'}`}>
+        <div
+          className={`p-4 rounded-full bg-stone-100 border border-stone-200 mb-4 transition-transform duration-200 ${isDragging ? 'scale-110 text-stone-700' : 'text-stone-400'}`}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -120,7 +122,11 @@ export default function DropOverlay({ onFileUploaded }: DropOverlayProps) {
             stroke="currentColor"
             className="w-8 h-8"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
+            />
           </svg>
         </div>
 
@@ -130,13 +136,13 @@ export default function DropOverlay({ onFileUploaded }: DropOverlayProps) {
         </h3>
 
         <p className="text-sm text-stone-500 mt-1">
-          Drag and drop your route anywhere on this screen, or <span className="text-stone-700 font-medium underline">browse files</span>
+          Drag and drop your route anywhere on this screen, or{' '}
+          <span className="text-stone-700 font-medium underline">browse files</span>
         </p>
 
         <span className="text-xs text-stone-400 mt-6 px-3 py-1 bg-stone-100/80 border border-stone-200 rounded-md tracking-wide uppercase">
           Supports .gpx tracks
         </span>
-
       </div>
     </div>
   );

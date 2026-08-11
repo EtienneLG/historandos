@@ -5,7 +5,6 @@ import { SiteHeader } from '@/components/site-header';
 export default function UploadPage() {
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden">
-
       <SiteHeader>
         {/* Left Side: Go back arrow */}
         <div className="flex flex-1 justify-start">
@@ -22,7 +21,11 @@ export default function UploadPage() {
               stroke="currentColor"
               className="w-4 h-4 transition-transform group-hover:-translate-x-0.5"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+              />
             </svg>
             Cancel
           </Link>
@@ -32,7 +35,6 @@ export default function UploadPage() {
       <main className="flex-1 min-h-0 relative w-full">
         <UploadShell />
       </main>
-
     </div>
   );
 }

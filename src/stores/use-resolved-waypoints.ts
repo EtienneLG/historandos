@@ -8,7 +8,7 @@ import { HikePoint, ResolvedWaypoint, Waypoint } from '@/types/hike-types';
  */
 export function useResolvedWaypoints(
   waypoints: Waypoint[],
-  hikePoints: HikePoint[]
+  hikePoints: HikePoint[],
 ): ResolvedWaypoint[] {
   return useMemo(() => {
     if (hikePoints.length === 0) return [];

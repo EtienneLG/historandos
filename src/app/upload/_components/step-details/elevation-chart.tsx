@@ -43,22 +43,27 @@ export default function ElevationChart() {
   };
 
   // Detect if the user clicked a nearby, draggable splitter.
-  const handleChartMouseDown = useCallback((nextState: any) => {
-    if (!nextState || typeof nextState.activeTooltipIndex === 'undefined') return;
+  const handleChartMouseDown = useCallback(
+    (nextState: any) => {
+      if (!nextState || typeof nextState.activeTooltipIndex === 'undefined') return;
 
-    const clickedIndex = nextState.activeTooltipIndex;
+      const clickedIndex = nextState.activeTooltipIndex;
 
-    const hitRadius = 15;
-    const matchedWaypoint = waypoints.find(
-      (w) => !LOCKED_CATEGORIES.includes(w.category) && Math.abs(w.indexFromStart - clickedIndex) <= hitRadius
-    );
+      const hitRadius = 15;
+      const matchedWaypoint = waypoints.find(
+        (w) =>
+          !LOCKED_CATEGORIES.includes(w.category) &&
+          Math.abs(w.indexFromStart - clickedIndex) <= hitRadius,
+      );
 
-    if (matchedWaypoint) {
-      lastValidIndexRef.current = matchedWaypoint.indexFromStart;
-      dragStartPixelXRef.current = nextState.activeCoordinate?.x ?? null;
-      setDraggingSplitterId(matchedWaypoint.id);
-    }
-  }, [waypoints]);
+      if (matchedWaypoint) {
+        lastValidIndexRef.current = matchedWaypoint.indexFromStart;
+        dragStartPixelXRef.current = nextState.activeCoordinate?.x ?? null;
+        setDraggingSplitterId(matchedWaypoint.id);
+      }
+    },
+    [waypoints],
+  );
 
   // Persist the dragged waypoint's new position, if any, and release the drag lock.
   const handleCommitDrag = useCallback(() => {
@@ -92,36 +97,42 @@ export default function ElevationChart() {
   }, [handleCommitDrag]);
 
   // Bridge the hovered trace point to the map marker, and move the dragged splitter's pin/line.
-  const handleMouseMove = useCallback((nextState: any) => {
-    if (!nextState || typeof nextState.activeTooltipIndex === 'undefined') return;
-    const currentHoverIndex = nextState.activeTooltipIndex;
+  const handleMouseMove = useCallback(
+    (nextState: any) => {
+      if (!nextState || typeof nextState.activeTooltipIndex === 'undefined') return;
+      const currentHoverIndex = nextState.activeTooltipIndex;
 
-    // Detect the current trace point hovering
-    const event = new CustomEvent('trace-point-hover', { detail: currentHoverIndex });
-    window.dispatchEvent(event);
+      // Detect the current trace point hovering
+      const event = new CustomEvent('trace-point-hover', { detail: currentHoverIndex });
+      window.dispatchEvent(event);
 
-    if (!draggingSplitterId || dragStartPixelXRef.current === null) return;
+      if (!draggingSplitterId || dragStartPixelXRef.current === null) return;
 
-    // Safety check: ensure we don't drag a splitter past the ends of the master array
-    if (currentHoverIndex > 0 && currentHoverIndex < hikePoints.length - 1) {
-      lastValidIndexRef.current = currentHoverIndex;
+      // Safety check: ensure we don't drag a splitter past the ends of the master array
+      if (currentHoverIndex > 0 && currentHoverIndex < hikePoints.length - 1) {
+        lastValidIndexRef.current = currentHoverIndex;
 
-      const pixelX = nextState.activeCoordinate?.x;
-      if (typeof pixelX !== 'number') return;
+        const pixelX = nextState.activeCoordinate?.x;
+        if (typeof pixelX !== 'number') return;
 
-      // Move the dragged splitter's line/pin directly via a plain SVG transform — no state
-      // update, no re-render, so the whole chart isn't recomputed on every mousemove.
-      const delta = pixelX - dragStartPixelXRef.current;
-      const nodes = waypointNodesRef.current.get(draggingSplitterId);
-      const transform = `translate(${delta} 0)`;
-      nodes?.line?.setAttribute('transform', transform);
-      nodes?.dot?.setAttribute('transform', transform);
-    }
-  }, [draggingSplitterId, hikePoints.length]);
+        // Move the dragged splitter's line/pin directly via a plain SVG transform — no state
+        // update, no re-render, so the whole chart isn't recomputed on every mousemove.
+        const delta = pixelX - dragStartPixelXRef.current;
+        const nodes = waypointNodesRef.current.get(draggingSplitterId);
+        const transform = `translate(${delta} 0)`;
+        nodes?.line?.setAttribute('transform', transform);
+        nodes?.dot?.setAttribute('transform', transform);
+      }
+    },
+    [draggingSplitterId, hikePoints.length],
+  );
 
   return (
-    <div className={`w-full h-full p-3 flex flex-col select-none [&_*]:select-none justify-between ${draggingSplitterId ? 'cursor-ew-resize' : 'cursor-default'
-      }`}>
+    <div
+      className={`w-full h-full p-3 flex flex-col select-none [&_*]:select-none justify-between ${
+        draggingSplitterId ? 'cursor-ew-resize' : 'cursor-default'
+      }`}
+    >
       {/* Tiny Header Context */}
       <div className="flex justify-between items-center px-2 mb-1">
         <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
@@ -146,7 +157,9 @@ export default function ElevationChart() {
               shape={(props) => (
                 <WaypointChartLine
                   {...props}
-                  groupRef={(node) => { getNodes(waypoint.id).line = node; }}
+                  groupRef={(node) => {
+                    getNodes(waypoint.id).line = node;
+                  }}
                   waypoint={waypoint}
                   isActive={activeWaypointId === waypoint.id}
                   onSelect={setActiveWaypointId}
@@ -164,7 +177,9 @@ export default function ElevationChart() {
               shape={(props) => (
                 <WaypointChartPin
                   {...props}
-                  groupRef={(node) => { getNodes(waypoint.id).dot = node; }}
+                  groupRef={(node) => {
+                    getNodes(waypoint.id).dot = node;
+                  }}
                   waypoint={waypoint}
                   isActive={activeWaypointId === waypoint.id}
                   onSelect={setActiveWaypointId}

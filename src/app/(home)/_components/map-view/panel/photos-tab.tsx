@@ -9,12 +9,10 @@ interface PhotosTabProps {
 export function PhotosTab({ photoDirId }: PhotosTabProps) {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
-  const {
-    sentinelRef,
-    visiblePhotoIds,
-    isFetchingPhotos,
-    hasMorePhotos
-  } = useScrollingPhotos(photoDirId, scrollContainerRef);
+  const { sentinelRef, visiblePhotoIds, isFetchingPhotos, hasMorePhotos } = useScrollingPhotos(
+    photoDirId,
+    scrollContainerRef,
+  );
 
   return (
     <div
@@ -28,8 +26,12 @@ export function PhotosTab({ photoDirId }: PhotosTabProps) {
             <ActivityPhoto key={id} photoId={id} />
           ))}
         </div>
-      ) : !hasMorePhotos && (
-        <p className="text-center text-sm text-ink/40 py-10">Aucune photo pour cette randonnée.</p>
+      ) : (
+        !hasMorePhotos && (
+          <p className="text-center text-sm text-ink/40 py-10">
+            Aucune photo pour cette randonnée.
+          </p>
+        )
       )}
 
       {/* Scroll Sentinel Target & Loader */}

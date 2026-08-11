@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getThumbnail } from '@/lib/infomaniak';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id: photoId } = await params;
 
   try {
@@ -16,9 +13,9 @@ export async function GET(
         'Cache-Control': 'public, max-age=31536000, immutable',
       },
     });
-
-  } catch (error: any) {
-    console.error(`Error streaming photo ${photoId}:`, error.message);
-    return NextResponse.json({ error: "Image unavailable" }, { status: 404 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`Error streaming photo ${photoId}:`, message);
+    return NextResponse.json({ error: 'Image unavailable' }, { status: 404 });
   }
 }

@@ -2,13 +2,13 @@ import { z } from 'zod';
 import { GeoJSONGeometrySchema, GeoJSONBBoxSchema } from 'zod-geojson';
 
 export const WaypointCategorySchema = z.enum([
-  'start',          // Departure point
-  'end',            // Arrival point
-  'accommodation',  // Refuge, Tent/Bivouac, Hotel, Gîte
-  'poi',            // Viewpoint, Peak, Lake, Heritage
-  'logistics',      // Water point, Resupply, Parking, Bus stop
-  'hazard'          // Technical pass, exposed section
-])
+  'start', // Departure point
+  'end', // Arrival point
+  'accommodation', // Refuge, Tent/Bivouac, Hotel, Gîte
+  'poi', // Viewpoint, Peak, Lake, Heritage
+  'logistics', // Water point, Resupply, Parking, Bus stop
+  'hazard', // Technical pass, exposed section
+]);
 
 export const AccommodationTypeSchema = z.enum(['tent', 'refuge', 'hotel', 'other']);
 
@@ -23,8 +23,8 @@ export const WaypointSchema = z.object({
 
   // Metadata based on category
   accommodationType: AccommodationTypeSchema.nullable(),
-  poiType: PoiTypeSchema.nullable()
-})
+  poiType: PoiTypeSchema.nullable(),
+});
 
 export const HikeSummarySchema = z.object({
   id: z.uuid(),
@@ -44,15 +44,15 @@ export const HikeSummarySchema = z.object({
 
   // Map data
   bbox: GeoJSONBBoxSchema,
-})
+});
 
 export const HikeGeometrySchema = z.object({
   id: z.uuid(),
   geometry: GeoJSONGeometrySchema,
 
   // Waypoints in sequence
-  waypoints: z.array(WaypointSchema)
-})
+  waypoints: z.array(WaypointSchema),
+});
 
 /** Waypoint payload as sent by the upload client — no DB id yet, the server assigns one. */
 export const NewWaypointSchema = WaypointSchema.omit({ id: true });
@@ -66,10 +66,10 @@ export const NewHikeRequestSchema = z.object({
   photoDirId: z.int().positive(),
   geometry: GeoJSONGeometrySchema.refine(
     (g) => g.type === 'LineString' && g.coordinates.length >= 2,
-    { message: 'geometry must be a LineString with at least 2 points' }
+    { message: 'geometry must be a LineString with at least 2 points' },
   ),
   waypoints: z.array(NewWaypointSchema),
-})
+});
 
 export interface HikePoint {
   lon: number;

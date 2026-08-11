@@ -3,7 +3,7 @@ import { getQA } from '@/lib/infomaniak';
 
 export async function GET() {
   await connection();
-  
+
   try {
     const QAs = await getQA();
     const question = QAs[Math.floor(Math.random() * QAs.length)];
@@ -12,15 +12,13 @@ export async function GET() {
       question: {
         id: question.id,
         question: question.question,
-        type: question.type
+        type: question.type,
       },
     });
-  } catch (error: any) {
-    console.error('Question fetch error:', error.message);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('Question fetch error:', message);
 
-    return NextResponse.json(
-      { error: 'Unable to load question' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Unable to load question' }, { status: 500 });
   }
 }

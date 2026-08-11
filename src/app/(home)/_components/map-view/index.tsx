@@ -1,11 +1,11 @@
 import { HikeSummary } from '@/types/hike-types';
-import dynamic from "next/dynamic";
+import dynamic from 'next/dynamic';
 
 interface MapViewProps {
   hikes: HikeSummary[];
 }
 
-const MapInner = dynamic(() => import("./map-inner"), {
+const MapInner = dynamic(() => import('./map-inner'), {
   ssr: false,
   loading: () => (
     <div className="w-full h-full bg-slate-100 flex items-center justify-center">
@@ -19,12 +19,8 @@ const MapInner = dynamic(() => import("./map-inner"), {
 export default function MapViewWrapper({ hikes }: MapViewProps) {
   return (
     <div className="w-full h-full relative">
-
       {/* Map */}
-      <MapInner 
-        hikes={hikes} 
-      />
-
+      <MapInner hikes={hikes} />
     </div>
   );
 }

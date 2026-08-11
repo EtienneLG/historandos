@@ -7,13 +7,13 @@ export async function GET(request: NextRequest) {
   const dirId = searchParams.get('dir_id');
 
   if (!dirId) {
-    return NextResponse.json({ error: "Missing directory ID" }, { status: 400 });
+    return NextResponse.json({ error: 'Missing directory ID' }, { status: 400 });
   }
 
   try {
     const params = new URLSearchParams({
       'order_by[]': 'name',
-      'order': 'asc',
+      order: 'asc',
       'type[]': 'file',
     });
     if (cursor) {
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     }
 
     const fileList = await getFileList(params, dirId);
-    
+
     const photoIds = fileList.data
       .filter((file: { id: number; extension_type: string }) => file.extension_type === 'image')
       .map((file: { id: number }) => file.id);
@@ -31,10 +31,10 @@ export async function GET(request: NextRequest) {
       cursor: fileList.cursor,
       has_more: fileList.has_more,
     });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('Fetch Error:', message);
 
-  } catch (error: any) {
-    console.error("Fetch Error:", error.message);
-
-    return NextResponse.json({ error: "Failed to fetch photos" }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch photos' }, { status: 500 });
   }
 }

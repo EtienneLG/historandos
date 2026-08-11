@@ -23,9 +23,9 @@ export function TracePhoto({ photoDirId }: TracePhotoProps) {
       try {
         const response = await fetch(`/api/photos/random?dir_id=${photoDirId}`);
         if (!response.ok) throw new Error('Network authentication or route layout failure');
-        
+
         const data = await response.json();
-        
+
         if (isCurrentRequest) {
           setImgSrc(data.url);
         }
@@ -46,11 +46,20 @@ export function TracePhoto({ photoDirId }: TracePhotoProps) {
 
   return (
     <div className="w-1/3 md:w-1/3 bg-stone relative shrink-0 aspect-square overflow-hidden rounded-xl border border-stone shadow-sm">
-
       {(!imgSrc || !isImageLoaded) && (
         <div className="absolute inset-0 bg-stone animate-pulse z-10 flex items-center justify-center">
-          <svg className="w-5 h-5 text-stone-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 19l6.5-11L14 15l2.5-3.5L21 19H3z" />
+          <svg
+            className="w-5 h-5 text-stone-dark"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3 19l6.5-11L14 15l2.5-3.5L21 19H3z"
+            />
           </svg>
         </div>
       )}

@@ -6,11 +6,7 @@ import BaseChart from '@/components/base-chart';
 import { WaypointChartLine, WaypointChartPin } from '@/components/waypoint-chart';
 import { buildDayNumberIndex, DaySegment } from '@/lib/day-segments';
 import { downsampleForChart } from '@/lib/geo';
-import {
-  DOCK_COLLAPSED_HEIGHT_PX,
-  DOCK_HEIGHT_PX,
-  PANEL_WIDTH_PX,
-} from '@/lib/waypoints';
+import { DOCK_COLLAPSED_HEIGHT_PX, DOCK_HEIGHT_PX, PANEL_WIDTH_PX } from '@/lib/waypoints';
 import { useUIStore } from '@/stores/ui-store';
 import { HikePoint, ResolvedWaypoint } from '@/types/hike-types';
 
@@ -38,10 +34,7 @@ export function ElevationDock({ hikePoints, waypoints, days, loading }: Elevatio
   const dayNumberByWaypointId = useMemo(() => buildDayNumberIndex(days), [days]);
   // Computed once per hike (keyed on the stable hikePoints reference), not on every
   // waypoint/day selection re-render.
-  const chartPoints = useMemo(
-    () => downsampleForChart(hikePoints, CHART_MAX_POINTS),
-    [hikePoints]
-  );
+  const chartPoints = useMemo(() => downsampleForChart(hikePoints, CHART_MAX_POINTS), [hikePoints]);
 
   const handleSelectWaypoint = (id: string) => {
     selectWaypoint(id, dayNumberByWaypointId.get(id) ?? null);
@@ -61,7 +54,7 @@ export function ElevationDock({ hikePoints, waypoints, days, loading }: Elevatio
           )}
         />
       )),
-    [waypoints]
+    [waypoints],
   );
 
   const waypointPins = useMemo(
@@ -78,7 +71,7 @@ export function ElevationDock({ hikePoints, waypoints, days, loading }: Elevatio
           )}
         />
       )),
-    [waypoints]
+    [waypoints],
   );
 
   // Bridges the chart hover to the map marker (listened to in map-inner). Dispatches the
@@ -104,8 +97,13 @@ export function ElevationDock({ hikePoints, waypoints, days, loading }: Elevatio
       }}
     >
       {/* Header strip */}
-      <div className="flex items-center justify-between px-5 shrink-0" style={{ height: DOCK_COLLAPSED_HEIGHT_PX }}>
-        <h3 className="font-display text-xs uppercase tracking-widest text-pine/60">Profil altimétrique</h3>
+      <div
+        className="flex items-center justify-between px-5 shrink-0"
+        style={{ height: DOCK_COLLAPSED_HEIGHT_PX }}
+      >
+        <h3 className="font-display text-xs uppercase tracking-widest text-pine/60">
+          Profil altimétrique
+        </h3>
 
         <div className="flex items-center gap-3">
           <span className="font-mono text-[11px] text-ink/40 font-medium">m / km</span>

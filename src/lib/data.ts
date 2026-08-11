@@ -3,7 +3,13 @@ import { cacheLife, cacheTag, revalidateTag } from 'next/cache';
 import { db } from '@/db/index';
 import { hikes, hikeWaypoints } from '@/db/schema';
 import { z } from 'zod';
-import { HikeGeometry, HikeGeometrySchema, HikeSummary, HikeSummarySchema, NewHikeRequest } from '@/types/hike-types';
+import {
+  HikeGeometry,
+  HikeGeometrySchema,
+  HikeSummary,
+  HikeSummarySchema,
+  NewHikeRequest,
+} from '@/types/hike-types';
 import { computeHikePoints, computeHikeStats } from '@/lib/geo';
 
 export async function getHikes(): Promise<HikeSummary[]> {
@@ -11,21 +17,24 @@ export async function getHikes(): Promise<HikeSummary[]> {
   cacheTag('hikes');
   cacheLife('days');
 
-  const hikeList = await db.select({
-    id: hikes.id,
-    title: hikes.title,
-    description: hikes.description,
-    date: hikes.date,
-    isLoop: hikes.isLoop,
-    people: hikes.people,
-    photoDirId: hikes.photoDirId,
-    startLat: hikes.startLat,
-    startLon: hikes.startLon,
-    distanceM: hikes.distanceM,
-    elevationGainM: hikes.elevationGainM,
-    elevationLossM: hikes.elevationLossM,
-    bbox: hikes.bbox
-  }).from(hikes).orderBy(desc(hikes.date));
+  const hikeList = await db
+    .select({
+      id: hikes.id,
+      title: hikes.title,
+      description: hikes.description,
+      date: hikes.date,
+      isLoop: hikes.isLoop,
+      people: hikes.people,
+      photoDirId: hikes.photoDirId,
+      startLat: hikes.startLat,
+      startLon: hikes.startLon,
+      distanceM: hikes.distanceM,
+      elevationGainM: hikes.elevationGainM,
+      elevationLossM: hikes.elevationLossM,
+      bbox: hikes.bbox,
+    })
+    .from(hikes)
+    .orderBy(desc(hikes.date));
 
   const result = z.array(HikeSummarySchema).safeParse(hikeList);
   if (!result.success) {
@@ -42,20 +51,24 @@ export async function getHikeGeometry(hikeId: string): Promise<HikeGeometry> {
   cacheLife('days');
 
   const [detail, waypoints] = await Promise.all([
-    db.select({
-      id: hikes.id,
-      geometry: hikes.geometry
-    }).from(hikes)
+    db
+      .select({
+        id: hikes.id,
+        geometry: hikes.geometry,
+      })
+      .from(hikes)
       .where(eq(hikes.id, hikeId)),
-    db.select({
-      id: hikeWaypoints.id,
-      category: hikeWaypoints.category,
-      name: hikeWaypoints.name,
-      description: hikeWaypoints.description,
-      indexFromStart: hikeWaypoints.indexFromStart,
-      accommodationType: hikeWaypoints.accommodationType,
-      poiType: hikeWaypoints.poiType,
-    }).from(hikeWaypoints)
+    db
+      .select({
+        id: hikeWaypoints.id,
+        category: hikeWaypoints.category,
+        name: hikeWaypoints.name,
+        description: hikeWaypoints.description,
+        indexFromStart: hikeWaypoints.indexFromStart,
+        accommodationType: hikeWaypoints.accommodationType,
+        poiType: hikeWaypoints.poiType,
+      })
+      .from(hikeWaypoints)
       .where(eq(hikeWaypoints.hikeId, hikeId))
       .orderBy(asc(hikeWaypoints.indexFromStart)),
   ]);
@@ -114,7 +127,7 @@ export async function createHike(input: NewHikeRequest): Promise<string> {
           indexFromStart: w.indexFromStart,
           accommodationType: w.accommodationType,
           poiType: w.poiType,
-        }))
+        })),
       );
     }
 

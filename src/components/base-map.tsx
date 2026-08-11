@@ -13,7 +13,14 @@ interface BaseMapProps {
   mapRef?: React.RefObject<MapRef | null>;
 }
 
-export default function BaseMap({ longitude=6.5, latitude=46.5, zoom=6, handleMapLoad, children, mapRef }: BaseMapProps) {
+export default function BaseMap({
+  longitude = 6.5,
+  latitude = 46.5,
+  zoom = 6,
+  handleMapLoad,
+  children,
+  mapRef,
+}: BaseMapProps) {
   const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
   return (
@@ -24,7 +31,7 @@ export default function BaseMap({ longitude=6.5, latitude=46.5, zoom=6, handleMa
         initialViewState={{
           longitude: longitude,
           latitude: latitude,
-          zoom: zoom
+          zoom: zoom,
         }}
         style={{ width: '100%', height: '100%' }}
         mapStyle="mapbox://styles/mapbox/outdoors-v12"

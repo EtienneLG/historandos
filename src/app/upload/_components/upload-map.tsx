@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
-import BaseMap from "@/components/base-map";
+import { useEffect, useRef } from 'react';
+import BaseMap from '@/components/base-map';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import mapboxgl, { LineLayerSpecification } from "mapbox-gl";
-import { Layer, Source, Marker } from "react-map-gl/mapbox";
-import { useUploadStore } from "@/stores/upload-store";
-import { computeHikePointsBbox } from "@/lib/geo";
-import { useResolvedWaypoints } from "@/stores/use-resolved-waypoints";
-import { getWaypointVisual } from "@/lib/waypoints";
-import { WaypointIcon } from "@/components/waypoint-icon";
+import mapboxgl, { LineLayerSpecification } from 'mapbox-gl';
+import { Layer, Source, Marker } from 'react-map-gl/mapbox';
+import { useUploadStore } from '@/stores/upload-store';
+import { computeHikePointsBbox } from '@/lib/geo';
+import { useResolvedWaypoints } from '@/stores/use-resolved-waypoints';
+import { getWaypointVisual } from '@/lib/waypoints';
+import { WaypointIcon } from '@/components/waypoint-icon';
 
 interface UploadMapProps {
   handleMapLoad: () => void;
@@ -45,12 +45,11 @@ export default function UploadMap({ handleMapLoad }: UploadMapProps) {
     if (!rawMap || hoverMarkerRef.current) return;
 
     const el = document.createElement('div');
-    el.className = 'w-4 h-4 bg-trail border-2 border-parchment-light rounded-full shadow-md shadow-ink/20 pointer-events-none hidden';
+    el.className =
+      'w-4 h-4 bg-trail border-2 border-parchment-light rounded-full shadow-md shadow-ink/20 pointer-events-none hidden';
     el.id = 'elevation-hover-dot';
 
-    const marker = new mapboxgl.Marker({ element: el })
-      .setLngLat([0, 0])
-      .addTo(rawMap);
+    const marker = new mapboxgl.Marker({ element: el }).setLngLat([0, 0]).addTo(rawMap);
 
     hoverMarkerRef.current = marker;
 
@@ -62,11 +61,11 @@ export default function UploadMap({ handleMapLoad }: UploadMapProps) {
         top: 50,
         bottom: 220,
         left: 50,
-        right: 440
+        right: 440,
       },
-      duration: 1200
+      duration: 1200,
     });
-  }
+  };
 
   useEffect(() => {
     const handleHoverBridge = (e: Event) => {
@@ -95,10 +94,7 @@ export default function UploadMap({ handleMapLoad }: UploadMapProps) {
   }, [hikePoints]);
 
   return (
-    <BaseMap
-      mapRef={mapRef}
-      handleMapLoad={onLoadComplete}
-    >
+    <BaseMap mapRef={mapRef} handleMapLoad={onLoadComplete}>
       {geometry && (
         <Source id="active-day-gpx" type="geojson" data={geometry}>
           <Layer {...dayHighlightLayerStyle} />
@@ -110,11 +106,7 @@ export default function UploadMap({ handleMapLoad }: UploadMapProps) {
         const visual = getWaypointVisual(waypoint);
 
         return (
-          <Marker
-            key={waypoint.id}
-            latitude={waypoint.lat}
-            longitude={waypoint.lon}
-          >
+          <Marker key={waypoint.id} latitude={waypoint.lat} longitude={waypoint.lon}>
             <button
               className="group relative flex items-center justify-center cursor-pointer"
               aria-label={waypoint.name}

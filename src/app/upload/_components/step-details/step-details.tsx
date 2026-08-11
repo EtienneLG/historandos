@@ -107,7 +107,9 @@ export default function StepDetails() {
 
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        throw new Error(data?.error ? JSON.stringify(data.error) : "Échec de l'enregistrement du parcours");
+        throw new Error(
+          data?.error ? JSON.stringify(data.error) : "Échec de l'enregistrement du parcours",
+        );
       }
 
       reset();
@@ -117,7 +119,7 @@ export default function StepDetails() {
       setIsProcessing(null);
     }
   };
-  
+
   return (
     <div className="h-full flex flex-col justify-between">
       {/* Scrollable waypoint list */}
@@ -125,7 +127,8 @@ export default function StepDetails() {
         <div>
           <h2 className="text-lg font-bold text-ink mb-1">Points du parcours</h2>
           <p className="text-xs text-ink/60">
-            Ajoutez vos étapes, hébergements et points d&apos;intérêt. Leur position sur le tracé se règle depuis le profil d&apos;élévation.
+            Ajoutez vos étapes, hébergements et points d&apos;intérêt. Leur position sur le tracé se
+            règle depuis le profil d&apos;élévation.
           </p>
         </div>
 
@@ -151,7 +154,13 @@ export default function StepDetails() {
           onClick={handleAddWaypoint}
           className="w-full flex items-center justify-center gap-1.5 py-2.5 text-sm font-semibold border border-dashed rounded-xl transition-all text-pine border-pine/40 hover:bg-pine/5"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2.5}
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
           Ajouter un point

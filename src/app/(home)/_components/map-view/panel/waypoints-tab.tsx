@@ -14,7 +14,14 @@ interface WaypointsTabProps {
   onSelect: (id: string | null) => void;
 }
 
-export function WaypointsTab({ waypoints, hikePoints, activeWaypointId, activeHike, loading, onSelect }: WaypointsTabProps) {
+export function WaypointsTab({
+  waypoints,
+  hikePoints,
+  activeWaypointId,
+  activeHike,
+  loading,
+  onSelect,
+}: WaypointsTabProps) {
   const days = useMemo(() => computeDaySegments(waypoints, hikePoints), [waypoints, hikePoints]);
   const openDayNumber = useUIStore((s) => s.activeDayNumber);
   const setOpenDayNumber = useUIStore((s) => s.setActiveDayNumber);
@@ -27,7 +34,7 @@ export function WaypointsTab({ waypoints, hikePoints, activeWaypointId, activeHi
     } else {
       setOpenDayNumber(dayNumber);
     }
-  } 
+  };
 
   if (loading) {
     return (
@@ -41,8 +48,18 @@ export function WaypointsTab({ waypoints, hikePoints, activeWaypointId, activeHi
   if (waypoints.length === 0) {
     return (
       <div className="h-full flex flex-col items-center justify-center gap-2 px-10 text-center">
-        <svg className="w-8 h-8 text-stone-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.4 2.2V6.8L9 4.6m0 15.4l6-2.2m-6 2.2V4.6m6 13.2l5.4 2.2V4.6L15 6.8m0 11V6.8m0 0L9 4.6" />
+        <svg
+          className="w-8 h-8 text-stone-dark"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={1.5}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M9 20l-5.4 2.2V6.8L9 4.6m0 15.4l6-2.2m-6 2.2V4.6m6 13.2l5.4 2.2V4.6L15 6.8m0 11V6.8m0 0L9 4.6"
+          />
         </svg>
         <p className="text-sm text-ink/40">Aucune étape enregistrée pour cette randonnée.</p>
       </div>
@@ -54,7 +71,7 @@ export function WaypointsTab({ waypoints, hikePoints, activeWaypointId, activeHi
       className="h-full overflow-y-auto px-5 py-4 flex flex-col gap-4"
       style={{ scrollbarGutter: 'stable' }}
     >
-      <HikeHeader activeHike={activeHike}/>
+      <HikeHeader activeHike={activeHike} />
 
       <div className="flex flex-col gap-3">
         {days.map((day) => (

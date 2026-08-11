@@ -1,6 +1,6 @@
-import { HikePoint, Waypoint } from "@/types/hike-types";
-import { GeoJSONGeometry } from "zod-geojson";
-import { create } from "zustand";
+import { HikePoint, Waypoint } from '@/types/hike-types';
+import { GeoJSONGeometry } from 'zod-geojson';
+import { create } from 'zustand';
 
 export type UploadStep = 'drop' | 'global' | 'details';
 
@@ -31,7 +31,9 @@ interface UploadState {
   goToPrevStep: () => void;
   setGeometry: (geometry: GeoJSONGeometry | null) => void;
   setHikePoints: (hikePoints: HikePoint[]) => void;
-  setGlobalData: (data: Partial<Pick<UploadState, 'title' | 'description' | 'date' | 'people' | 'photoDirId'>>) => void;
+  setGlobalData: (
+    data: Partial<Pick<UploadState, 'title' | 'description' | 'date' | 'people' | 'photoDirId'>>,
+  ) => void;
   setWaypoints: (waypoints: Waypoint[]) => void;
   addWaypoint: (waypoint: Waypoint) => void;
   updateWaypoint: (id: string, fields: Partial<Waypoint>) => void;
@@ -59,17 +61,19 @@ export const useUploadStore = create<UploadState>((set) => ({
 
   setIsProcessing: (isProcessing: string | null) => set({ isProcessing: isProcessing }),
 
-  goToNextStep: () => set((state) => {
-    const currentIndex = STEP_ORDER.indexOf(state.currentStep);
-    const nextStep = STEP_ORDER[currentIndex + 1] ?? state.currentStep;
-    return { currentStep: nextStep };
-  }),
+  goToNextStep: () =>
+    set((state) => {
+      const currentIndex = STEP_ORDER.indexOf(state.currentStep);
+      const nextStep = STEP_ORDER[currentIndex + 1] ?? state.currentStep;
+      return { currentStep: nextStep };
+    }),
 
-  goToPrevStep: () => set((state) => {
-    const currentIndex = STEP_ORDER.indexOf(state.currentStep);
-    const prevStep = STEP_ORDER[currentIndex - 1] ?? state.currentStep;
-    return { currentStep: prevStep };
-  }),
+  goToPrevStep: () =>
+    set((state) => {
+      const currentIndex = STEP_ORDER.indexOf(state.currentStep);
+      const prevStep = STEP_ORDER[currentIndex - 1] ?? state.currentStep;
+      return { currentStep: prevStep };
+    }),
 
   setGeometry: (geometry) => set({ geometry }),
 
@@ -81,15 +85,17 @@ export const useUploadStore = create<UploadState>((set) => ({
 
   addWaypoint: (waypoint) => set((state) => ({ waypoints: [...state.waypoints, waypoint] })),
 
-  updateWaypoint: (id, fields) => set((state) => ({
-    waypoints: state.waypoints.map((w) => (w.id === id ? { ...w, ...fields } : w)),
-  })),
+  updateWaypoint: (id, fields) =>
+    set((state) => ({
+      waypoints: state.waypoints.map((w) => (w.id === id ? { ...w, ...fields } : w)),
+    })),
 
-  removeWaypoint: (id) => set((state) => ({
-    waypoints: state.waypoints.filter((w) => w.id !== id),
-  })),
+  removeWaypoint: (id) =>
+    set((state) => ({
+      waypoints: state.waypoints.filter((w) => w.id !== id),
+    })),
 
   setActiveWaypointId: (id) => set({ activeWaypointId: id }),
 
   reset: () => set(initialState),
-}))
+}));

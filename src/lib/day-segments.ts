@@ -22,7 +22,11 @@ export interface DaySegment {
  * the two waypoints' own elevations), so intermediate ups and downs along
  * the trail aren't lost to a single endpoint-to-endpoint delta.
  */
-function computeSegment(from: ResolvedWaypoint, to: ResolvedWaypoint, hikePoints: HikePoint[]): WaypointSegment {
+function computeSegment(
+  from: ResolvedWaypoint,
+  to: ResolvedWaypoint,
+  hikePoints: HikePoint[],
+): WaypointSegment {
   const distanceM = to.distanceFromStartM - from.distanceFromStartM;
 
   const fromIndex = Math.min(from.indexFromStart, to.indexFromStart);
@@ -52,11 +56,18 @@ function computeSegment(from: ResolvedWaypoint, to: ResolvedWaypoint, hikePoints
  * and is used to compute real elevation gain/loss along the trail, rather
  * than just the delta between waypoints' own elevations.
  */
-export function computeDaySegments(waypoints: ResolvedWaypoint[], hikePoints: HikePoint[]): DaySegment[] {
+export function computeDaySegments(
+  waypoints: ResolvedWaypoint[],
+  hikePoints: HikePoint[],
+): DaySegment[] {
   if (waypoints.length === 0) return [];
 
   const boundaryIndexes = waypoints.reduce<number[]>((acc, waypoint, index) => {
-    if (waypoint.category === 'start' || waypoint.category === 'accommodation' || waypoint.category === 'end') {
+    if (
+      waypoint.category === 'start' ||
+      waypoint.category === 'accommodation' ||
+      waypoint.category === 'end'
+    ) {
       acc.push(index);
     }
     return acc;
@@ -77,7 +88,11 @@ export function computeDaySegments(waypoints: ResolvedWaypoint[], hikePoints: Hi
   return segments;
 }
 
-function buildDaySegment(dayNumber: number, waypoints: ResolvedWaypoint[], hikePoints: HikePoint[]): DaySegment {
+function buildDaySegment(
+  dayNumber: number,
+  waypoints: ResolvedWaypoint[],
+  hikePoints: HikePoint[],
+): DaySegment {
   let distanceM = 0;
   let gainM = 0;
   let lossM = 0;

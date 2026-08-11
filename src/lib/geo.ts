@@ -1,8 +1,8 @@
 import distance from '@turf/distance';
 import { point } from '@turf/helpers';
 import { gpx } from '@tmcw/togeojson';
-import { GeoJSONGeometry } from "zod-geojson"
-import { HikePoint } from "@/types/hike-types"
+import { GeoJSONGeometry } from 'zod-geojson';
+import { HikePoint } from '@/types/hike-types';
 
 /** Parses raw GPX XML text into a single `LineString` geometry (all tracks/segments merged in order). */
 export function gpxToGeoJson(gpxXmlText: string): GeoJSONGeometry | null {
@@ -33,7 +33,9 @@ export function computeHikePoints(geometry: GeoJSONGeometry): HikePoint[] {
 
     if (i > 0) {
       const [prevLon, prevLat] = coordinates[i - 1];
-      distanceFromStartM += distance(point([prevLon, prevLat]), point([lon, lat]), { units: 'meters' });
+      distanceFromStartM += distance(point([prevLon, prevLat]), point([lon, lat]), {
+        units: 'meters',
+      });
     }
 
     return { lon, lat, elevation, distanceFromStartM };
@@ -82,7 +84,8 @@ export function downsampleForChart(points: HikePoint[], maxPoints: number): Hike
     for (let j = currentBucketStart; j < currentBucketEnd; j++) {
       const area = Math.abs(
         (prevPoint.distanceFromStartM - avgDistance) * (points[j].elevation - prevPoint.elevation) -
-        (prevPoint.distanceFromStartM - points[j].distanceFromStartM) * (avgElevation - prevPoint.elevation)
+          (prevPoint.distanceFromStartM - points[j].distanceFromStartM) *
+            (avgElevation - prevPoint.elevation),
       );
       if (area > maxArea) {
         maxArea = area;
@@ -103,11 +106,15 @@ export function formatDistance(dist: Number): string {
   return dist.toLocaleString('fr-FR', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 1,
-  })
+  });
 }
 
 /** Extracts the (inclusive) `[fromIndex, toIndex]` slice of an ordered `HikePoint[]` track. */
-export function sliceHikePoints(hikePoints: HikePoint[], fromIndex: number, toIndex: number): HikePoint[] {
+export function sliceHikePoints(
+  hikePoints: HikePoint[],
+  fromIndex: number,
+  toIndex: number,
+): HikePoint[] {
   const from = Math.max(0, Math.min(fromIndex, toIndex));
   const to = Math.min(hikePoints.length - 1, Math.max(fromIndex, toIndex));
 
@@ -123,10 +130,15 @@ export function hikePointsToLineString(points: HikePoint[]): GeoJSONGeometry {
 }
 
 /** Computes the `[minLon, minLat, maxLon, maxLat]` bounding box of a list of `HikePoint`s. */
-export function computeHikePointsBbox(points: HikePoint[]): [number, number, number, number] | null {
+export function computeHikePointsBbox(
+  points: HikePoint[],
+): [number, number, number, number] | null {
   if (points.length === 0) return null;
 
-  let minLon = Infinity, minLat = Infinity, maxLon = -Infinity, maxLat = -Infinity;
+  let minLon = Infinity,
+    minLat = Infinity,
+    maxLon = -Infinity,
+    maxLat = -Infinity;
 
   for (const p of points) {
     if (p.lon < minLon) minLon = p.lon;
@@ -170,7 +182,9 @@ export function computeHikeStats(hikePoints: HikePoint[]): HikeStats {
 
   const first = hikePoints[0];
   const last = hikePoints[hikePoints.length - 1];
-  const startEndDistanceM = distance(point([first.lon, first.lat]), point([last.lon, last.lat]), { units: 'meters' });
+  const startEndDistanceM = distance(point([first.lon, first.lat]), point([last.lon, last.lat]), {
+    units: 'meters',
+  });
 
   return {
     distanceM: Math.round(last.distanceFromStartM),

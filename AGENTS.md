@@ -13,32 +13,36 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 Guidance for AI agents and developers working in this repository.
 
 ## What this is
+
 A **private hiking web app** (not public) for the owner and a few friends.
 Core features: browse hikes in a **list** and on a **map**, and **upload a GPX** to add a hike.
 Priorities: **simple yet robust**, solo-maintainer friendly, **Next.js on Vercel**.
 
 ## Tech Stack (core)
-| Concern | Choice |
-|---|---|
-| Framework | Next.js (**App Router**) + React + **TypeScript (strict)** |
-| Styling | **Tailwind CSS** (plain — no component library) |
-| Database | **Supabase Postgres** |
-| ORM | **Drizzle ORM** (relational API, `defineRelations`) + drizzle-kit + `postgres.js` |
-| Photo storage | **Infomaniak Drive API** (`src/lib/infomaniak.ts`) — hikes reference a `photoDirId`, photos/thumbnails are proxied server-side, never stored locally |
-| Map | **Mapbox GL JS** via `mapbox-gl` + `react-map-gl` |
-| Charts | **recharts** (elevation profile) |
-| GPX/geo parsing | `@tmcw/togeojson` (GPX → GeoJSON) + `@turf/distance` + `@turf/helpers` (stats) |
-| Auth | **jose** (JWT) + password & rotating security question |
-| Validation | **Zod** + `zod-geojson` (API input, env, geometry/bbox) |
-| Env safety | Hand-rolled `src/env.ts` with Zod (no extra dependency) |
-| Client UI state | **Zustand** (client interaction only, not server data) |
-| Lint/format | ESLint (next config) + Prettier |
-| Package manager | **npm** |
+
+| Concern         | Choice                                                                                                                                               |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Framework       | Next.js (**App Router**) + React + **TypeScript (strict)**                                                                                           |
+| Styling         | **Tailwind CSS** (plain — no component library)                                                                                                      |
+| Database        | **Supabase Postgres**                                                                                                                                |
+| ORM             | **Drizzle ORM** (relational API, `defineRelations`) + drizzle-kit + `postgres.js`                                                                    |
+| Photo storage   | **Infomaniak Drive API** (`src/lib/infomaniak.ts`) — hikes reference a `photoDirId`, photos/thumbnails are proxied server-side, never stored locally |
+| Map             | **Mapbox GL JS** via `mapbox-gl` + `react-map-gl`                                                                                                    |
+| Charts          | **recharts** (elevation profile)                                                                                                                     |
+| GPX/geo parsing | `@tmcw/togeojson` (GPX → GeoJSON) + `@turf/distance` + `@turf/helpers` (stats)                                                                       |
+| Auth            | **jose** (JWT) + password & rotating security question                                                                                               |
+| Validation      | **Zod** + `zod-geojson` (API input, env, geometry/bbox)                                                                                              |
+| Env safety      | Hand-rolled `src/env.ts` with Zod (no extra dependency)                                                                                              |
+| Client UI state | **Zustand** (client interaction only, not server data)                                                                                               |
+| Lint/format     | ESLint (next config) + Prettier                                                                                                                      |
+| Package manager | **npm**                                                                                                                                              |
 
 ### Additional dependencies
+
 **DO NOT ADD** other dependencies without approval
 
 ## Architecture
+
 ```
 Browser (App Router: Server + Client Components)
   ├─ /login              → answer password + security question → sets HTTP-only JWT cookie
@@ -57,6 +61,7 @@ Browser (App Router: Server + Client Components)
 ```
 
 ### Conventions
+
 - **Reads** (`src/lib/data.ts`) go through **Server Components**, using Drizzle with Next's
   `'use cache'` + `cacheTag('hikes')` + `cacheLife('days')`.
 - **Mutations** go through **Route Handlers** and call `revalidateTag('hikes', 'days')` after writing.
@@ -69,17 +74,20 @@ Browser (App Router: Server + Client Components)
   source of truth for both API validation and TS types (`z.infer`).
 
 ## Auth model
+
 - No shared single secret. Login (`/login`) requires **both** a password (`LOGIN_PASSWORD`) and
   the correct answer to a **random security question**, fetched via `getQA()` from an
   Infomaniak-hosted QA list (`INFOMANIAK_LOGIN_QA_ID`).
 - `POST /api/login/qa/answer` verifies both, then signs a **JWT** (`jose`, HMAC) stored in an
-  **HTTP-only cookie** (`authentificated`).
+  **HTTP-only cookie** (`authenticated`).
 - **`proxy.ts`** verifies the cookie on all routes **except** `/api/login`, static assets, and
   Next internals; redirects unauthenticated requests to `/login`.
 - No auth provider, no users table. Secrets live only in Vercel env vars — never commit them.
 
 ## GPX handling
+
 **GPX is parsed client-side during upload and never persisted as a file.**
+
 1. The upload wizard parses the `.gpx` (via `@tmcw/togeojson`) and derives geometry, stats
    (distance/elevation gain-loss via `@turf/*`), and waypoints in the browser.
 2. `POST /api/hikes` receives the derived **JSON** payload (Zod-validated
@@ -89,6 +97,7 @@ Browser (App Router: Server + Client Components)
    (The legacy `gpxPath` column on `hikes` is unused and always `null`.)
 
 ## Data model (Drizzle, `src/db/schema.ts`)
+
 - **`hikes`**: `id` uuid (pk), `title`, `description`, `date`, `isLoop` bool, `people` text[],
   `photoDirId` int (Infomaniak folder), `startLat`/`startLon`, derived stats `distanceM` /
   `elevationGainM` / `elevationLossM`, `bbox` jsonb, `geometry` jsonb (GeoJSON LineString),
@@ -101,6 +110,7 @@ Browser (App Router: Server + Client Components)
   waypoints.
 
 ## Environment variables
+
 - `DATABASE_URL` — Supabase Postgres connection string (`DIRECT_DATABASE_URL` optional, for
   migrations needing a non-pooled connection)
 - `JWT_SECRET_KEY` — signing key for the session JWT
