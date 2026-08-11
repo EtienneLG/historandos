@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { HikeSummary } from '@/types/hike-types';
 import ListView from './list-view/index';
 import MapViewWrapper from './map-view/index';
@@ -93,6 +94,26 @@ export default function HomeShell({ hikes }: HomeShellProps) {
               Carte
             </button>
           </nav>
+
+          {/* Divider */}
+          <div className="w-px h-6 bg-stone" />
+
+          {/* Add Hike Button */}
+          <Link
+            href="/upload"
+            className="flex items-center gap-2 h-9 px-4 bg-blaze hover:bg-blaze-dark text-parchment-light text-sm font-semibold rounded-lg shadow-sm shadow-blaze/30 transition-all active:scale-[0.98]"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Ajouter une rando
+          </Link>
         </div>
       </SiteHeader>
 
