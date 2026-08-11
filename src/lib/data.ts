@@ -41,27 +41,28 @@ export async function getHikeGeometry(hikeId: string): Promise<HikeGeometry> {
   cacheTag('hikes');
   cacheLife('days');
 
-  const detail = await db.select({
-    id: hikes.id,
-    geometry: hikes.geometry
-  }).from(hikes)
-    .where(eq(hikes.id, hikeId));
+  const [detail, waypoints] = await Promise.all([
+    db.select({
+      id: hikes.id,
+      geometry: hikes.geometry
+    }).from(hikes)
+      .where(eq(hikes.id, hikeId)),
+    db.select({
+      id: hikeWaypoints.id,
+      category: hikeWaypoints.category,
+      name: hikeWaypoints.name,
+      description: hikeWaypoints.description,
+      indexFromStart: hikeWaypoints.indexFromStart,
+      accommodationType: hikeWaypoints.accommodationType,
+      poiType: hikeWaypoints.poiType,
+    }).from(hikeWaypoints)
+      .where(eq(hikeWaypoints.hikeId, hikeId))
+      .orderBy(asc(hikeWaypoints.indexFromStart)),
+  ]);
 
   if (detail.length === 0) {
     throw new Error(`Hike not found: ${hikeId}`);
   }
-
-  const waypoints = await db.select({
-    id: hikeWaypoints.id,
-    category: hikeWaypoints.category,
-    name: hikeWaypoints.name,
-    description: hikeWaypoints.description,
-    indexFromStart: hikeWaypoints.indexFromStart,
-    accommodationType: hikeWaypoints.accommodationType,
-    poiType: hikeWaypoints.poiType,
-  }).from(hikeWaypoints)
-    .where(eq(hikeWaypoints.hikeId, hikeId))
-    .orderBy(asc(hikeWaypoints.indexFromStart));
 
   const result = HikeGeometrySchema.safeParse({ ...detail[0], waypoints });
   if (!result.success) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import Map, { Source, Layer, Marker, LineLayerSpecification } from 'react-map-gl/mapbox';
+import { Source, Layer, Marker, LineLayerSpecification } from 'react-map-gl/mapbox';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { HUDPanel } from "./hud-panel";
@@ -15,7 +15,7 @@ import { useHikeGeometry } from "@/stores/use-hike-geometry";
 import { useActiveHike } from "@/stores/use-active-hike";
 import { useHikePoints } from "@/stores/use-hike-points";
 import { useResolvedWaypoints } from "@/stores/use-resolved-waypoints";
-import { computeDaySegments, dayIndexRange } from "@/lib/day-segments";
+import { computeDaySegments, buildDayNumberIndex, dayIndexRange } from "@/lib/day-segments";
 import { computeHikePointsBbox, hikePointsToLineString, sliceHikePoints } from "@/lib/geo";
 
 interface MapInnerProps {
@@ -26,7 +26,7 @@ export default function MapInner({ hikes }: MapInnerProps) {
   const activeHikeId = useUIStore((s) => s.activeHikeId);
   const setActiveHikeId = useUIStore((s) => s.setActiveHikeId);
   const activeWaypointId = useUIStore((s) => s.activeWaypointId);
-  const setActiveWaypointId = useUIStore((s) => s.setActiveWaypointId);
+  const selectWaypoint = useUIStore((s) => s.selectWaypoint);
   const activeDayNumber = useUIStore((s) => s.activeDayNumber);
   const dockCollapsed = useUIStore((s) => s.dockCollapsed);
   const activeHike = useActiveHike(hikes);
@@ -38,6 +38,7 @@ export default function MapInner({ hikes }: MapInnerProps) {
     () => computeDaySegments(resolvedWaypoints, hikePoints),
     [resolvedWaypoints, hikePoints]
   );
+  const dayNumberByWaypointId = useMemo(() => buildDayNumberIndex(days), [days]);
   const activeDay = useMemo(
     () => days.find((d) => d.dayNumber === activeDayNumber) ?? null,
     [days, activeDayNumber]
@@ -235,7 +236,7 @@ export default function MapInner({ hikes }: MapInnerProps) {
                 key={waypoint.id}
                 latitude={waypoint.lat}
                 longitude={waypoint.lon}
-                onClick={() => setActiveWaypointId(waypoint.id)}
+                onClick={() => selectWaypoint(waypoint.id, dayNumberByWaypointId.get(waypoint.id) ?? null)}
               >
                 <button
                   className="group relative flex items-center justify-center cursor-pointer"
@@ -273,6 +274,7 @@ export default function MapInner({ hikes }: MapInnerProps) {
         <ElevationDock
           hikePoints={hikePoints}
           waypoints={resolvedWaypoints}
+          days={days}
           loading={loading}
         />
       )}

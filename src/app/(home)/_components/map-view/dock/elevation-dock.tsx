@@ -1,8 +1,10 @@
 'use client';
 
+import { useMemo } from 'react';
 import { ReferenceDot, ReferenceLine } from 'recharts';
 import BaseChart from '@/components/base-chart';
 import { WaypointChartLine, WaypointChartPin } from '@/components/waypoint-chart';
+import { buildDayNumberIndex, DaySegment } from '@/lib/day-segments';
 import {
   DOCK_COLLAPSED_HEIGHT_PX,
   DOCK_HEIGHT_PX,
@@ -14,14 +16,21 @@ import { HikePoint, ResolvedWaypoint } from '@/types/hike-types';
 interface ElevationDockProps {
   hikePoints: HikePoint[];
   waypoints: ResolvedWaypoint[];
+  days: DaySegment[];
   loading: boolean;
 }
 
-export function ElevationDock({ hikePoints, waypoints, loading }: ElevationDockProps) {
+export function ElevationDock({ hikePoints, waypoints, days, loading }: ElevationDockProps) {
   const dockCollapsed = useUIStore((s) => s.dockCollapsed);
   const toggleDockCollapsed = useUIStore((s) => s.toggleDockCollapsed);
   const activeWaypointId = useUIStore((s) => s.activeWaypointId);
-  const setActiveWaypointId = useUIStore((s) => s.setActiveWaypointId);
+  const selectWaypoint = useUIStore((s) => s.selectWaypoint);
+
+  const dayNumberByWaypointId = useMemo(() => buildDayNumberIndex(days), [days]);
+
+  const handleSelectWaypoint = (id: string) => {
+    selectWaypoint(id, dayNumberByWaypointId.get(id) ?? null);
+  };
 
   // Bridges the chart hover to the map marker (listened to in map-inner).
   const handleMouseMove = (e?: { activeTooltipIndex?: number }) => {
@@ -92,7 +101,7 @@ export function ElevationDock({ hikePoints, waypoints, loading }: ElevationDockP
                         {...props}
                         waypoint={waypoint}
                         isActive={activeWaypointId === waypoint.id}
-                        onSelect={setActiveWaypointId}
+                        onSelect={handleSelectWaypoint}
                       />
                     )}
                   />
@@ -109,7 +118,7 @@ export function ElevationDock({ hikePoints, waypoints, loading }: ElevationDockP
                         {...props}
                         waypoint={waypoint}
                         isActive={activeWaypointId === waypoint.id}
-                        onSelect={setActiveWaypointId}
+                        onSelect={handleSelectWaypoint}
                       />
                     )}
                   />

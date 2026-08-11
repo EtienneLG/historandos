@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from 'react';
-import { computeDaySegments, findDayNumberForWaypoint } from '@/lib/day-segments';
+import { useMemo } from 'react';
+import { computeDaySegments } from '@/lib/day-segments';
 import { HikePoint, HikeSummary, ResolvedWaypoint } from '@/types/hike-types';
 import { useUIStore } from '@/stores/ui-store';
 import { DaySection } from './day-section';
@@ -18,10 +18,7 @@ export function WaypointsTab({ waypoints, hikePoints, activeWaypointId, activeHi
   const days = useMemo(() => computeDaySegments(waypoints, hikePoints), [waypoints, hikePoints]);
   const openDayNumber = useUIStore((s) => s.activeDayNumber);
   const setOpenDayNumber = useUIStore((s) => s.setActiveDayNumber);
-
-  useEffect(() => {
-    setOpenDayNumber(findDayNumberForWaypoint(days, activeWaypointId));
-  }, [activeWaypointId]);
+  const selectWaypoint = useUIStore((s) => s.selectWaypoint);
 
   const handleDaySelection = (dayNumber: number) => {
     if (openDayNumber === dayNumber) {
@@ -68,7 +65,7 @@ export function WaypointsTab({ waypoints, hikePoints, activeWaypointId, activeHi
             isOpen={openDayNumber === day.dayNumber}
             activeWaypointId={activeWaypointId}
             onToggle={() => handleDaySelection(day.dayNumber)}
-            onSelectWaypoint={onSelect}
+            onSelectWaypoint={(id) => selectWaypoint(id, day.dayNumber)}
           />
         ))}
       </div>

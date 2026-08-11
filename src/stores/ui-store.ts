@@ -15,6 +15,7 @@ interface UIState {
     setPanelTab: (tab: PanelTab) => void;
     setActiveWaypointId: (id: string | null) => void;
     setActiveDayNumber: (day: number | null) => void;
+    selectWaypoint: (id: string | null, dayNumber: number | null) => void;
     toggleDockCollapsed: () => void;
 }
 
@@ -31,5 +32,6 @@ export const useUIStore = create<UIState>((set) => ({
     setPanelTab: (tab) => set({ panelTab: tab }),
     setActiveWaypointId: (id) => set({ activeWaypointId: id }),
     setActiveDayNumber: (day) => set({ activeDayNumber: day }),
+    selectWaypoint: (id, dayNumber) => set({ activeWaypointId: id, activeDayNumber: dayNumber }),
     toggleDockCollapsed: () => set((s) => ({ dockCollapsed: !s.dockCollapsed }))
 }))

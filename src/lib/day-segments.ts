@@ -92,12 +92,15 @@ function buildDaySegment(dayNumber: number, waypoints: ResolvedWaypoint[], hikeP
   return { dayNumber, waypoints, distanceM, gainM, lossM };
 }
 
-/** Finds the day number containing the given waypoint id, if any. */
-export function findDayNumberForWaypoint(days: DaySegment[], waypointId: string | null): number | null {
-  if (!waypointId) return null;
-
-  const day = days.find((d) => d.waypoints.some((w) => w.id === waypointId));
-  return day?.dayNumber ?? null;
+/** Builds a `waypointId → dayNumber` lookup index from computed day segments. */
+export function buildDayNumberIndex(days: DaySegment[]): Map<string, number> {
+  const index = new Map<string, number>();
+  for (const day of days) {
+    for (const waypoint of day.waypoints) {
+      index.set(waypoint.id, day.dayNumber);
+    }
+  }
+  return index;
 }
 
 /**
