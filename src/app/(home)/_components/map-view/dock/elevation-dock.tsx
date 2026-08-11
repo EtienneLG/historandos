@@ -5,6 +5,7 @@ import { ReferenceDot, ReferenceLine } from 'recharts';
 import BaseChart from '@/components/base-chart';
 import { WaypointChartLine, WaypointChartPin } from '@/components/waypoint-chart';
 import { buildDayNumberIndex, DaySegment } from '@/lib/day-segments';
+import { downsampleForChart } from '@/lib/geo';
 import {
   DOCK_COLLAPSED_HEIGHT_PX,
   DOCK_HEIGHT_PX,
@@ -12,6 +13,15 @@ import {
 } from '@/lib/waypoints';
 import { useUIStore } from '@/stores/ui-store';
 import { HikePoint, ResolvedWaypoint } from '@/types/hike-types';
+
+/**
+ * Max number of points fed to the elevation chart. GPX tracks can hold thousands of
+ * raw coordinates; recharts recomputes the full SVG path on every re-render (e.g. on
+ * every waypoint/day selection), which becomes very costly at full resolution. This
+ * only affects the chart's backing series — map layers, stats and waypoint placement
+ * all keep using the full-resolution `hikePoints`.
+ */
+const CHART_MAX_POINTS = 600;
 
 interface ElevationDockProps {
   hikePoints: HikePoint[];
@@ -23,19 +33,61 @@ interface ElevationDockProps {
 export function ElevationDock({ hikePoints, waypoints, days, loading }: ElevationDockProps) {
   const dockCollapsed = useUIStore((s) => s.dockCollapsed);
   const toggleDockCollapsed = useUIStore((s) => s.toggleDockCollapsed);
-  const activeWaypointId = useUIStore((s) => s.activeWaypointId);
   const selectWaypoint = useUIStore((s) => s.selectWaypoint);
 
   const dayNumberByWaypointId = useMemo(() => buildDayNumberIndex(days), [days]);
+  // Computed once per hike (keyed on the stable hikePoints reference), not on every
+  // waypoint/day selection re-render.
+  const chartPoints = useMemo(
+    () => downsampleForChart(hikePoints, CHART_MAX_POINTS),
+    [hikePoints]
+  );
 
   const handleSelectWaypoint = (id: string) => {
     selectWaypoint(id, dayNumberByWaypointId.get(id) ?? null);
   };
 
-  // Bridges the chart hover to the map marker (listened to in map-inner).
+  // Kept stable across re-renders (only depends on `waypoints`), so recharts doesn't
+  // treat these as brand-new children (and redo layout) on every unrelated re-render.
+  const waypointLines = useMemo(
+    () =>
+      waypoints.map((waypoint) => (
+        <ReferenceLine
+          key={waypoint.id}
+          x={waypoint.distanceFromStartM}
+          ifOverflow="visible"
+          shape={(props) => (
+            <WaypointChartLine {...props} waypoint={waypoint} onSelect={handleSelectWaypoint} />
+          )}
+        />
+      )),
+    [waypoints]
+  );
+
+  const waypointPins = useMemo(
+    () =>
+      waypoints.map((waypoint) => (
+        <ReferenceDot
+          key={waypoint.id}
+          x={waypoint.distanceFromStartM}
+          y={waypoint.elevation}
+          yAxisId={0}
+          ifOverflow="visible"
+          shape={(props) => (
+            <WaypointChartPin {...props} waypoint={waypoint} onSelect={handleSelectWaypoint} />
+          )}
+        />
+      )),
+    [waypoints]
+  );
+
+  // Bridges the chart hover to the map marker (listened to in map-inner). Dispatches the
+  // actual hovered point (not its index) since `chartPoints` is a downsampled view of
+  // `hikePoints` and indices between the two arrays don't line up.
   const handleMouseMove = (e?: { activeTooltipIndex?: number }) => {
     if (e && e.activeTooltipIndex !== undefined) {
-      window.dispatchEvent(new CustomEvent('trace-point-hover', { detail: e.activeTooltipIndex }));
+      const point = chartPoints[e.activeTooltipIndex] ?? null;
+      window.dispatchEvent(new CustomEvent('trace-point-hover', { detail: point }));
     }
   };
 
@@ -87,42 +139,12 @@ export function ElevationDock({ hikePoints, waypoints, days, loading }: Elevatio
           ) : (
             <div className="h-full w-full bg-stone/20 rounded-2xl p-2 border border-stone">
               <BaseChart
-                data={hikePoints}
+                data={chartPoints}
                 handleMouseMove={handleMouseMove}
                 handleMouseLeave={handleMouseLeave}
               >
-                {waypoints.map((waypoint) => (
-                  <ReferenceLine
-                    key={waypoint.id}
-                    x={waypoint.distanceFromStartM}
-                    ifOverflow="visible"
-                    shape={(props) => (
-                      <WaypointChartLine
-                        {...props}
-                        waypoint={waypoint}
-                        isActive={activeWaypointId === waypoint.id}
-                        onSelect={handleSelectWaypoint}
-                      />
-                    )}
-                  />
-                ))}
-                {waypoints.map((waypoint) => (
-                  <ReferenceDot
-                    key={waypoint.id}
-                    x={waypoint.distanceFromStartM}
-                    y={waypoint.elevation}
-                    yAxisId={0}
-                    ifOverflow="visible"
-                    shape={(props) => (
-                      <WaypointChartPin
-                        {...props}
-                        waypoint={waypoint}
-                        isActive={activeWaypointId === waypoint.id}
-                        onSelect={handleSelectWaypoint}
-                      />
-                    )}
-                  />
-                ))}
+                {waypointLines}
+                {waypointPins}
               </BaseChart>
             </div>
           )}

@@ -1,6 +1,7 @@
 // src/app/upload/_components/ElevationChart.tsx
 'use client';
 
+import React from 'react';
 import { formatDistance } from '@/lib/geo';
 import { HikePoint } from '@/types/hike-types';
 import {
@@ -35,7 +36,7 @@ const CleanTooltip = ({ active, payload }: any) => {
   return null;
 };
 
-export default function BaseChart({
+export default React.memo(function BaseChart({
   data,
   handleMouseMove,
   handleMouseLeave,
@@ -130,4 +131,4 @@ export default function BaseChart({
       </ComposedChart>
     </ResponsiveContainer>
   );
-}
+});

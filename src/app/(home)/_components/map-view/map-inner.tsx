@@ -73,20 +73,17 @@ export default function MapInner({ hikes }: MapInnerProps) {
 
   useEffect(() => {
     const handleHoverBridge = (e: Event) => {
-      const index = (e as CustomEvent).detail;
+      const point = (e as CustomEvent).detail as { lon: number; lat: number } | null;
       const marker = hoverMarkerRef.current;
 
-      if (!marker || !hikePoints) return;
+      if (!marker) return;
 
-      if (index === null) {
+      if (point === null) {
         document.getElementById('elevation-hover-dot')?.classList.add('hidden');
         return;
       }
 
-      const activePoint = hikePoints[index];
-      if (!activePoint) return;
-
-      marker.setLngLat([activePoint.lon, activePoint.lat]);
+      marker.setLngLat([point.lon, point.lat]);
       document.getElementById('elevation-hover-dot')?.classList.remove('hidden');
     };
 
@@ -95,7 +92,7 @@ export default function MapInner({ hikes }: MapInnerProps) {
     return () => {
       window.removeEventListener('trace-point-hover', handleHoverBridge);
     };
-  }, [hikePoints]);
+  }, []);
 
   useEffect(() => {
     if (!activeHike || !mapRef.current) return;

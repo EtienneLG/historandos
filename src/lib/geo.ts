@@ -40,6 +40,64 @@ export function computeHikePoints(geometry: GeoJSONGeometry): HikePoint[] {
   });
 }
 
+/**
+ * Downsamples a `HikePoint[]` for chart display using the Largest-Triangle-Three-Buckets
+ * (LTTB) algorithm. Unlike naive fixed-stride decimation, LTTB preserves visually
+ * significant points (summits, sharp drops) instead of averaging them away.
+ * The first and last points are always kept so the chart's start/end (distance, elevation)
+ * stay exact. No-op if `points` already has `maxPoints` or fewer entries.
+ */
+export function downsampleForChart(points: HikePoint[], maxPoints: number): HikePoint[] {
+  const n = points.length;
+  if (maxPoints >= n || maxPoints <= 2) return points;
+
+  const sampled: HikePoint[] = [points[0]];
+  // Buckets exclude the first and last points, which are always kept as-is.
+  const bucketSize = (n - 2) / (maxPoints - 2);
+  let previousSelectedIndex = 0;
+
+  for (let i = 0; i < maxPoints - 2; i++) {
+    // Average point of the next bucket, used as one vertex of the triangle.
+    const nextBucketStart = Math.floor((i + 1) * bucketSize) + 1;
+    const nextBucketEnd = Math.min(Math.floor((i + 2) * bucketSize) + 1, n);
+
+    let avgDistance = 0;
+    let avgElevation = 0;
+    const nextBucketLength = nextBucketEnd - nextBucketStart;
+    for (let j = nextBucketStart; j < nextBucketEnd; j++) {
+      avgDistance += points[j].distanceFromStartM;
+      avgElevation += points[j].elevation;
+    }
+    avgDistance /= nextBucketLength;
+    avgElevation /= nextBucketLength;
+
+    // Current bucket range to pick the point maximizing the triangle area from.
+    const currentBucketStart = Math.floor(i * bucketSize) + 1;
+    const currentBucketEnd = Math.floor((i + 1) * bucketSize) + 1;
+
+    const prevPoint = points[previousSelectedIndex];
+    let maxArea = -1;
+    let maxAreaIndex = currentBucketStart;
+
+    for (let j = currentBucketStart; j < currentBucketEnd; j++) {
+      const area = Math.abs(
+        (prevPoint.distanceFromStartM - avgDistance) * (points[j].elevation - prevPoint.elevation) -
+        (prevPoint.distanceFromStartM - points[j].distanceFromStartM) * (avgElevation - prevPoint.elevation)
+      );
+      if (area > maxArea) {
+        maxArea = area;
+        maxAreaIndex = j;
+      }
+    }
+
+    sampled.push(points[maxAreaIndex]);
+    previousSelectedIndex = maxAreaIndex;
+  }
+
+  sampled.push(points[n - 1]);
+  return sampled;
+}
+
 /** Format a number to the french format */
 export function formatDistance(dist: Number): string {
   return dist.toLocaleString('fr-FR', {
