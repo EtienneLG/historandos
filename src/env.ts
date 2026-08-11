@@ -8,7 +8,6 @@ const envSchema = z.object({
 
   INFOMANIAK_DRIVE_SECRET: z.string().min(1),
   INFOMANIAK_DRIVE_ID: z.string().min(1),
-  INFOMANIAK_METADATA_ID: z.string().min(1),
   INFOMANIAK_LOGIN_QA_ID: z.string().min(1),
   INFOMANIAK_TRACE_DIR_ID: z.string().min(1),
 });

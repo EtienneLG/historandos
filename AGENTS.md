@@ -116,7 +116,7 @@ Browser (App Router: Server + Client Components)
 - `JWT_SECRET_KEY` — signing key for the session JWT
 - `LOGIN_PASSWORD` — password entered at `/login`, checked alongside the security question
 - `INFOMANIAK_DRIVE_SECRET`, `INFOMANIAK_DRIVE_ID` — Infomaniak Drive API credentials
-- `INFOMANIAK_METADATA_ID`, `INFOMANIAK_LOGIN_QA_ID`, `INFOMANIAK_TRACE_DIR_ID` — Drive file/dir
+- `INFOMANIAK_LOGIN_QA_ID`, `INFOMANIAK_TRACE_DIR_ID` — Drive file/dir
   IDs for metadata, login QA list, and trace storage
 - `NEXT_PUBLIC_MAPBOX_TOKEN` — client-side Mapbox GL token
 
