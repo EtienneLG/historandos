@@ -70,7 +70,7 @@ export default function ElevationChart() {
       nodes?.dot?.removeAttribute('transform');
 
       if (lastValidIndexRef.current !== null) {
-        updateWaypoint(draggingSplitterId, { indexFromStart: lastValidIndexRef.current });
+        updateWaypoint(draggingSplitterId, { indexFromStart: Number(lastValidIndexRef.current) });
       }
     }
     setDraggingSplitterId(null);

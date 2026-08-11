@@ -11,7 +11,7 @@ export default function StepGlobal() {
   const [title, setTitle] = useState<string>(useUploadStore((s) => s.title));
   const [people, setPeople] = useState<string[]>(useUploadStore((s) => s.people));
   const [date, setDate] = useState<string>(useUploadStore((s) => s.date));
-  const [description, setDescription] = useState<string>(useUploadStore((s) => s.date));
+  const [description, setDescription] = useState<string>(useUploadStore((s) => s.description));
   const [photoDirectoryId, setPhotoDirectoryId] = useState<number>(useUploadStore((s) => s.photoDirId));
 
   const saveGlobalData = () => {

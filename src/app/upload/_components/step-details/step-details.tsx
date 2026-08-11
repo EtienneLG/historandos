@@ -1,12 +1,15 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useUploadStore } from '@/stores/upload-store';
 import { useResolvedWaypoints } from '@/stores/use-resolved-waypoints';
 import { Waypoint } from '@/types/hike-types';
 import WaypointCard from './waypoint-card';
 
 export default function StepDetails() {
+  const router = useRouter();
+
   const hikePoints = useUploadStore((s) => s.hikePoints);
   const waypoints = useUploadStore((s) => s.waypoints);
   const addWaypoint = useUploadStore((s) => s.addWaypoint);
@@ -15,6 +18,9 @@ export default function StepDetails() {
   const goToPrevStep = useUploadStore((s) => s.goToPrevStep);
   const activeWaypointId = useUploadStore((s) => s.activeWaypointId);
   const setActiveWaypointId = useUploadStore((s) => s.setActiveWaypointId);
+  const isProcessing = useUploadStore((s) => s.isProcessing);
+  const setIsProcessing = useUploadStore((s) => s.setIsProcessing);
+  const reset = useUploadStore((s) => s.reset);
 
   const resolvedWaypoints = useResolvedWaypoints(waypoints, hikePoints);
 
@@ -73,6 +79,44 @@ export default function StepDetails() {
     addWaypoint(newWaypoint);
     setActiveWaypointId(newWaypoint.id);
   };
+
+  const handleSave = async () => {
+    const state = useUploadStore.getState();
+
+    if (!state.geometry) {
+      alert("Aucun tracé n'a été chargé.");
+      return;
+    }
+
+    setIsProcessing('Enregistrement du parcours');
+
+    try {
+      const response = await fetch('/api/hikes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: state.title,
+          description: state.description,
+          date: state.date,
+          people: state.people,
+          photoDirId: state.photoDirId,
+          geometry: state.geometry,
+          waypoints: state.waypoints.map(({ id: _id, ...rest }) => rest),
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.error ? JSON.stringify(data.error) : "Échec de l'enregistrement du parcours");
+      }
+
+      reset();
+      router.push('/');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Erreur lors de l'enregistrement du parcours");
+      setIsProcessing(null);
+    }
+  };
   
   return (
     <div className="h-full flex flex-col justify-between">
@@ -126,8 +170,9 @@ export default function StepDetails() {
 
         <button
           type="button"
-          onClick={() => void 0}
-          className="flex-1 px-4 py-2 text-sm font-semibold bg-pine text-parchment-light rounded-xl hover:bg-pine-dark transition-colors text-center shadow"
+          onClick={handleSave}
+          disabled={!!isProcessing}
+          className="flex-1 px-4 py-2 text-sm font-semibold bg-pine text-parchment-light rounded-xl hover:bg-pine-dark transition-colors text-center shadow disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Enregistrer le parcours
         </button>

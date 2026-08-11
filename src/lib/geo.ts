@@ -79,3 +79,48 @@ export function computeHikePointsBbox(points: HikePoint[]): [number, number, num
 
   return [minLon, minLat, maxLon, maxLat];
 }
+
+export interface HikeStats {
+  distanceM: number;
+  elevationGainM: number;
+  elevationLossM: number;
+  bbox: [number, number, number, number];
+  startLat: number;
+  startLon: number;
+  isLoop: boolean;
+}
+
+/** Below this start/end distance (in meters), a track is considered a loop. */
+const LOOP_DISTANCE_THRESHOLD_M = 50;
+
+/** Computes the hike's derived stats */
+export function computeHikeStats(hikePoints: HikePoint[]): HikeStats {
+  if (hikePoints.length < 2) {
+    throw new Error('computeHikeStats requires at least 2 points');
+  }
+
+  let elevationGainM = 0;
+  let elevationLossM = 0;
+
+  for (let i = 1; i < hikePoints.length; i++) {
+    const delta = hikePoints[i].elevation - hikePoints[i - 1].elevation;
+    if (delta > 0) elevationGainM += delta;
+    else elevationLossM += -delta;
+  }
+
+  const bbox = computeHikePointsBbox(hikePoints)!;
+
+  const first = hikePoints[0];
+  const last = hikePoints[hikePoints.length - 1];
+  const startEndDistanceM = distance(point([first.lon, first.lat]), point([last.lon, last.lat]), { units: 'meters' });
+
+  return {
+    distanceM: Math.round(last.distanceFromStartM),
+    elevationGainM: Math.round(elevationGainM),
+    elevationLossM: Math.round(elevationLossM),
+    bbox,
+    startLat: first.lat,
+    startLon: first.lon,
+    isLoop: startEndDistanceM < LOOP_DISTANCE_THRESHOLD_M,
+  };
+}

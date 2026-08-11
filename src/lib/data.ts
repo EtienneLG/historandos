@@ -1,9 +1,10 @@
 import { asc, desc, eq } from 'drizzle-orm';
-import { cacheLife, cacheTag } from 'next/cache';
+import { cacheLife, cacheTag, revalidateTag } from 'next/cache';
 import { db } from '@/db/index';
 import { hikes, hikeWaypoints } from '@/db/schema';
 import { z } from 'zod';
-import { HikeGeometry, HikeGeometrySchema, HikeSummary, HikeSummarySchema } from '@/types/hike-types';
+import { HikeGeometry, HikeGeometrySchema, HikeSummary, HikeSummarySchema, NewHikeRequest } from '@/types/hike-types';
+import { computeHikePoints, computeHikeStats } from '@/lib/geo';
 
 export async function getHikes(): Promise<HikeSummary[]> {
   'use cache';
@@ -69,4 +70,57 @@ export async function getHikeGeometry(hikeId: string): Promise<HikeGeometry> {
   }
 
   return result.data;
+}
+
+export async function createHike(input: NewHikeRequest): Promise<string> {
+  const { title, description, date, people, photoDirId, geometry, waypoints } = input;
+
+  const hikePoints = computeHikePoints(geometry);
+  if (hikePoints.length < 2) {
+    throw new Error('geometry must resolve to at least 2 points');
+  }
+
+  const stats = computeHikeStats(hikePoints);
+
+  const insertedId = await db.transaction(async (tx) => {
+    const [inserted] = await tx
+      .insert(hikes)
+      .values({
+        title,
+        description,
+        date,
+        isLoop: stats.isLoop,
+        people,
+        photoDirId,
+        startLat: stats.startLat,
+        startLon: stats.startLon,
+        distanceM: stats.distanceM,
+        elevationGainM: stats.elevationGainM,
+        elevationLossM: stats.elevationLossM,
+        bbox: stats.bbox,
+        geometry,
+        gpxPath: null,
+      })
+      .returning({ id: hikes.id });
+
+    if (waypoints.length > 0) {
+      await tx.insert(hikeWaypoints).values(
+        waypoints.map((w) => ({
+          hikeId: inserted.id,
+          category: w.category,
+          name: w.name,
+          description: w.description,
+          indexFromStart: w.indexFromStart,
+          accommodationType: w.accommodationType,
+          poiType: w.poiType,
+        }))
+      );
+    }
+
+    return inserted.id;
+  });
+
+  revalidateTag('hikes', 'days');
+
+  return insertedId;
 }

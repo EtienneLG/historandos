@@ -44,8 +44,9 @@ export const hikes = pgTable('hikes', {
   bbox: jsonb('bbox').notNull(),
   geometry: jsonb('geometry').notNull(),
 
-  // Raw .gpx object path in Supabase Storage
-  gpxPath: text('gpx_path').notNull(),
+  // Raw .gpx object path in Supabase Storage.
+  // Nullable for now: Storage upload isn't wired up yet, see AGENTS.md.
+  gpxPath: text('gpx_path'),
 
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });

@@ -54,6 +54,23 @@ export const HikeGeometrySchema = z.object({
   waypoints: z.array(WaypointSchema)
 })
 
+/** Waypoint payload as sent by the upload client — no DB id yet, the server assigns one. */
+export const NewWaypointSchema = WaypointSchema.omit({ id: true });
+
+/** Body of `POST /api/hikes` */
+export const NewHikeRequestSchema = z.object({
+  title: z.string().min(1),
+  description: z.string(),
+  date: z.iso.date(),
+  people: z.array(z.string()),
+  photoDirId: z.int().positive(),
+  geometry: GeoJSONGeometrySchema.refine(
+    (g) => g.type === 'LineString' && g.coordinates.length >= 2,
+    { message: 'geometry must be a LineString with at least 2 points' }
+  ),
+  waypoints: z.array(NewWaypointSchema),
+})
+
 export interface HikePoint {
   lon: number;
   lat: number;
@@ -63,6 +80,8 @@ export interface HikePoint {
 
 export type HikeSummary = z.infer<typeof HikeSummarySchema>;
 export type HikeGeometry = z.infer<typeof HikeGeometrySchema>;
+export type NewHikeRequest = z.infer<typeof NewHikeRequestSchema>;
+export type NewWaypointInput = z.infer<typeof NewWaypointSchema>;
 export type Waypoint = z.infer<typeof WaypointSchema>;
 export type WaypointCategory = z.infer<typeof WaypointCategorySchema>;
 export type AccommodationType = z.infer<typeof AccommodationTypeSchema>;
