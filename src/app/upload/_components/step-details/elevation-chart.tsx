@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { ReferenceDot, ReferenceLine } from 'recharts';
 import BaseChart from '@/components/base-chart';
 import { WaypointChartLine, WaypointChartPin } from '@/components/waypoint-chart';
@@ -43,7 +43,7 @@ export default function ElevationChart() {
   };
 
   // Detect if the user clicked a nearby, draggable splitter.
-  const handleChartMouseDown = (nextState: any) => {
+  const handleChartMouseDown = useCallback((nextState: any) => {
     if (!nextState || typeof nextState.activeTooltipIndex === 'undefined') return;
 
     const clickedIndex = nextState.activeTooltipIndex;
@@ -58,10 +58,10 @@ export default function ElevationChart() {
       dragStartPixelXRef.current = nextState.activeCoordinate?.x ?? null;
       setDraggingSplitterId(matchedWaypoint.id);
     }
-  };
+  }, [waypoints]);
 
   // Persist the dragged waypoint's new position, if any, and release the drag lock.
-  const handleCommitDrag = () => {
+  const handleCommitDrag = useCallback(() => {
     if (draggingSplitterId) {
       // Clear the imperative preview transform: React never knew about it, so it won't clean it
       // up on its own even once the upcoming state update re-renders with the committed position.
@@ -76,23 +76,23 @@ export default function ElevationChart() {
     setDraggingSplitterId(null);
     dragStartPixelXRef.current = null;
     lastValidIndexRef.current = null;
-  };
+  }, [draggingSplitterId, updateWaypoint]);
 
   // Release the drag lock.
-  const handleChartMouseUp = () => {
+  const handleChartMouseUp = useCallback(() => {
     handleCommitDrag();
-  };
+  }, [handleCommitDrag]);
 
   // Detect the mouse leaving the chart.
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     const event = new CustomEvent('trace-point-hover', { detail: null });
     window.dispatchEvent(event);
 
     handleCommitDrag();
-  };
+  }, [handleCommitDrag]);
 
   // Bridge the hovered trace point to the map marker, and move the dragged splitter's pin/line.
-  const handleMouseMove = (nextState: any) => {
+  const handleMouseMove = useCallback((nextState: any) => {
     if (!nextState || typeof nextState.activeTooltipIndex === 'undefined') return;
     const currentHoverIndex = nextState.activeTooltipIndex;
 
@@ -117,7 +117,7 @@ export default function ElevationChart() {
       nodes?.line?.setAttribute('transform', transform);
       nodes?.dot?.setAttribute('transform', transform);
     }
-  };
+  }, [draggingSplitterId, hikePoints.length]);
 
   return (
     <div className={`w-full h-full p-3 flex flex-col select-none [&_*]:select-none justify-between ${draggingSplitterId ? 'cursor-ew-resize' : 'cursor-default'
