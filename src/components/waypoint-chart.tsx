@@ -1,3 +1,4 @@
+import type { Ref } from 'react';
 import { getWaypointVisual } from '@/lib/waypoints';
 import { ResolvedWaypoint } from '@/types/hike-types';
 
@@ -7,16 +8,19 @@ interface WaypointChartPinProps {
   waypoint: ResolvedWaypoint;
   isActive: boolean;
   onSelect: (id: string) => void;
+  /** Exposes the underlying `<g>` node so a drag interaction can mutate its position directly (no re-render). */
+  groupRef?: Ref<SVGGElement>;
 }
 
 /** Small colored dot marking a waypoint's position on the elevation chart. */
-export function WaypointChartPin({ cx, cy, waypoint, isActive, onSelect }: WaypointChartPinProps) {
+export function WaypointChartPin({ cx, cy, waypoint, isActive, onSelect, groupRef }: WaypointChartPinProps) {
   if (cx === undefined || cy === undefined) return null;
 
   const visual = getWaypointVisual(waypoint);
 
   return (
     <g
+      ref={groupRef}
       className="cursor-pointer"
       onClick={() => onSelect(waypoint.id)}
     >
@@ -43,16 +47,18 @@ interface WaypointChartLineProps {
   waypoint: ResolvedWaypoint;
   isActive: boolean;
   onSelect: (id: string) => void;
+  /** Exposes the underlying `<g>` node so a drag interaction can mutate its position directly (no re-render). */
+  groupRef?: Ref<SVGGElement>;
 }
 
 /** Thin dotted vertical line marking a waypoint's position along the elevation chart. */
-export function WaypointChartLine({ x1, y1, y2, waypoint, isActive, onSelect }: WaypointChartLineProps) {
+export function WaypointChartLine({ x1, y1, y2, waypoint, isActive, onSelect, groupRef }: WaypointChartLineProps) {
   if (x1 === undefined || y1 === undefined || y2 === undefined) return null;
 
   const visual = getWaypointVisual(waypoint);
 
   return (
-    <g className="cursor-pointer" onClick={() => onSelect(waypoint.id)}>
+    <g ref={groupRef} className="cursor-pointer" onClick={() => onSelect(waypoint.id)}>
       <title>{waypoint.name}</title>
       {/* Wider transparent line, easier to click/hover than the thin dotted one. */}
       <line x1={x1} y1={y1} x2={x1} y2={y2} stroke="transparent" strokeWidth={10} />

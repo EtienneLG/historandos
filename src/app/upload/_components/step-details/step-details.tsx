@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useUploadStore } from '@/stores/upload-store';
 import { useResolvedWaypoints } from '@/stores/use-resolved-waypoints';
 import { Waypoint } from '@/types/hike-types';
@@ -13,10 +13,10 @@ export default function StepDetails() {
   const updateWaypoint = useUploadStore((s) => s.updateWaypoint);
   const removeWaypoint = useUploadStore((s) => s.removeWaypoint);
   const goToPrevStep = useUploadStore((s) => s.goToPrevStep);
+  const activeWaypointId = useUploadStore((s) => s.activeWaypointId);
+  const setActiveWaypointId = useUploadStore((s) => s.setActiveWaypointId);
 
   const resolvedWaypoints = useResolvedWaypoints(waypoints, hikePoints);
-
-  const [activeWaypointId, setActiveWaypointId] = useState<string | null>(null);
 
   // Ensure the track always has a fixed start & end waypoint the moment this step is reached.
   useEffect(() => {
@@ -73,9 +73,7 @@ export default function StepDetails() {
     addWaypoint(newWaypoint);
     setActiveWaypointId(newWaypoint.id);
   };
-
-  console.log(resolvedWaypoints);
-
+  
   return (
     <div className="h-full flex flex-col justify-between">
       {/* Scrollable waypoint list */}

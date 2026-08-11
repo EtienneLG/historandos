@@ -23,6 +23,7 @@ interface UploadState {
 
   // Step 3: Hike details
   waypoints: Waypoint[];
+  activeWaypointId: string | null;
 
   // Actions
   setIsProcessing: (isProcessing: string | null) => void;
@@ -35,6 +36,7 @@ interface UploadState {
   addWaypoint: (waypoint: Waypoint) => void;
   updateWaypoint: (id: string, fields: Partial<Waypoint>) => void;
   removeWaypoint: (id: string) => void;
+  setActiveWaypointId: (id: string | null) => void;
   reset: () => void;
 }
 
@@ -49,6 +51,7 @@ const initialState = {
   people: [],
   photoDirId: 0,
   waypoints: [],
+  activeWaypointId: null,
 };
 
 export const useUploadStore = create<UploadState>((set) => ({
@@ -85,6 +88,8 @@ export const useUploadStore = create<UploadState>((set) => ({
   removeWaypoint: (id) => set((state) => ({
     waypoints: state.waypoints.filter((w) => w.id !== id),
   })),
+
+  setActiveWaypointId: (id) => set({ activeWaypointId: id }),
 
   reset: () => set(initialState),
 }))

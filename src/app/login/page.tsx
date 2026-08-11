@@ -49,8 +49,7 @@ export default function LoginPage() {
         setError('Question indisponible');
         return;
       }
-      console.log(answer);
-
+      
       const response = await fetch('/api/login/qa/answer', {
         method: 'POST',
         headers: {
