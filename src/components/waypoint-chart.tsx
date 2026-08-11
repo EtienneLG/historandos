@@ -40,7 +40,7 @@ export function WaypointChartPin({ cx, cy, waypoint, onSelect, groupRef, isActiv
       <circle
         cx={cx}
         cy={cy}
-        r={isActive ? 6 : 4.5}
+        r={isActive ? 5 : 3.5}
         fill={visual.color}
         stroke="#faf7ef"
         strokeWidth={isActive ? 2.5 : 1.5}
