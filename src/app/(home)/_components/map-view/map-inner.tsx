@@ -55,11 +55,15 @@ export default function MapInner({ hikes }: MapInnerProps) {
   }, [activeDay, hikePoints]);
   const activeDayGeometry = useMemo(
     () => (activeDayPoints ? hikePointsToLineString(activeDayPoints) : geometry),
-    [activeDayPoints],
+    [activeDayPoints, geometry],
   );
 
   const mapRef = useRef<any>(null);
   const hoverMarkerRef = useRef<mapboxgl.Marker | null>(null);
+
+  useEffect(() => {
+    console.log(activeDay, activeDayPoints, activeDayGeometry);
+  }, [activeDayGeometry])
 
   const handleMapLoad = () => {
     const rawMap = mapRef.current?.getMap();
