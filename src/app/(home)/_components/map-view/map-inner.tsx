@@ -60,11 +60,7 @@ export default function MapInner({ hikes }: MapInnerProps) {
 
   const mapRef = useRef<any>(null);
   const hoverMarkerRef = useRef<mapboxgl.Marker | null>(null);
-
-  useEffect(() => {
-    console.log(activeDay, activeDayPoints, activeDayGeometry);
-  }, [activeDayGeometry])
-
+  
   const handleMapLoad = () => {
     const rawMap = mapRef.current?.getMap();
     if (!rawMap || hoverMarkerRef.current) return;

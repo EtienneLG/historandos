@@ -107,12 +107,21 @@ function buildDaySegment(
   return { dayNumber, waypoints, distanceM, gainM, lossM };
 }
 
-/** Builds a `waypointId → dayNumber` lookup index from computed day segments. */
+/**
+ * Builds a `waypointId → dayNumber` lookup index from computed day segments.
+ *
+ * Boundary waypoints (`accommodation`) belong to two consecutive segments (the last
+ * waypoint of day N and the first of day N+1). We keep the first day number assigned
+ * (days are iterated in ascending order), so the index stays consistent with the
+ * waypoints tab, which only ever displays such a waypoint under its first day.
+ */
 export function buildDayNumberIndex(days: DaySegment[]): Map<string, number> {
   const index = new Map<string, number>();
-  for (const day of days) {
+  for (const day of days.sort((a, b) => a.dayNumber - b.dayNumber)) {
     for (const waypoint of day.waypoints) {
-      index.set(waypoint.id, day.dayNumber);
+      if (!index.has(waypoint.id)) {
+        index.set(waypoint.id, day.dayNumber);
+      }
     }
   }
   return index;
