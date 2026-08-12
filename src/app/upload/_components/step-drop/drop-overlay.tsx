@@ -28,9 +28,8 @@ export default function DropOverlay({ onFileUploaded }: DropOverlayProps) {
       onFileUploaded();
       goToNextStep();
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Error parsing GPX file');
-    } finally {
       setIsProcessing(null);
+      alert(error instanceof Error ? error.message : 'Error parsing GPX file');
     }
   };
 
@@ -55,9 +54,8 @@ export default function DropOverlay({ onFileUploaded }: DropOverlayProps) {
       };
       reader.readAsText(file);
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Error parsing GPX file');
-    } finally {
       setIsProcessing(null);
+      alert(error instanceof Error ? error.message : 'Error parsing GPX file');
     }
   };
 
