@@ -257,7 +257,7 @@ export default function MapInner({ hikes }: MapInnerProps) {
           })}
 
           {/* End Marker */}
-          {activeHike && !activeHike.isLoop && hikePoints && (
+          {activeHike && !activeHike.isLoop && hikePoints.length > 0 && (
             <Marker
               key="end-marker"
               latitude={hikePoints[hikePoints.length - 1].lat}
