@@ -30,7 +30,7 @@ export const accommodationTypeEnum = pgEnum('accommodation_type', [
 
 export const poiTypeEnum = pgEnum('poi_type', ['peak', 'sight', 'building', 'other']);
 
-export const hikes = pgTable('hikes', {
+export const hikes = pgTable.withRLS('hikes', {
   id: uuid('id').primaryKey().defaultRandom(),
   title: text('title').notNull(),
   description: text('description').notNull(),
@@ -57,7 +57,7 @@ export const hikes = pgTable('hikes', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
-export const hikeWaypoints = pgTable('hike_waypoints', {
+export const hikeWaypoints = pgTable.withRLS('hike_waypoints', {
   id: uuid('id').primaryKey().defaultRandom(),
   hikeId: uuid('hike_id')
     .notNull()
