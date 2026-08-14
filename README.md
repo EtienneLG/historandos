@@ -4,6 +4,9 @@
 **list** or on a **map**, dive into photos and waypoints, and **upload a
 GPX** whenever you're back from a new one.
 
+A demo version of the app is available at
+[https://historandos-demo.vercel.app/](https://historandos-demo.vercel.app/).
+
 ## Tech stack
 
 Next.js (App Router) + TypeScript, Tailwind CSS, Supabase Postgres via
