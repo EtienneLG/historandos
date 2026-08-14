@@ -163,7 +163,7 @@ export default function LoginPage() {
           <div className="flex flex-col gap-5 p-12">
             {/* Password */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-base font-bold uppercase tracking-wide text-pine/70">
+              <label className="text-base font-bold uppercase tracking-wide text-pine/30">
                 Mot de passe
               </label>
               <div className="relative">
@@ -185,8 +185,8 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-3 py-2.5 text-sm border border-stone rounded-xl bg-stone/20 focus:bg-parchment-light focus:outline-none focus:ring-2 focus:ring-pine/40 focus:border-pine transition-all placeholder:text-ink/30 text-ink"
-                  required
+                  className="w-full pl-10 pr-3 py-2.5 text-sm border border-stone rounded-xl bg-stone/20 text-ink/40 placeholder:text-ink/20 cursor-not-allowed select-none"
+                  disabled
                 />
               </div>
             </div>
@@ -194,7 +194,7 @@ export default function LoginPage() {
             {/* Security question */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between gap-2">
-                <label className="text-base font-bold tracking-wide text-blaze">
+                <label className="text-base font-bold tracking-wide text-blaze/30">
                   {questionLoading
                     ? 'Chargement de la question…'
                     : question?.question || 'Question indisponible'}
@@ -241,9 +241,8 @@ export default function LoginPage() {
                   placeholder="Réponse"
                   value={answer}
                   onChange={(e) => setAnswer(e.target.value)}
-                  className="w-full pl-10 pr-3 py-2.5 text-sm border border-stone rounded-xl bg-stone/20 focus:bg-parchment-light focus:outline-none focus:ring-2 focus:ring-tarn/40 focus:border-tarn transition-all placeholder:text-ink/30 text-ink"
-                  required
-                  disabled={questionLoading || !question}
+                  className="w-full pl-10 pr-3 py-2.5 text-sm border border-stone rounded-xl bg-stone/20 text-ink/40 placeholder:text-ink/20 cursor-not-allowed select-none"
+                  disabled
                 />
               </div>
             </div>
@@ -294,7 +293,7 @@ export default function LoginPage() {
                   Chargement...
                 </>
               ) : (
-                'Se connecter'
+                'Accéder à la démo'
               )}
             </button>
           </div>
