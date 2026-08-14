@@ -51,11 +51,9 @@ for the full list.
 | `npm run seed:waypoints` | Seed or clean demo waypoints for an existing hike by id              |
 
 Database schema changes go through `drizzle-kit`, configured in
-`drizzle.config.ts` (schema at `src/db/schema.ts`, migrations output to
-`drizzle/`):
+`drizzle.config.ts` (schema at `src/db/schema.ts``). They are push-only:
 
 ```bash
-npx drizzle-kit generate   # create a migration from schema changes
 npx drizzle-kit push       # push schema changes directly to the database
 ```
 
