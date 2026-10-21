@@ -47,7 +47,7 @@ const initialState = {
   isProcessing: null,
   geometry: null,
   hikePoints: [],
-  title: 'Hike',
+  title: '',
   description: '',
   date: '2026-08-10',
   people: [],

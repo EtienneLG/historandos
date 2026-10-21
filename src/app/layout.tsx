@@ -7,7 +7,7 @@ const body = Inter({ subsets: ['latin'], variable: '--font-body' });
 const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export const metadata: Metadata = {
-  title: 'Journal de radonnée',
+  title: 'Journal de randonnée',
   description: 'Explorer les activités',
 };
 
